@@ -10,6 +10,11 @@ const String   &ParseRequest::getMethod() const
     return(this->_method);
 }
 
+const String   &ParseRequest::getBody() const
+{
+    return(this->_body);
+}
+
 const String   &ParseRequest::getPath() const
 {
     return(this->_path);
@@ -22,8 +27,8 @@ const String   &ParseRequest::getVersProtocol() const
 
 void ParseRequest::parsingStartLine(String &line)
 {
-    size_t pos = 0;
-    size_t i = 0;
+    // size_t pos = 0;
+    // size_t i = 0;
     String temp;
     
     std::vector<String> newLine = split(line);
@@ -32,9 +37,12 @@ void ParseRequest::parsingStartLine(String &line)
     this->_method = newLine[0];
     this->_path = newLine[1];
     this->_versProtocol = newLine[2];
+    if (this->_versProtocol != "HTTP/1.1")
+        throw std::exception();
     // проверить на валидность параметры
 } // еще не работает :(
-void print(Map m)
+
+void print(Map m) // функция для тестирования мапы
 {
 std::map<String,String>::iterator it;
  
@@ -42,23 +50,30 @@ for (it=m.begin(); it!=m.end(); it++)
 std::cout << "Ключ: " << it->first << "| Значение: " << it->second << '\n';
 
 }
-void ParseRequest::parsingHeading(std::vector<std::string> res)
+
+void ParseRequest::parsingHeading(std::string request)
 {
-    int i = 1;
-    while(res[i] != "")
-    {
-        std::vector<std::string> temp = split(res[i]);
-       // std::cout << i << "|"<< temp[0]<< "|"<< temp[1] <<'\n';
-        this->_heading.insert(make_pair(temp[0].erase(temp[0].size() - 1),temp[1]));
-        i++;
-    }
-    print(this->_heading);
+    std::vector<std::string> temp = split(request);
+    this->_heading.insert(make_pair(temp[0].erase(temp[0].size() - 1),temp[1]));
 }
 
 void ParseRequest::parsRequest(String request)
 {
-    std::vector<std::string> res = catLine(request);
-    parsingStartLine(res[0]);
-    parsingHeading(res);
+    std::string r =  getLine(request);
+    parsingStartLine(r);
+     r =  getLine(request);
+    while(r != "")
+    {
+        parsingHeading(r);
+         r =  getLine(request);
+    }
+    
+    if(this->_heading.count("Host")==0)
+        std::cout << "host not found" << '\n';
+    print(this->_heading);
+    if(!request.empty())
+    {
+        this->_body = request;
+    }
 
 }

@@ -32,9 +32,7 @@ bool notdelim(char c)
 {
     return !del(c);
 }
- 
 
- 
 std::vector<std::string> split(const std::string& s)
 {
     typedef std::string::const_iterator iter;
@@ -58,6 +56,7 @@ std::vector<std::string> catLine(const std::string& s)
     typedef std::string::const_iterator iter;
     std::vector<std::string> res;
     iter i = s.begin();
+    int r = 0;
     while(i!=s.end())
     {
         i = std::find_if(i, s.end(), notdelim); 
@@ -65,10 +64,31 @@ std::vector<std::string> catLine(const std::string& s)
         if(i!=s.end())
         {
             res.push_back(std::string(i, j));
+            //std::cout << res[r] << '\n';
             i = j;
+            r++;
         }
     }
     return res;
 }
 
+std::string getLine(std::string &request)
+{
+  size_t CRPos = request.find('\r');
+  size_t LFPos = request.find('\n');
+  if (LFPos != std::string::npos) {
+    if (CRPos != std::string::npos && LFPos - CRPos == 1)  
+    {
+      std::string requestLine = request.substr(0, CRPos);
+      request.erase(0, LFPos + 1);
+      return requestLine;
+    }
+    else {
+      std::string requestLine = request.substr(0, LFPos);
+      request.erase(0, LFPos + 1);
+      return requestLine;
+    }
+  }
+  return "";
+}
 #endif
