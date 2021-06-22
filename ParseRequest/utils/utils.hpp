@@ -91,5 +91,5 @@ std::string getLine(std::string &request)
     }
   }
   return "";
-}
+}   
 #endif
