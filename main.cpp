@@ -3,8 +3,9 @@
 int main()
 {
     ParseRequest parse;
-    std::string line = "POST /login.php HTTP/1.1 \r\n Server: Apache \r\n Accept-Ranges: bytes \r\n Content-Length: 29769 \r\n\r\n это тело \r\n\r\n";
-    try{
+    std::string line = "POST /login.php HTTP/1.1 \r\n Host: Apache \r\n Accept-Ranges: bytes \r\n Content-Length: 29769 \r\n\r\n это тело \r\n\r\n";
+    try
+    {
         parse.parsRequest(line);
     }
     catch (std::exception const & ex)

@@ -24,56 +24,78 @@ const String   &ParseRequest::getVersProtocol() const
 {
     return(this->_versProtocol);
 }
-
-void ParseRequest::parsingStartLine(String &line)
+const Map   &ParseRequest::getMap() const
 {
-    // size_t pos = 0;
-    // size_t i = 0;
+    return(this->_heading);
+}
+
+error ParseRequest::parsingStartLine(String &line)
+{
     String temp;
     
     std::vector<String> newLine = split(line);
     if (newLine.size() != 3)
-        return; 
+        throw std::exception(); 
     this->_method = newLine[0];
     this->_path = newLine[1];
     this->_versProtocol = newLine[2];
     if (this->_versProtocol != "HTTP/1.1")
         throw std::exception();
+    return(OK);
     // проверить на валидность параметры
 } // еще не работает :(
 
 void print(Map m) // функция для тестирования мапы
 {
-std::map<String,String>::iterator it;
+Map::iterator it;
  
 for (it=m.begin(); it!=m.end(); it++)
 std::cout << "Ключ: " << it->first << "| Значение: " << it->second << '\n';
 
 }
 
-void ParseRequest::parsingHeading(std::string request)
+// //=========проверяет ключь на валидность===========
+// static bool checkKey(String value)
+// {
+//     for(int i = 0; i < this->Keys.size(); i++)
+//     {
+//         if(Keys[i] == value)
+//             return true; 
+//     }
+//     return false;
+// }
+
+//=========добавляет в map ключ:значение===========
+error ParseRequest::parsingHeading(String request)
 {
-    std::vector<std::string> temp = split(request);
-    this->_heading.insert(make_pair(temp[0].erase(temp[0].size() - 1),temp[1]));
+    std::vector<String> temp = split(request);
+    String key = temp[0].erase(temp[0].size() - 1);
+    // if(!checkKey(key))
+    //      return BadRequest;
+    this->_heading.insert(make_pair(key,temp[1]));
+    return OK;
 }
 
-void ParseRequest::parsRequest(String request)
+//=========главная функция парсинга запроса========
+error ParseRequest::parsRequest(String request)
 {
-    std::string r =  getLine(request);
-    parsingStartLine(r);
-     r =  getLine(request);
-    while(r != "")
+    String str =  getLine(request);
+    parsingStartLine(str);
+    str =  getLine(request);
+    while(str != "")
     {
-        parsingHeading(r);
-         r =  getLine(request);
+        if (parsingHeading(str) == BadRequest)
+            return BadRequest;
+        str =  getLine(request);
     }
     
-    if(this->_heading.count("Host")==0)
-        std::cout << "host not found" << '\n';
+    if(this->_heading.count("Host") == 0)
+       return BadRequest;
+    
     print(this->_heading);
     if(!request.empty())
     {
         this->_body = request;
     }
-
+    return OK;
 }
