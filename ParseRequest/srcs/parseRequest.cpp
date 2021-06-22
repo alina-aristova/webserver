@@ -1,9 +1,6 @@
 #include "../Includes/parseRequest.hpp"
 #include "../utils/utils.hpp"
-ParseRequest::ParseRequest()
-{
-
-}
+ParseRequest::ParseRequest() : _bodyLength(0) {}
 
 const String   &ParseRequest::getMethod() const
 {
@@ -32,15 +29,19 @@ const Map   &ParseRequest::getMap() const
 error ParseRequest::parsingStartLine(String &line)
 {
     String temp;
-    
+
     std::vector<String> newLine = split(line);
     if (newLine.size() != 3)
-        throw std::exception(); 
+        throw std::exception();
     this->_method = newLine[0];
     this->_path = newLine[1];
     this->_versProtocol = newLine[2];
     if (this->_versProtocol != "HTTP/1.1")
-        throw std::exception();
+        return(BadRequest);
+    if (this->_method !=  "DELETE"
+        && this->_method !=  "POST"
+        && this->_method !=  "GET")
+        return(BadRequest);
     return(OK);
     // проверить на валидность параметры
 } // еще не работает :(
@@ -79,6 +80,7 @@ error ParseRequest::parsingHeading(String request)
 //=========главная функция парсинга запроса========
 error ParseRequest::parsRequest(String request)
 {
+    std::cout << request << std::endl;
     String str =  getLine(request);
     parsingStartLine(str);
     str =  getLine(request);
@@ -91,11 +93,36 @@ error ParseRequest::parsRequest(String request)
     
     if(this->_heading.count("Host") == 0)
        return BadRequest;
-    
+
     print(this->_heading);
     if(!request.empty())
     {
         this->_body = request;
     }
     return OK;
+}
+
+int ParseRequest::getBodyLength() const { return _bodyLength; }
+
+error ParseRequest::parsBodyLength(std::string &request) {
+    size_t contentLengthStart;
+    size_t contentLengthEnd;
+    if ((contentLengthStart = request.find("Content-length: "))
+        == String::npos) {
+        if ((contentLengthStart = request.find("Content-Length: "))
+            == String::npos)
+            return OK;
+    }
+    if ((contentLengthEnd = request.find("\r\n", contentLengthStart)) == String::npos) {
+        if ((contentLengthEnd = request.find("\r\n", contentLengthStart)) == String::npos)
+            return OK;
+    }
+    String contentLengthString = request.substr(contentLengthStart, contentLengthEnd - contentLengthStart);
+    std::vector<String> contentLengthParts = split(contentLengthString);
+
+    if (contentLengthParts.size() != 2)
+        return (BadRequest);
+
+    _bodyLength = std::stoi(contentLengthParts[1]);
+    return (OK);
 }

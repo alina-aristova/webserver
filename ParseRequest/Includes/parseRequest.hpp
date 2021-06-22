@@ -108,6 +108,7 @@ class ParseRequest
         String      _versProtocol;
         String      _body;
         Map         _heading;
+        int         _bodyLength;
         //Vector  Keys = {String("Host"), String("Content-Type")};
     public: //  private?
         ParseRequest();
@@ -117,13 +118,15 @@ class ParseRequest
         const String   &getPath() const;
         const String   &getVersProtocol() const;
         const String   &getBody() const;
-        const Map   &getMap() const;
+        const Map      &getMap() const;
+        int            getBodyLength() const;
         //===========Parsing methods===============
         error  parsingStartLine(String &line);
         error  parsingBody(String &line);
         error  parsingHeading(String res);
         error  parsRequest(String request);
         error  parsBody(String request);
+        error  parsBodyLength(String & request);
 };
 
 #endif
