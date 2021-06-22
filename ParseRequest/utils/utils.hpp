@@ -88,7 +88,7 @@ std::string getLine(std::string &request)
       std::string requestLine = request.substr(0, LFPos);
       request.erase(0, LFPos + 1);
       return requestLine;
-    }  
+    }  ed
   }
   return "";
 }      
