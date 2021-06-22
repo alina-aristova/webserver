@@ -3,7 +3,8 @@
 int main()
 {
     ParseRequest parse;
-    std::string line = "POST /login.php HTTP/1.1 \r\n Host: Apache \r\n Accept-Ranges: bytes \r\n Content-Length: 29769 \r\n\r\n это тело \r\n\r\n";
+    std::string line = "GET / HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
+    parse.addArrKeys();
     try
     {
         parse.parsRequest(line);

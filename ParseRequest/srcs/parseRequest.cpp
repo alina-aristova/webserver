@@ -54,25 +54,57 @@ for (it=m.begin(); it!=m.end(); it++)
 std::cout << "Ключ: " << it->first << "| Значение: " << it->second << '\n';
 
 }
+//=========добавляет все возможные ключи=============
 
-// //=========проверяет ключь на валидность===========
-// static bool checkKey(String value)
-// {
-//     for(int i = 0; i < this->Keys.size(); i++)
-//     {
-//         if(Keys[i] == value)
-//             return true; 
-//     }
-//     return false;
-// }
+void ParseRequest::addArrKeys()
+{
+    this->Keys.push_back("host");
+    this->Keys.push_back("accept");
+    this->Keys.push_back("accept-charset");
+    this->Keys.push_back("accept-encoding");
+    this->Keys.push_back("accept-language");
+    this->Keys.push_back("authorization");
+    this->Keys.push_back("content-disposition");
+    this->Keys.push_back("expect");
+    this->Keys.push_back("from");
+    this->Keys.push_back("if-match");
+    this->Keys.push_back("if-modified-since");
+    this->Keys.push_back("if-none-match");
+    this->Keys.push_back("content-length");
+    this->Keys.push_back("content-location");
+    this->Keys.push_back("content-type");
+    this->Keys.push_back("content-version");
+    this->Keys.push_back("title");
+
+}
+//=========проверяет ключ на валидность===========
+bool ParseRequest::checkKey(String value)
+{
+    
+    for(unsigned long i = 0; i < this->Keys.size(); i++)
+    {
+        if(this->Keys[i] == value)
+            return true; 
+    }
+    return false;
+}
 
 //=========добавляет в map ключ:значение===========
 error ParseRequest::parsingHeading(String request)
 {
+    int i = 0;
+    while(request[i] != '\0')
+	{
+		request[i] = std::tolower(request[i]);
+		i++;
+	}
     std::vector<String> temp = split(request);
     String key = temp[0].erase(temp[0].size() - 1);
-    // if(!checkKey(key))
-    //      return BadRequest;
+    if(!checkKey(key) || this->_heading.count(key) == 1)
+    {
+         std::cout <<" error" << std::endl;
+        return BadRequest;
+    }
     this->_heading.insert(make_pair(key,temp[1]));
     return OK;
 }
@@ -86,12 +118,13 @@ error ParseRequest::parsRequest(String request)
     str =  getLine(request);
     while(str != "")
     {
+        std::cout <<" request" << std::endl;
         if (parsingHeading(str) == BadRequest)
             return BadRequest;
         str =  getLine(request);
     }
     
-    if(this->_heading.count("Host") == 0)
+    if(this->_heading.count("host") == 0)
        return BadRequest;
 
     print(this->_heading);
@@ -121,7 +154,14 @@ error ParseRequest::parsBodyLength(std::string &request) {
     std::vector<String> contentLengthParts = split(contentLengthString);
 
     if (contentLengthParts.size() != 2)
-        return (BadRequest);
+        return BadRequest;
+    int i = 0;
+    while(contentLengthParts[1][i] != '\0')
+    {
+        if(!(isdigit(contentLengthParts[1][i])))
+             return BadRequest;
+        i++;
+    }
 
     _bodyLength = std::stoi(contentLengthParts[1]);
     return (OK);
