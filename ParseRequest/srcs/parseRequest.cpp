@@ -118,7 +118,7 @@ error ParseRequest::parsRequest(String request)
     str =  getLine(request);
     while(str != "")
     {
-        std::cout <<" request" << std::endl;
+       // std::cout <<" request" << std::endl;
         if (parsingHeading(str) == BadRequest)
             return BadRequest;
         str =  getLine(request);

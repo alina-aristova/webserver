@@ -99,6 +99,7 @@ enum error
     OK = 200
 
  };
+ 
 class ParseRequest
 {
     private:
