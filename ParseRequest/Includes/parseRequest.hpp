@@ -94,11 +94,10 @@
 // 525 SSL Handshake Failed («квитирование SSL не удалось»)[15];
 // 526 Invalid SSL Certificate («недействительный сертификат SSL»)[15].
 enum error
- {
+{
     BadRequest = 400,
     OK = 200
-
- };
+};
  
 class ParseRequest
 {
@@ -128,6 +127,7 @@ class ParseRequest
         error  parsRequest(String request);
         error  parsBody(String request);
         error   parsBodyLength(std::string &request);
+        std::vector<String>   splitValues(std::string &value);
         void    addArrKeys(void);
         bool checkKey(String value);
 };
