@@ -54,6 +54,7 @@ for (it=m.begin(); it!=m.end(); it++)
 std::cout << "Ключ: " << it->first << "| Значение: " << it->second << '\n';
 
 }
+
 //=========добавляет все возможные ключи=============
 
 void ParseRequest::addArrKeys()
@@ -88,11 +89,7 @@ bool ParseRequest::checkKey(String value)
     }
     return false;
 }
-//=========разрезает значения на токены===========
-std::vector<String> ParseRequest::splitValues(String &value)
-{
-    
-}
+
 //=========добавляет в map ключ:значение===========
 error ParseRequest::parsingHeading(String request)
 {
@@ -102,15 +99,14 @@ error ParseRequest::parsingHeading(String request)
 		request[i] = std::tolower(request[i]);
 		i++;
 	}
-    std::vector<String> temp = splitByColon(request);
-    std::vector<String> value = splitValues(temp[1]);
-    String key = temp[0];
+    std::vector<String> temp = split(request);
+    String key = temp[0].erase(temp[0].size() - 1);
     if(!checkKey(key) || this->_heading.count(key) == 1)
     {
          std::cout <<" error" << std::endl;
         return BadRequest;
     }
-    this->_heading.insert(make_pair(key,value));
+    this->_heading.insert(make_pair(key,temp[1]));
     return OK;
 }
 
