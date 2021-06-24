@@ -12,6 +12,12 @@
  # include <iostream>
  # include <sstream>
  # include <iomanip>
+ # include <iostream>
+ # include <fstream>
+ # include <string>
+#include <sys/stat.h>
+
+
  # define String std::string
  # define Map std::map<std::string,std::string>
  # define Vector std::vector<std::string>
@@ -96,7 +102,9 @@
 enum error
 {
     BadRequest = 400,
-    OK = 200
+    OK = 200,
+    IS_DIR = 42,
+    NotFound = 404
 };
  
 class ParseRequest
@@ -104,12 +112,18 @@ class ParseRequest
     private:
 
         String      _method;
+         String      _code;
         String      _path;
         String      _versProtocol;
-        String      _body;
-        Map         _heading;
-        Vector      Keys;
-        int         _bodyLength;
+        String      _body; //тело в post
+        String      _contentType; 
+        Map         _heading; //словарь заголовков
+         Map         _types; // доступные расширение файла
+        Vector      Keys; // доступные заголовки
+        int         _bodyLength; // длина тела для post
+        String      _str; // буфер в который считали данные из файла
+        String      _strPath; // путь
+        unsigned long _sizeFile;
     public: //  private?
         ParseRequest();
         //~ParseRequest();
@@ -118,8 +132,13 @@ class ParseRequest
         const String   &getPath() const;
         const String   &getVersProtocol() const;
         const String   &getBody() const;
+        const String   &getStr() const;
+        const String   &getStrPath() const;
+        const String   &getContentType() const;
         const Map       &getMap() const;
+        const String   &getCode() const;
         int             getBodyLength() const;
+        const unsigned long             &getSizeFile() const;
         //===========Parsing methods===============
         error  parsingStartLine(String &line);
         error  parsingBody(String &line);
@@ -129,7 +148,13 @@ class ParseRequest
         error   parsBodyLength(std::string &request);
         std::vector<String>   splitValues(std::string &value);
         void    addArrKeys(void);
+        void    addTypes(void);
         bool checkKey(String value);
+        void findType(std::string fn);
+        void findPath(std::string root);
+        error fileToString(std::string root);
+        error dirToString(std::string indexFile);
+        void findNewPath(std::string indexFile);
 };
 
 #endif

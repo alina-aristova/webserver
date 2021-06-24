@@ -1,22 +1,45 @@
 # include "ParseRequest/Includes/parseRequest.hpp"
+#include "ParseRequest/response/response.hpp"
 
+String test(ParseRequest &parse)
+{
+  
+    std::string line = "GETe /acase/Desktop/testfile/ HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
+    parse.addArrKeys();
+    parse.addTypes();
+    parse.parsRequest(line);
+    if(parse.getCode()!="200")
+        return(parse.getCode());
+    parse.findPath("/Users"); //root
+    if(parse.getCode()!="200")
+        return(parse.getCode());
+    if (parse.fileToString(parse.getStrPath()) == IS_DIR)
+    {   
+        if(parse.getCode()!="200")
+            return(parse.getCode());
+            parse.dirToString("good.txt"); // тут будет путь до дир
+    }
+    if(parse.getCode()!="200")
+        return(parse.getCode());
+    parse.findType(parse.getStrPath());
+    if(parse.getCode()!="200")
+        return(parse.getCode());
+    return(parse.getCode());
+}
 int main()
 {
-    ParseRequest parse;
-    std::string line = "GET / HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
-    parse.addArrKeys();
-    try
-    {
-        parse.parsRequest(line);
-    }
-    catch (std::exception const & ex)
-    {
-       std::cout << ex.what() << std::endl;
-    }
     
-
-    std::cout << "Метод: " << parse.getMethod() << std::endl;
-    std::cout << "Путь: " << parse.getPath() << std::endl;
-    std::cout << "Версия: " << parse.getVersProtocol() << std::endl;
-    std::cout << "body: " << parse.getBody() << std::endl;
+    ParseRequest parse;
+    Response  response;
+    test(parse);
+    response.addTypes();
+    std::string res = response.creatRespons(parse,parse.getCode());
+    std::cout << res << std::endl;
+    // std::cout << "Метод: " << parse.getMethod() << std::endl;
+    // std::cout << "Путь до файла: " << parse.getPath() << std::endl;
+    // std::cout << "Версия: " << parse.getVersProtocol() << std::endl;
+    // std::cout << "body: " << parse.getBody() << std::endl;
+    // std::cout << "то что считали с файла: " << parse.getStr() << std::endl;
+    // std::cout << "склееный путь вместе с файлом: " << parse.getStrPath() << std::endl;
+    // std::cout << "Type: " << parse.getContentType() << std::endl;
 }

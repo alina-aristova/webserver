@@ -7,6 +7,21 @@ const String   &ParseRequest::getMethod() const
     return(this->_method);
 }
 
+const String   &ParseRequest::getStr() const
+{
+    return(this->_str);
+}
+int ParseRequest::getBodyLength() const { return _bodyLength; }
+const String   &ParseRequest::getStrPath() const
+{
+    return(this->_strPath);
+}
+
+const String   &ParseRequest::getContentType() const
+{
+    return(this->_contentType);
+}
+
 const String   &ParseRequest::getBody() const
 {
     return(this->_body);
@@ -16,10 +31,18 @@ const String   &ParseRequest::getPath() const
 {
     return(this->_path);
 }
-
+const String   &ParseRequest::getCode() const
+{
+    return(this->_code);
+}
 const String   &ParseRequest::getVersProtocol() const
 {
     return(this->_versProtocol);
+}
+
+const unsigned long    &ParseRequest::getSizeFile() const
+{
+    return(this->_sizeFile);
 }
 const Map   &ParseRequest::getMap() const
 {
@@ -32,16 +55,24 @@ error ParseRequest::parsingStartLine(String &line)
 
     std::vector<String> newLine = split(line);
     if (newLine.size() != 3)
-        throw std::exception();
+        {
+            this-> _code = "400";
+            return(BadRequest);}
     this->_method = newLine[0];
     this->_path = newLine[1];
     this->_versProtocol = newLine[2];
     if (this->_versProtocol != "HTTP/1.1")
-        return(BadRequest);
+       {
+           this-> _code = "400";
+           return(BadRequest);
+       }
     if (this->_method !=  "DELETE"
         && this->_method !=  "POST"
         && this->_method !=  "GET")
-        return(BadRequest);
+       { 
+           this-> _code = "400";
+           return(BadRequest);}
+    this-> _code = "200";
     return(OK);
     // проверить на валидность параметры
 } // еще не работает :(
@@ -54,7 +85,82 @@ for (it=m.begin(); it!=m.end(); it++)
 std::cout << "Ключ: " << it->first << "| Значение: " << it->second << '\n';
 
 }
+void ParseRequest::addTypes()
+{
+    this->_types.insert( std::make_pair("aac","audio/aac"));
+    this->_types.insert( std::make_pair("abw","application/x-abiword"));
+    this->_types.insert( std::make_pair("arc","application/x-freearc"));
+    this->_types.insert( std::make_pair("avi","video/x-msvideo"));
+    this->_types.insert( std::make_pair("azw","application/vnd.amazon.ebook"));
+    this->_types.insert( std::make_pair("bin","application/octet-stream"));
+    this->_types.insert( std::make_pair("bmp","image/bmp"));
+    this->_types.insert( std::make_pair("bz","application/x-bzip"));
+    this->_types.insert( std::make_pair("bz2","application/x-bzip2"));
+    this->_types.insert( std::make_pair("csh","application/x-csh"));
+    this->_types.insert( std::make_pair("css","text/css"));
+    this->_types.insert( std::make_pair("csv","text/csv"));
+    this->_types.insert( std::make_pair("doc","application/msword"));
+    this->_types.insert( std::make_pair("docx","application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+    this->_types.insert( std::make_pair("eot","application/vnd.ms-fontobject"));
+    this->_types.insert( std::make_pair("epub","application/epub+zip"));
+    this->_types.insert( std::make_pair("gz","application/gzip"));
+    this->_types.insert( std::make_pair("gif","image/gif"));
+    this->_types.insert( std::make_pair("htm","text/html"));
+    this->_types.insert( std::make_pair("html","text/html"));
+    this->_types.insert( std::make_pair("ico","image/vnd.microsoft.icon"));
+    this->_types.insert( std::make_pair("ics","text/calendar"));
+    this->_types.insert( std::make_pair("jar","application/java-archive"));
+    this->_types.insert( std::make_pair("jpeg","image/jpeg"));
+    this->_types.insert( std::make_pair("jpg","image/jpeg"));
+    this->_types.insert( std::make_pair("js","text/javascript"));
+    this->_types.insert( std::make_pair("json","application/json"));
+    this->_types.insert( std::make_pair("jsonld","application/ld+json"));
+    this->_types.insert( std::make_pair("mid","audio/midi audio/x-midi"));
+    this->_types.insert( std::make_pair("midi","audio/midi audio/x-midi"));
+    this->_types.insert( std::make_pair("mjs","text/javascript"));
+    this->_types.insert( std::make_pair("mp3","audio/mpeg"));
+    this->_types.insert( std::make_pair("mpeg","video/mpeg"));
+    this->_types.insert( std::make_pair("mpkg","application/vnd.apple.installer+xml"));
+    this->_types.insert( std::make_pair("odp","application/vnd.oasis.opendocument.presentation"));
+    this->_types.insert( std::make_pair("ods","application/vnd.oasis.opendocument.spreadsheet"));
+    this->_types.insert( std::make_pair("odt","application/vnd.oasis.opendocument.text"));
+    this->_types.insert( std::make_pair("oga","audio/ogg"));
+    this->_types.insert( std::make_pair("ogv","video/ogg"));
+    this->_types.insert( std::make_pair("ogx","application/ogg"));
+    this->_types.insert( std::make_pair("opus","audio/opus"));
+    this->_types.insert( std::make_pair("otf","font/otf"));
+    this->_types.insert( std::make_pair("png","image/png"));
+    this->_types.insert( std::make_pair("pdf","application/pdf"));
+    this->_types.insert( std::make_pair("php","application/x-httpd-php"));
+    this->_types.insert( std::make_pair("ppt","application/vnd.ms-powerpoint"));
+    this->_types.insert( std::make_pair("pptx","application/vnd.openxmlformats-officedocument.presentationml.presentation"));
+    this->_types.insert( std::make_pair("rar","application/vnd.rar"));
+    this->_types.insert( std::make_pair("rtf","application/rtf"));
+    this->_types.insert( std::make_pair("sh","application/x-sh"));
+    this->_types.insert( std::make_pair("svg","image/svg+xml"));
+    this->_types.insert( std::make_pair("swf","application/x-shockwave-flash"));
+    this->_types.insert( std::make_pair("tar","application/x-tar"));
+    this->_types.insert( std::make_pair("tif","image/tiff"));
+    this->_types.insert( std::make_pair("tiff","image/tiff"));
+    this->_types.insert( std::make_pair("ts","video/mp2t"));
+    this->_types.insert( std::make_pair("ttf","font/ttf"));
+    this->_types.insert( std::make_pair("txt","text/plain"));
+    this->_types.insert( std::make_pair("vsd","application/vnd.visio"));
+    this->_types.insert( std::make_pair("wav","audio/wav"));
+    this->_types.insert( std::make_pair("weba","audio/webm"));
+    this->_types.insert( std::make_pair("webm","video/webm"));
+    this->_types.insert( std::make_pair("webp","image/webp"));
+    this->_types.insert( std::make_pair("woff","font/woff"));
+    this->_types.insert( std::make_pair("woff2","font/woff2"));
+    this->_types.insert( std::make_pair("xhtml","application/xhtml+xml"));
+    this->_types.insert( std::make_pair("xls","application/vnd.ms-excel"));
+    this->_types.insert( std::make_pair("xlsx","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+    this->_types.insert( std::make_pair("xul","application/vnd.mozilla.xul+xml"));
+    this->_types.insert( std::make_pair("zip","application/zip"));
+    this->_types.insert( std::make_pair("7z","application/x-7z-compressed"));
 
+
+}
 //=========добавляет все возможные ключи=============
 
 void ParseRequest::addArrKeys()
@@ -103,7 +209,7 @@ error ParseRequest::parsingHeading(String request)
     String key = temp[0].erase(temp[0].size() - 1);
     if(!checkKey(key) || this->_heading.count(key) == 1)
     {
-         std::cout <<" error" << std::endl;
+        this-> _code = "400";
         return BadRequest;
     }
     this->_heading.insert(make_pair(key,temp[1]));
@@ -113,22 +219,24 @@ error ParseRequest::parsingHeading(String request)
 //=========главная функция парсинга запроса========
 error ParseRequest::parsRequest(String request)
 {
-    std::cout << request << std::endl;
+   // std::cout << request << std::endl;
     String str =  getLine(request);
     parsingStartLine(str);
     str =  getLine(request);
     while(str != "")
     {
-       // std::cout <<" request" << std::endl;
         if (parsingHeading(str) == BadRequest)
+        {
+            this-> _code = "400";
             return BadRequest;
+        }
         str =  getLine(request);
     }
     
     if(this->_heading.count("host") == 0)
        return BadRequest;
 
-    print(this->_heading);
+    //print(this->_heading);
     if(!request.empty())
     {
         this->_body = request;
@@ -136,7 +244,6 @@ error ParseRequest::parsRequest(String request)
     return OK;
 }
 
-int ParseRequest::getBodyLength() const { return _bodyLength; }
 
 //какая то функция которую написал Федя, вроде она ищет Content-length
 error ParseRequest::parsBodyLength(std::string &request) {
@@ -146,25 +253,115 @@ error ParseRequest::parsBodyLength(std::string &request) {
         == String::npos) {
         if ((contentLengthStart = request.find("Content-Length: "))
             == String::npos)
-            return OK;
+        {   this-> _code = "200"; 
+            return OK;}
     }
     if ((contentLengthEnd = request.find("\r\n", contentLengthStart)) == String::npos) {
         if ((contentLengthEnd = request.find("\r\n", contentLengthStart)) == String::npos)
-            return OK;
+           { this-> _code = "200";
+               return OK;}
     }
     String contentLengthString = request.substr(contentLengthStart, contentLengthEnd - contentLengthStart);
     std::vector<String> contentLengthParts = split(contentLengthString);
 
     if (contentLengthParts.size() != 2)
+    {
+        this-> _code = "400";
         return BadRequest;
+    }
     int i = 0;
     while(contentLengthParts[1][i] != '\0')
     {
         if(!(isdigit(contentLengthParts[1][i])))
-             return BadRequest;
+       {   this-> _code = "400";  
+            return BadRequest;}
         i++;
     }
 
     _bodyLength = std::stoi(contentLengthParts[1]);
+    this-> _code = "200";
     return (OK);
 }
+
+
+
+
+void ParseRequest::findPath(std::string root)
+{
+    //std::cout << "this->_path" << this->_path;
+    if (root.back() == '/' && this->_path.front() == '/')//если this->_path.back() == '/' 
+    {
+        this->_strPath = (root.substr(0,root.length() - 1) + this->_path);
+        return;
+    } 
+    if(root.back() != '/' && this->_path.front() != '/')
+    { 
+          this->_strPath = (root + "/" + this->_path);
+           return;
+    }
+    this->_strPath = (root + this->_path);
+}
+
+void ParseRequest::findNewPath(std::string indexFile)
+{
+    //std::cout << "this->_path" << this->_path;
+    if ( this->_strPath.back() == '/' && indexFile.front() == '/')//если this->_path.back() == '/' 
+    {
+        this->_strPath = (this->_strPath.substr(0,this->_strPath.length() - 1) + indexFile);
+        return;
+    } 
+    if(this->_strPath.back() != '/' && indexFile.front() != '/')
+    { 
+          this->_strPath = (this->_strPath + "/" + indexFile);
+           return;
+    }
+    this->_strPath = (this->_strPath + indexFile);
+}
+void ParseRequest::findType(std::string fn)
+{   
+    
+    //std::cout << "WTW:"  << fn << "\n";
+    std::string fn1 = fn.substr(fn.find_last_of(".") + 1);
+    //std::cout << "тип файла:"  << fn1 << "\n";
+    if(this->_types.count(fn1) == 1)
+        this->_contentType = _types[fn1];
+
+}
+error ParseRequest::dirToString(std::string indexFile)
+{
+    findNewPath(indexFile);
+    std::ifstream file(this->_strPath);  
+    if (!file.is_open()) 
+    {
+        this-> _code = "404";
+        return(NotFound);
+    }
+    std::string   str((std::istreambuf_iterator<char>(file)),
+                    std::istreambuf_iterator<char>());
+     
+    this->_str = str;//найти длину
+    this->_sizeFile = str.size();
+    this-> _code = "200";
+    return(OK);
+}
+
+ error ParseRequest::fileToString(std::string root)
+ {
+     struct stat stat1;
+    
+     if (root.back() == '/' || stat(root.c_str(), &stat1))
+        return(IS_DIR);
+       std::ifstream file(root);  
+        if (!file.is_open()) 
+        {this-> _code = "404";
+            return(NotFound);
+        }
+     std::string   str((std::istreambuf_iterator<char>(file)),
+                    std::istreambuf_iterator<char>());
+     
+    this->_str = str;//найти длину
+    this->_sizeFile = str.size();
+    this-> _code = "200";
+    return(OK);
+
+ }
