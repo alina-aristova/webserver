@@ -138,6 +138,7 @@ error ParseRequest::parsRequest(String request)
 
 int ParseRequest::getBodyLength() const { return _bodyLength; }
 
+//какая то функция которую написал Федя, вроде она ищет Content-length
 error ParseRequest::parsBodyLength(std::string &request) {
     size_t contentLengthStart;
     size_t contentLengthEnd;
