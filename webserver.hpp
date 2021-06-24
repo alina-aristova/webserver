@@ -10,6 +10,7 @@
 # include <sys/select.h>
 # include <fcntl.h>
 # include <cstdlib>
+# include "ParseRequest/Includes/parseRequest.hpp"
 # include <unistd.h>
 # define BUFF_SIZE 1024
 
