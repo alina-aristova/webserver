@@ -107,13 +107,15 @@ String                  Response::findFile(std::string NewPath)
 
 String                  Response::creatRespons(ParseRequest &Request, std::string numError)
 {
-    
+    std::cout << "numError" << numError << "\r\n\r\n";
+    this->_errorFilePath = Request.getErrorFilePath();
+    this->_types = Request.getType();
     this->_FileLength = std::to_string(Request.getSizeFile());
     this->_NumError = numError;
     this->_contentType = Request.getContentType();
     this->_FileLength = std::to_string(Request.getSizeFile());
     if(this->_NumError != "200")
-        this->_File = findFile( "/Users/acase/Desktop/Error/error.pdf");//?
+        this->_File = findFile(this->_errorFilePath);//?
     else
         this->_File = Request.getStr();
     

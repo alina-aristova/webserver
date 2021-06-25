@@ -16,7 +16,7 @@
  # include <fstream>
  # include <string>
 #include <sys/stat.h>
-
+#include "../response/HostClass.hpp"
 
  # define String std::string
  # define Map std::map<std::string,std::string>
@@ -124,6 +124,10 @@ class ParseRequest
         String      _str; // буфер в который считали данные из файла
         String      _strPath; // путь
         unsigned long _sizeFile;
+
+        String      _errorFilePath;
+        String      _indexingFilePath;
+        String      _rootDirectory;
     public: //  private?
         ParseRequest();
         //~ParseRequest();
@@ -139,11 +143,16 @@ class ParseRequest
         const String            &getCode() const;
         int                     getBodyLength() const;
         const unsigned long     &getSizeFile() const;
+         const std::string & getRootDirectory() const;
+    const std::string & getIndexingFilePath() const;
+    const std::string & getErrorFilePath() const;
+
+        const  Map   &getType()const;
         //===========Parsing methods===============
         error                 parsingStartLine(String &line);
         error                 parsingBody(String &line);
         error                 parsingHeading(String res);
-        error                 parsRequest(String request);
+        error                 parsRequest(String request, HostClass host,String NumCode);
         error                 parsBody(String request);
         error                 parsBodyLength(std::string &request);
         std::vector<String>   splitValues(std::string &value);
@@ -155,7 +164,7 @@ class ParseRequest
         error                 fileToString(std::string root);
         error                 dirToString(std::string indexFile);
         void                  findNewPath(std::string indexFile);
-        void                 parsPut();
+        void                 parsGet();
 };
 
 #endif

@@ -24,7 +24,13 @@ const unsigned long    &ParseRequest::getSizeFile() const{return(this->_sizeFile
 
 const Map   &ParseRequest::getMap() const{return(this->_heading);}
 
+const Map  &ParseRequest::getType() const{return(this->_types);}
 
+const std::string & ParseRequest::getRootDirectory() const { return (_rootDirectory); }
+
+const std::string & ParseRequest::getIndexingFilePath() const { return (_indexingFilePath); }
+
+const std::string & ParseRequest::getErrorFilePath() const { return (_errorFilePath); }
 //=============================================================================
 // Функция parsingStartLine проверяет первую строку запроса на наличие
 // трех параметов.  
@@ -227,13 +233,13 @@ error ParseRequest::parsingHeading(String request)
     this-> _code = "200";
     return OK;
 }
-void ParseRequest::parsPut()
+void ParseRequest::parsGet()
 {
-     if (fileToString(this->getStrPath()) == IS_DIR) 
+    if (fileToString(this->getStrPath()) == IS_DIR) 
     {   
-        dirToString("good.txt"); // тут будет путь до дир
+        dirToString(this->_indexingFilePath); // тут будет путь до дир
     }
-   findType(this->getStrPath());
+    findType(this->getStrPath());
 }
 //=============================================================================
 // главная функция парсинга запроса
@@ -243,13 +249,22 @@ void ParseRequest::parsPut()
 //
 //=============================================================================
 
-error ParseRequest::parsRequest(String request)
+error ParseRequest::parsRequest(String request, HostClass host, String NumCode)
 {
+    this->_errorFilePath = host.getErrorFilePath();
+    this->_rootDirectory = host.getRootDirectory();
+    this->_indexingFilePath = host.getIndexingFilePath();
+    if (NumCode != "200")
+    {    
+        this->_code = NumCode;
+        return(BadRequest);
+    }
     addArrKeys();
     addTypes();
     String str =  getLine(request);
-    parsingStartLine(str);
-    findPath("/Users");
+    if (parsingStartLine(str) != 200)
+        return(BadRequest);
+    findPath(this->_rootDirectory);
     str =  getLine(request);
     while(str != "")
     {
@@ -262,9 +277,9 @@ error ParseRequest::parsRequest(String request)
     }
     if(this->_heading.count("host") == 0)
        return BadRequest;
-    if(this->_method == "PUT")
-        parsPut();
-    //print(this->_heading);
+    if(this->_method == "GET")
+        parsGet();
+    print(this->_heading);
     if(!request.empty())
         this->_body = request;
     return OK;
@@ -350,8 +365,8 @@ void ParseRequest::findPath(std::string root)
 
 void ParseRequest::findNewPath(std::string indexFile)
 {
-    //std::cout << "this->_path" << this->_path;
-    if ( this->_strPath.back() == '/' && indexFile.front() == '/')//если this->_path.back() == '/' 
+    
+    if ( this->_strPath.back() == '/' && indexFile.front() == '/')
     {
         this->_strPath = (this->_strPath.substr(0,this->_strPath.length() - 1) + indexFile);
         return;
@@ -363,16 +378,30 @@ void ParseRequest::findNewPath(std::string indexFile)
     }
     this->_strPath = (this->_strPath + indexFile);
 }
+
+//=============================================================================
+// Функция принимает на вход имя файла (fn), находит его расширение, 
+// проверяет есть ли данное расширение в заданном заранее Map контейнере, 
+// если ключ удалось найти, устанавливает в MIME type (this->_contentType)
+// значение найденное по ключу. 
+//=============================================================================
+
 void ParseRequest::findType(std::string fn)
 {   
-    
-    //std::cout << "WTW:"  << fn << "\n";
     std::string fn1 = fn.substr(fn.find_last_of(".") + 1);
-    //std::cout << "тип файла:"  << fn1 << "\n";
     if(this->_types.count(fn1) == 1)
         this->_contentType = _types[fn1];
-
 }
+
+//=============================================================================
+// Функция dirToString вызывается в том случае, если в URL подали путь не до
+// файла, а до директории. (в котором нужно найти Index File)
+// Получаем путь до Index File (std::string indexFile). Если файл удалось найти
+// и открыть, считываем из него информацию в буфер (this->_str). В переменную
+// this->_sizeFile помещаем длину буфера и устанавливаем статус код 200 (OK).
+// Иначе устанавливаем статус код 404 (Not Found) и возвращаем ошибку.
+//=============================================================================
+
 error ParseRequest::dirToString(std::string indexFile)
 {
     findNewPath(indexFile);
@@ -384,12 +413,19 @@ error ParseRequest::dirToString(std::string indexFile)
     }
     std::string   str((std::istreambuf_iterator<char>(file)),
                     std::istreambuf_iterator<char>());
-     
-    this->_str = str;//найти длину
+    this->_str = str;
     this->_sizeFile = str.size();
     this-> _code = "200";
     return(OK);
 }
+
+//=============================================================================
+//
+//
+//
+//
+//
+//=============================================================================
 
  error ParseRequest::fileToString(std::string root)
  {
@@ -404,8 +440,7 @@ error ParseRequest::dirToString(std::string indexFile)
         }
      std::string   str((std::istreambuf_iterator<char>(file)),
                     std::istreambuf_iterator<char>());
-     
-    this->_str = str;//найти длину
+    this->_str = str;
     this->_sizeFile = str.size();
     this-> _code = "200";
     return(OK);
