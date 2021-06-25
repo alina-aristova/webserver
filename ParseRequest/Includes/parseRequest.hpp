@@ -119,7 +119,7 @@ class ParseRequest
         String      _contentType; 
         Map         _heading; //словарь заголовков
          Map         _types; // доступные расширение файла
-        Vector      Keys; // доступные заголовки
+        Vector      _keys; // доступные заголовки
         int         _bodyLength; // длина тела для post
         String      _str; // буфер в который считали данные из файла
         String      _strPath; // путь
@@ -128,33 +128,34 @@ class ParseRequest
         ParseRequest();
         //~ParseRequest();
         //==================get/set================
-        const String   &getMethod() const;
-        const String   &getPath() const;
-        const String   &getVersProtocol() const;
-        const String   &getBody() const;
-        const String   &getStr() const;
-        const String   &getStrPath() const;
-        const String   &getContentType() const;
-        const Map       &getMap() const;
-        const String   &getCode() const;
-        int             getBodyLength() const;
-        const unsigned long             &getSizeFile() const;
+        const String            &getMethod() const;
+        const String            &getPath() const;
+        const String            &getVersProtocol() const;
+        const String            &getBody() const;
+        const String            &getStr() const;
+        const String            &getStrPath() const;
+        const String            &getContentType() const;
+        const Map               &getMap() const;
+        const String            &getCode() const;
+        int                     getBodyLength() const;
+        const unsigned long     &getSizeFile() const;
         //===========Parsing methods===============
-        error  parsingStartLine(String &line);
-        error  parsingBody(String &line);
-        error  parsingHeading(String res);
-        error  parsRequest(String request);
-        error  parsBody(String request);
-        error   parsBodyLength(std::string &request);
+        error                 parsingStartLine(String &line);
+        error                 parsingBody(String &line);
+        error                 parsingHeading(String res);
+        error                 parsRequest(String request);
+        error                 parsBody(String request);
+        error                 parsBodyLength(std::string &request);
         std::vector<String>   splitValues(std::string &value);
-        void    addArrKeys(void);
-        void    addTypes(void);
-        bool checkKey(String value);
-        void findType(std::string fn);
-        void findPath(std::string root);
-        error fileToString(std::string root);
-        error dirToString(std::string indexFile);
-        void findNewPath(std::string indexFile);
+        void                  addArrKeys(void);
+        void                  addTypes(void);
+        bool                  checkKey(String value);
+        void                  findType(std::string fn);
+        void                  findPath(std::string root);
+        error                 fileToString(std::string root);
+        error                 dirToString(std::string indexFile);
+        void                  findNewPath(std::string indexFile);
+        void                 parsPut();
 };
 
 #endif

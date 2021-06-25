@@ -1,30 +1,14 @@
 # include "ParseRequest/Includes/parseRequest.hpp"
 #include "ParseRequest/response/response.hpp"
 
-String test(ParseRequest &parse)
+void test(ParseRequest &parse)
 {
-  
+    
     std::string line = "GETe /acase/Desktop/testfile/ HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
-    parse.addArrKeys();
-    parse.addTypes();
+ 
     parse.parsRequest(line);
-    if(parse.getCode()!="200")
-        return(parse.getCode());
-    parse.findPath("/Users"); //root
-    if(parse.getCode()!="200")
-        return(parse.getCode());
-    if (parse.fileToString(parse.getStrPath()) == IS_DIR)
-    {   
-        if(parse.getCode()!="200")
-            return(parse.getCode());
-            parse.dirToString("good.txt"); // тут будет путь до дир
-    }
-    if(parse.getCode()!="200")
-        return(parse.getCode());
-    parse.findType(parse.getStrPath());
-    if(parse.getCode()!="200")
-        return(parse.getCode());
-    return(parse.getCode());
+
+
 }
 int main()
 {

@@ -2,81 +2,70 @@
 #include "../utils/utils.hpp"
 ParseRequest::ParseRequest() : _bodyLength(0) {}
 
-const String   &ParseRequest::getMethod() const
-{
-    return(this->_method);
-}
+const String   &ParseRequest::getMethod() const { return(this->_method); }
 
-const String   &ParseRequest::getStr() const
-{
-    return(this->_str);
-}
+const String   &ParseRequest::getStr() const { return(this->_str); }
+
 int ParseRequest::getBodyLength() const { return _bodyLength; }
-const String   &ParseRequest::getStrPath() const
-{
-    return(this->_strPath);
-}
 
-const String   &ParseRequest::getContentType() const
-{
-    return(this->_contentType);
-}
+const String   &ParseRequest::getStrPath() const { return(this->_strPath); }
 
-const String   &ParseRequest::getBody() const
-{
-    return(this->_body);
-}
+const String   &ParseRequest::getContentType() const { return(this->_contentType); }
 
-const String   &ParseRequest::getPath() const
-{
-    return(this->_path);
-}
-const String   &ParseRequest::getCode() const
-{
-    return(this->_code);
-}
-const String   &ParseRequest::getVersProtocol() const
-{
-    return(this->_versProtocol);
-}
+const String   &ParseRequest::getBody() const{return(this->_body);}
 
-const unsigned long    &ParseRequest::getSizeFile() const
-{
-    return(this->_sizeFile);
-}
-const Map   &ParseRequest::getMap() const
-{
-    return(this->_heading);
-}
+const String   &ParseRequest::getPath() const{return(this->_path);}
+
+const String   &ParseRequest::getCode() const{return(this->_code);}
+
+const String   &ParseRequest::getVersProtocol() const{return(this->_versProtocol);}
+
+const unsigned long    &ParseRequest::getSizeFile() const{return(this->_sizeFile);}
+
+const Map   &ParseRequest::getMap() const{return(this->_heading);}
+
+
+//=============================================================================
+// Функция parsingStartLine проверяет первую строку запроса на наличие
+// трех параметов.  
+// 1. Название запроса (_method);
+// 2. URL (_path);
+// 3. Версия протокола (_versProtocol);
+// Проверяет три параметра на валидность, в случае ошибки устанавливает 
+// в статус код ошибки (_code) значение 400 (Bad Request);
+// При удачном выполении в статус код устанавливается значение 200 (OK)
+//=============================================================================
 
 error ParseRequest::parsingStartLine(String &line)
 {
     String temp;
 
     std::vector<String> newLine = split(line);
+
     if (newLine.size() != 3)
-        {
-            this-> _code = "400";
-            return(BadRequest);}
+    {
+        this-> _code = "400";
+        return(BadRequest);
+    }
     this->_method = newLine[0];
     this->_path = newLine[1];
     this->_versProtocol = newLine[2];
     if (this->_versProtocol != "HTTP/1.1")
-       {
+    {
            this-> _code = "400";
            return(BadRequest);
-       }
+    }
     if (this->_method !=  "DELETE"
         && this->_method !=  "POST"
         && this->_method !=  "GET")
-       { 
-           this-> _code = "400";
-           return(BadRequest);}
+    { 
+       this-> _code = "400";
+       return(BadRequest);
+    }
     this-> _code = "200";
     return(OK);
-    // проверить на валидность параметры
-} // еще не работает :(
 
+}
 void print(Map m) // функция для тестирования мапы
 {
 Map::iterator it;
@@ -161,42 +150,64 @@ void ParseRequest::addTypes()
 
 
 }
-//=========добавляет все возможные ключи=============
+
+
+//=============================================================================
+// Метод добавления всех возможных ключей 
+//
+//
+//
+//
+//=============================================================================
 
 void ParseRequest::addArrKeys()
 {
-    this->Keys.push_back("host");
-    this->Keys.push_back("accept");
-    this->Keys.push_back("accept-charset");
-    this->Keys.push_back("accept-encoding");
-    this->Keys.push_back("accept-language");
-    this->Keys.push_back("authorization");
-    this->Keys.push_back("content-disposition");
-    this->Keys.push_back("expect");
-    this->Keys.push_back("from");
-    this->Keys.push_back("if-match");
-    this->Keys.push_back("if-modified-since");
-    this->Keys.push_back("if-none-match");
-    this->Keys.push_back("content-length");
-    this->Keys.push_back("content-location");
-    this->Keys.push_back("content-type");
-    this->Keys.push_back("content-version");
-    this->Keys.push_back("title");
+    this->_keys.push_back("host");
+    this->_keys.push_back("accept");
+    this->_keys.push_back("accept-charset");
+    this->_keys.push_back("accept-encoding");
+    this->_keys.push_back("accept-language");
+    this->_keys.push_back("authorization");
+    this->_keys.push_back("content-disposition");
+    this->_keys.push_back("expect");
+    this->_keys.push_back("from");
+    this->_keys.push_back("if-match");
+    this->_keys.push_back("if-modified-since");
+    this->_keys.push_back("if-none-match");
+    this->_keys.push_back("content-length");
+    this->_keys.push_back("content-location");
+    this->_keys.push_back("content-type");
+    this->_keys.push_back("content-version");
+    this->_keys.push_back("title");
 
 }
-//=========проверяет ключ на валидность===========
+//=============================================================================
+//
+//
+//
+//
+//
+//=============================================================================
+
 bool ParseRequest::checkKey(String value)
 {
-    
-    for(unsigned long i = 0; i < this->Keys.size(); i++)
+    for(unsigned long i = 0; i < this->_keys.size(); i++)
     {
-        if(this->Keys[i] == value)
+        if(this->_keys[i] == value)
             return true; 
     }
     return false;
 }
 
-//=========добавляет в map ключ:значение===========
+
+//=============================================================================
+// добавляет в map ключ:значение
+//
+//
+//
+//
+//=============================================================================
+
 error ParseRequest::parsingHeading(String request)
 {
     int i = 0;
@@ -213,15 +224,32 @@ error ParseRequest::parsingHeading(String request)
         return BadRequest;
     }
     this->_heading.insert(make_pair(key,temp[1]));
+    this-> _code = "200";
     return OK;
 }
+void ParseRequest::parsPut()
+{
+     if (fileToString(this->getStrPath()) == IS_DIR) 
+    {   
+        dirToString("good.txt"); // тут будет путь до дир
+    }
+   findType(this->getStrPath());
+}
+//=============================================================================
+// главная функция парсинга запроса
+//
+//
+//
+//
+//=============================================================================
 
-//=========главная функция парсинга запроса========
 error ParseRequest::parsRequest(String request)
 {
-   // std::cout << request << std::endl;
+    addArrKeys();
+    addTypes();
     String str =  getLine(request);
     parsingStartLine(str);
+    findPath("/Users");
     str =  getLine(request);
     while(str != "")
     {
@@ -232,20 +260,24 @@ error ParseRequest::parsRequest(String request)
         }
         str =  getLine(request);
     }
-    
     if(this->_heading.count("host") == 0)
        return BadRequest;
-
+    if(this->_method == "PUT")
+        parsPut();
     //print(this->_heading);
     if(!request.empty())
-    {
         this->_body = request;
-    }
     return OK;
 }
 
+//=============================================================================
+//
+//
+// //какая то функция которую написал Федя, вроде она ищет Content-length
+//
+//
+//=============================================================================
 
-//какая то функция которую написал Федя, вроде она ищет Content-length
 error ParseRequest::parsBodyLength(std::string &request) {
     size_t contentLengthStart;
     size_t contentLengthEnd;
@@ -273,23 +305,29 @@ error ParseRequest::parsBodyLength(std::string &request) {
     while(contentLengthParts[1][i] != '\0')
     {
         if(!(isdigit(contentLengthParts[1][i])))
-       {   this-> _code = "400";  
-            return BadRequest;}
+        {   
+            this-> _code = "400";  
+            return BadRequest;
+        }
         i++;
     }
-
     _bodyLength = std::stoi(contentLengthParts[1]);
     this-> _code = "200";
     return (OK);
 }
 
-
-
+//=============================================================================
+//
+//
+//
+//
+//
+//=============================================================================
 
 void ParseRequest::findPath(std::string root)
 {
-    //std::cout << "this->_path" << this->_path;
-    if (root.back() == '/' && this->_path.front() == '/')//если this->_path.back() == '/' 
+    
+    if (root.back() == '/' && this->_path.front() == '/')
     {
         this->_strPath = (root.substr(0,root.length() - 1) + this->_path);
         return;
@@ -301,6 +339,14 @@ void ParseRequest::findPath(std::string root)
     }
     this->_strPath = (root + this->_path);
 }
+
+//=============================================================================
+//
+//
+//
+//
+//
+//=============================================================================
 
 void ParseRequest::findNewPath(std::string indexFile)
 {
