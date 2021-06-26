@@ -6,13 +6,13 @@ int main()
 {
     
     HostClass host;
-    host.setErrorFilePath("/Users/acase/Desktop/Error/error.pdf");
+    host.setErrorFilePath("/Users/acase/Desktop/Errodr/error.pdf");
     host.setIndexingFilePath("good.txt");
     host.setRootDirectory("/Users");
     ParseRequest parse;    
     Response  response;
-    std::string line = "GEs /acase/Desktop/testfile/ HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
-   std::string NumCode = "400";
+    std::string line = "GET /acase/Desktop/testfile/copy.txt HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
+    std::string NumCode = "200";
     parse.parsRequest(line,host,NumCode);
     
     std::string res = response.creatRespons(parse,parse.getCode());

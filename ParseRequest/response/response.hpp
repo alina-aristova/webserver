@@ -21,7 +21,8 @@
  # define String std::string
  # define Map std::map<std::string,std::string>
  # define Vector std::vector<std::string>
-
+ # define ERROR -1
+ # define SUCCESS 1
 
  
 class Response
@@ -58,7 +59,7 @@ class Response
         String                  creatRespons(ParseRequest &Request, std::string numError);
         String                  descriptionError(std::string numError);
         String                  getResponse(std::string Method, std::string numError);
-        String                  findFile(std::string NewPath );
+        int                  findFile(std::string NewPath );
         String findType(std::string fn);
         void addTypes();
 };

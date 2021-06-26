@@ -31,6 +31,7 @@ const std::string & ParseRequest::getRootDirectory() const { return (_rootDirect
 const std::string & ParseRequest::getIndexingFilePath() const { return (_indexingFilePath); }
 
 const std::string & ParseRequest::getErrorFilePath() const { return (_errorFilePath); }
+
 //=============================================================================
 // Функция parsingStartLine проверяет первую строку запроса на наличие
 // трех параметов.  
@@ -160,10 +161,6 @@ void ParseRequest::addTypes()
 
 //=============================================================================
 // Метод добавления всех возможных ключей 
-//
-//
-//
-//
 //=============================================================================
 
 void ParseRequest::addArrKeys()
@@ -188,11 +185,8 @@ void ParseRequest::addArrKeys()
 
 }
 //=============================================================================
-//
-//
-//
-//
-//
+// Функция checkKey проверяет встретился ли поданный ключ (value) в массиве
+// доступных ключей. Если ключ удалось найти возвращается true иначе false
 //=============================================================================
 
 bool ParseRequest::checkKey(String value)
@@ -207,11 +201,14 @@ bool ParseRequest::checkKey(String value)
 
 
 //=============================================================================
-// добавляет в map ключ:значение
-//
-//
-//
-//
+// Функция parsingHeading добавляет заголовки в map контейнер заголовков.
+// 1. Переводит строку в нижний регистр.
+// 2. Делит по пробелам на токены.
+// 3. Проверяет первый токен (название заголовка) на валидность (можем ли мы
+// его добавить, не пришел ли заголовок второй раз)
+// 4. Если проверка прошла успешно, добавляет пару в массив заголовков
+// (ключ = название заголовка : значение) и устанавливает код ошибки 200 (ОК)
+// иначе, устанавливает код ошибки 400 (Bad Request) и возвращает ошибку.
 //=============================================================================
 
 error ParseRequest::parsingHeading(String request)
@@ -233,11 +230,12 @@ error ParseRequest::parsingHeading(String request)
     this-> _code = "200";
     return OK;
 }
+
 void ParseRequest::parsGet()
 {
     if (fileToString(this->getStrPath()) == IS_DIR) 
     {   
-        dirToString(this->_indexingFilePath); // тут будет путь до дир
+        dirToString(this->_indexingFilePath);
     }
     findType(this->getStrPath());
 }
