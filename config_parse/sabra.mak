@@ -1,3 +1,3 @@
 SABRA = srcs/main.cpp \
-		srcs/HostClass.cpp
+		srcs/Configuration.cpp
 

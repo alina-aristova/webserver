@@ -1,9 +1,15 @@
-#include "HostClass.hpp"
+#include "Configuration.hpp"
 
 int main(void)
 {
-	HostClass test("default.conf");
-
-	test.parseConfig();
+	try
+	{
+		Configuration test("default.conf");
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	
 	return 0;
 }
