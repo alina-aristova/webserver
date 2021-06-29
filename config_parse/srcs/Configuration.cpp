@@ -1,31 +1,18 @@
 #include "../includes/Configuration.hpp"
 
-Configuration::Configuration(std::string const & config_file) : _hostName(DEFAULT_HOSTNAME), _rootDirectory(DEFAULT_ROOT_DIRECTORY),
-_indexingFilePath(DEFAULT_INDEXING_FILE_PATH), _storageDirectory(DEFAULT_STORAGE_DIRECTORY)
-{
-	_listOfAllowedMethods.push_back("ADD");
-	_listOfAllowedMethods.push_back("POST");
-	_listOfAllowedMethods.push_back("DELETE");
-	_directiveFields["allowed_methods"] = &Configuration::parseAllowedMethods;
-	_serverFields["listen"] = &Configuration::parseListen;
-	_serverFields["server_name"] = &Configuration::parseServerName;
-	_serverFields["error_page"] = &Configuration::parseErrorPage;
+// Configuration::Configuration(std::string const & config_file) : _hostName(DEFAULT_HOSTNAME), _rootDirectory(DEFAULT_ROOT_DIRECTORY),
+// _indexingFilePath(DEFAULT_INDEXING_FILE_PATH), _storageDirectory(DEFAULT_STORAGE_DIRECTORY)
+// {
+// 	_listOfAllowedMethods.push_back("ADD");
+// 	_listOfAllowedMethods.push_back("POST");
+// 	_listOfAllowedMethods.push_back("DELETE");
+// 	_directiveFields["allowed_methods"] = &Configuration::parseAllowedMethods;
+// 	_serverFields["listen"] = &Configuration::parseListen;
+// 	_serverFields["server_name"] = &Configuration::parseServerName;
+// 	_serverFields["error_page"] = &Configuration::parseErrorPage;
 
-	parseConfig(config_file);
-}
-// const std::string & Configuration::getHostName() const { return (_hostName); }
-
-// int Configuration::getPort() const { return (_port); }
-
-const std::string & Configuration::getRootDirectory() const { return (_rootDirectory); }
-
-const std::string & Configuration::getIndexingFilePath() const { return (_indexingFilePath); }
-
-const std::map<int, std::string> & Configuration::getErrorFilePath() const { return (_errorFilesPath); }
-
-const std::string & Configuration::getStorageDirectory() const { return (_storageDirectory); }
-
-const std::list<std::string> & Configuration::getListOfAllowedMethods() const { return (_listOfAllowedMethods); }
+// 	parseConfig(config_file);
+// }
 
 void Configuration::parseConfig(std::string const & config_file)
 {
