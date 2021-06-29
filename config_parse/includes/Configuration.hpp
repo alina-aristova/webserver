@@ -9,22 +9,17 @@
 # include <exception>
 # include "Server.hpp"
 
-# define DEFAULT_HOSTNAME "default"
-# define DEFAULT_ROOT_DIRECTORY "/"
-# define DEFAULT_INDEXING_FILE_PATH "/index.html"
-# define DEFAULT_ERROR_FILE_PAGE "/404.html"
-# define DEFAULT_STORAGE_DIRECTORY "/storage/"
 
 
 class Configuration 
 {
 
 	private:
-		std::vector<Server> 
+		std::vector<Server> _servers;
 
 	// 	/* ------------------------------- Parser funcs ------------------------------ */
 
-	// 	void parseConfig(std::string const & config_file);
+		void parseConfig(std::string const & config_file);
 	// 	void parseAllowedMethods(std::vector<std::string> & methods);
 	// 	void parseListen(std::vector<std::string> & port);
 	// 	void parseServerName(std::vector<std::string> & server_names);

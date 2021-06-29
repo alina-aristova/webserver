@@ -7,9 +7,10 @@
 
 class Location
 {
-	typedef void (Configuration::*parseFunc)(std::vector<std::string> &);
+	typedef void (Location::*parseFunc)(std::vector<std::string> &);
 
 	private:
+		Location(void);
 		std::string		_rootDirectory;
 		std::string		_indexingFilePath;
 		std::string		_storageDirectory;
@@ -18,7 +19,7 @@ class Location
 		std::map<std::string, parseFunc> _directiveFields;
 
 	public:
-		Location(void);
+		Location(std::ifstream & ifs, std::string & buf);
 		Location(Location const & other);
 		~Location(void);
 
@@ -30,8 +31,8 @@ class Location
 		std::map<std::string, std::string> getCgi(void) const {return _cgi;}
 
 		/* --------------------------------- Парсинг -------------------------------- */
-		Location &parseLocationBlock(std::ifstream & ifs, std::string & buf);
-		
+		void parseLocationBlock(std::ifstream & ifs, std::string & buf);
+		void parseAllowedMethods(std::vector<std::string> & methods);
 
 
 
