@@ -5,6 +5,7 @@ int main(void)
 	try
 	{
 		Configuration test("default.conf");
+		
 	}
 	catch(const std::exception& e)
 	{
