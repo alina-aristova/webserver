@@ -1,4 +1,4 @@
-#include "HostClass.hpp"
+#include "./HostClass.hpp"
 
 HostClass::HostClass() : _port(8080), _hostName(DEFAULT_HOSTNAME), _rootDirectory(DEFAULT_ROOT_DIRECTORY),
 _indexingFilePath(DEFAULT_INDEXING_FILE_PATH), _errorFilePath(DEFAULT_ERROR_FILE_PAGE),

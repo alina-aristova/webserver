@@ -19,6 +19,7 @@ private:
     std::string             _errorFilePath;
     std::string             _storageDirectory;
     std::list<std::string>  _listOfAllowedMethods;
+
 public:
     HostClass();
     int getPort() const;
