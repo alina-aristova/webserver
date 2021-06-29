@@ -15,30 +15,26 @@
  # include <iostream>
  # include <fstream>
  # include <string>
-#include <sys/stat.h>
-#include "../Includes/parseRequest.hpp"
-
+ # include <sys/stat.h>
+ # include "../Includes/parseRequest.hpp"
  # define String std::string
  # define Map std::map<std::string,std::string>
  # define Vector std::vector<std::string>
  # define ERROR -1
  # define SUCCESS 1
-
- 
 class Response
 {
     private:
         String          _versProtocol;
         String          _NumError;
-        String            _descriptionError;
+        String          _descriptionError;
         String          _contentType; 
         String          _FileLength;
         String          _File;
         int             _iNumError;
         unsigned long   _iFileLength;
         Map             _types;
-
-        String _errorFilePath;
+        String          _errorFilePath;
 
     public: //  private?
         Response();
@@ -49,19 +45,15 @@ class Response
         const String            &getDescriptionError() const;
         const String            &getContentType() const;
         const String            &getFileLength() const;
-        
         const int               &getINumError() const;
         const unsigned long     &getIFileLength() const;
-        
-       
-        
         //===========Parsing methods===============
         String                  creatRespons(ParseRequest &Request, std::string numError);
         String                  descriptionError(std::string numError);
         String                  getResponse(std::string Method, std::string numError);
-        int                  findFile(std::string NewPath );
-        String findType(std::string fn);
-        void addTypes();
+        int                     findFile(std::string NewPath );
+        String                  findType(std::string fn);
+        void                    addTypes();
 };
 
 #endif

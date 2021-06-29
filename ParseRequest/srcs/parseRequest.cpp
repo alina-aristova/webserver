@@ -34,7 +34,7 @@ const std::string & ParseRequest::getErrorFilePath() const { return (_errorFileP
 
 //=============================================================================
 // Функция parsingStartLine проверяет первую строку запроса на наличие
-// трех параметов.  
+// трех параметов.
 // 1. Название запроса (_method);
 // 2. URL (_path);
 // 3. Версия протокола (_versProtocol);
@@ -51,7 +51,7 @@ error ParseRequest::parsingStartLine(String &line)
 
     if (newLine.size() != 3)
     {
-        this-> _code = "400";
+        this->_code = "400";
         return(BadRequest);
     }
     this->_method = newLine[0];
@@ -59,28 +59,29 @@ error ParseRequest::parsingStartLine(String &line)
     this->_versProtocol = newLine[2];
     if (this->_versProtocol != "HTTP/1.1")
     {
-           this-> _code = "400";
-           return(BadRequest);
+        this->_code = "400";
+        return(BadRequest);
     }
     if (this->_method !=  "DELETE"
         && this->_method !=  "POST"
         && this->_method !=  "GET")
     { 
-       this-> _code = "400";
+       this->_code = "400";
        return(BadRequest);
     }
-    this-> _code = "200";
+    this->_code = "200";
     return(OK);
 
 }
+
 void print(Map m) // функция для тестирования мапы
 {
-Map::iterator it;
- 
-for (it=m.begin(); it!=m.end(); it++)
-std::cout << "Ключ: " << it->first << "| Значение: " << it->second << '\n';
-
+    Map::iterator it;
+    
+    for (it=m.begin(); it!=m.end(); it++)
+    std::cout << "Ключ: " << it->first << "| Значение: " << it->second << '\n';
 }
+
 void ParseRequest::addTypes()
 {
     this->_types.insert( std::make_pair("aac","audio/aac"));
@@ -154,10 +155,7 @@ void ParseRequest::addTypes()
     this->_types.insert( std::make_pair("xul","application/vnd.mozilla.xul+xml"));
     this->_types.insert( std::make_pair("zip","application/zip"));
     this->_types.insert( std::make_pair("7z","application/x-7z-compressed"));
-
-
 }
-
 
 //=============================================================================
 // Метод добавления всех возможных ключей 
@@ -182,8 +180,8 @@ void ParseRequest::addArrKeys()
     this->_keys.push_back("content-type");
     this->_keys.push_back("content-version");
     this->_keys.push_back("title");
-
 }
+
 //=============================================================================
 // Функция checkKey проверяет встретился ли поданный ключ (value) в массиве
 // доступных ключей. Если ключ удалось найти возвращается true иначе false
@@ -198,7 +196,6 @@ bool ParseRequest::checkKey(String value)
     }
     return false;
 }
-
 
 //=============================================================================
 // Функция parsingHeading добавляет заголовки в map контейнер заголовков.
@@ -239,6 +236,7 @@ void ParseRequest::parsGet()
     }
     findType(this->getStrPath());
 }
+
 //=============================================================================
 // главная функция парсинга запроса
 //
@@ -406,7 +404,7 @@ error ParseRequest::dirToString(std::string indexFile)
     std::ifstream file(this->_strPath);  
     if (!file.is_open()) 
     {
-        this-> _code = "404";
+        this->_code = "404";
         return(NotFound);
     }
     std::string   str((std::istreambuf_iterator<char>(file)),
@@ -442,5 +440,4 @@ error ParseRequest::dirToString(std::string indexFile)
     this->_sizeFile = str.size();
     this-> _code = "200";
     return(OK);
-
  }

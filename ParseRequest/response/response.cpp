@@ -43,7 +43,6 @@ const unsigned long    &Response:: getIFileLength() const
 // значение найденное по ключу. 
 //=============================================================================
 
-
 String Response::findType(std::string fn)
 {   
     std::string fn1 = fn.substr(fn.find_last_of(".") + 1);
@@ -59,7 +58,6 @@ String Response::findType(std::string fn)
 //
 //
 //=============================================================================
-
 
 String                  Response::descriptionError(std::string numError)
 {
@@ -77,7 +75,6 @@ String                  Response::descriptionError(std::string numError)
 //
 //
 //=============================================================================
-
 
 int                  Response::findFile(std::string NewPath)
 {
