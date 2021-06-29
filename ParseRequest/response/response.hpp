@@ -34,7 +34,7 @@ class Response
         int             _iNumError;
         unsigned long   _iFileLength;
         Map             _types;
-        String          _errorFilePath;
+        Map           _errorFilePath;
 
     public: //  private?
         Response();

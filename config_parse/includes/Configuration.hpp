@@ -9,7 +9,7 @@
 # include <exception>
 # include "Server.hpp"
 
-
+class Server;
 
 class Configuration 
 {
@@ -26,7 +26,8 @@ class Configuration
 	// 	void parseErrorPage(std::vector<std::string> & error_info);
 
 	public:
-	// 	Configuration();
+		Configuration(void);
+		~Configuration() {}
 	// 	Configuration(std::string const & config_file);
 	
 	class UnknownToken : public std::exception

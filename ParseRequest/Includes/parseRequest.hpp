@@ -16,7 +16,7 @@
  # include <fstream>
  # include <string>
 #include <sys/stat.h>
-#include "../response/HostClass.hpp"
+#include "Server.hpp"
 
  # define String std::string
  # define Map std::map<std::string,std::string>
@@ -106,28 +106,31 @@ enum error
     IS_DIR = 42,
     NotFound = 404
 };
- 
+class Server;
 class ParseRequest
 {
     private:
 
         String      _method;
-         String      _code;
+        String      _code;
         String      _path;
         String      _versProtocol;
         String      _body; //тело в post
         String      _contentType; 
         Map         _heading; //словарь заголовков
-         Map         _types; // доступные расширение файла
+        Map         _types; // доступные расширение файла
         Vector      _keys; // доступные заголовки
         int         _bodyLength; // длина тела для post
         String      _str; // буфер в который считали данные из файла
         String      _strPath; // путь
         unsigned long _sizeFile;
 
-        String      _errorFilePath;
+       std::map<std::string,std::string>      _errorFilePath;
         String      _indexingFilePath;
         String      _rootDirectory;
+        std::map<std::string, Location> _locations;
+        std::map<std::string, std::string> _cgi;
+        std::vector<std::string>  _listOfAllowedMethods;
     public: //  private?
         ParseRequest();
         //~ParseRequest();
@@ -143,16 +146,16 @@ class ParseRequest
         const String            &getCode() const;
         int                     getBodyLength() const;
         const unsigned long     &getSizeFile() const;
-         const std::string & getRootDirectory() const;
-    const std::string & getIndexingFilePath() const;
-    const std::string & getErrorFilePath() const;
-
+        const std::string       & getRootDirectory() const;
+        const std::string       & getIndexingFilePath() const;
+        const std::map<std::string,std::string>   &getErrorFilePath() const;
+        
         const  Map   &getType()const;
         //===========Parsing methods===============
         error                 parsingStartLine(String &line);
         error                 parsingBody(String &line);
         error                 parsingHeading(String res);
-        error                 parsRequest(String request, HostClass host,String NumCode);
+        error                 parsRequest(String request, Server host,String NumCode);
         error                 parsBody(String request);
         error                 parsBodyLength(std::string &request);
         std::vector<String>   splitValues(std::string &value);
@@ -164,7 +167,8 @@ class ParseRequest
         error                 fileToString(std::string root);
         error                 dirToString(std::string indexFile);
         void                  findNewPath(std::string indexFile);
-        void                 parsGet();
+        void                  parsGet();
+        error                  findLocation();
 };
 
 #endif

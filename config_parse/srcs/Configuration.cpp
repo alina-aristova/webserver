@@ -1,69 +1,61 @@
 #include "../includes/Configuration.hpp"
 
-// Configuration::Configuration(std::string const & config_file) : _hostName(DEFAULT_HOSTNAME), _rootDirectory(DEFAULT_ROOT_DIRECTORY),
-// _indexingFilePath(DEFAULT_INDEXING_FILE_PATH), _storageDirectory(DEFAULT_STORAGE_DIRECTORY)
-// {
-// 	_listOfAllowedMethods.push_back("ADD");
-// 	_listOfAllowedMethods.push_back("POST");
-// 	_listOfAllowedMethods.push_back("DELETE");
-// 	_directiveFields["allowed_methods"] = &Configuration::parseAllowedMethods;
-// 	_serverFields["listen"] = &Configuration::parseListen;
-// 	_serverFields["server_name"] = &Configuration::parseServerName;
-// 	_serverFields["error_page"] = &Configuration::parseErrorPage;
-
-// 	parseConfig(config_file);
-// }
-
-void Configuration::parseConfig(std::string const & config_file)
+Configuration::Configuration(void)
 {
-	std::string buf;
-	std::string word;
-
-    std::ifstream ifs(config_file, std::ios::in);
-	if (ifs.fail())
-	{
-		std::cerr << "Error: " << strerror(errno) << std::endl;
-		exit(-1);
-	}
-	while (std::getline(ifs, buf))
-	{
-		if (buf == "}" || buf.find_first_not_of(" \t\n\v\f\r") == std::string::npos)
-			continue;
-		if (buf == "{")
-		{
-			try
-			{
-				Server serverBlock(ifs, buf);
-				this->_servers.push_back(serverBlock);
-			}
-			catch(const std::exception& e)
-			{
-				std::cerr << e.what() << std::endl;
-			}
-		}
-	// 	std::istringstream streamForLine(buf);
-	// 	std::vector<std::string> wordsInLine;
-	// 	std::map<std::string, parseFunc>::iterator fieldsIterator;
-
-	// /* ---------------------------- Server parsing --------------------------- */
-	// 	if ((buf.find("location")) == std::string::npos)
-	// 	{
-	// 		streamForLine >> word;
-	// 		fieldsIterator = this->_serverFields.find(word);
-	// 		if (fieldsIterator == this->_serverFields.end())
-	// 			throw Configuration::UnknownToken();
-	// 		parseFunc handler = (*fieldsIterator).second;
-	// 		while (streamForLine >> word)
-	// 		{
-	// 			// std::cout << word << std::endl;
-	// 			wordsInLine.push_back(word);
-	// 		}
-	// 		(this->*handler)(wordsInLine);
-			// break;
-		}	
-	}
-
+	Server server_new;
+	this->_servers.push_back(server_new);
 }
+
+// void Configuration::parseConfig(std::string const & config_file)
+// {
+// 	std::string buf;
+// 	std::string word;
+
+//     std::ifstream ifs(config_file, std::ios::in);
+// 	if (ifs.fail())
+// 	{
+// 		std::cerr << "Error: " << strerror(errno) << std::endl;
+// 		exit(-1);
+// 	}
+// 	while (std::getline(ifs, buf))
+// 	{
+// 		if (buf == "}" || buf.find_first_not_of(" \t\n\v\f\r") == std::string::npos)
+// 			continue;
+// 		if (buf == "{")
+// 		{
+// 			try
+// 			{
+// 				Server serverBlock(ifs, buf);
+// 				this->_servers.push_back(serverBlock);
+// 			}
+// 			catch(const std::exception& e)
+// 			{
+// 				std::cerr << e.what() << std::endl;
+// 			}
+// 		}
+// 	// 	std::istringstream streamForLine(buf);
+// 	// 	std::vector<std::string> wordsInLine;
+// 	// 	std::map<std::string, parseFunc>::iterator fieldsIterator;
+
+// 	// /* ---------------------------- Server parsing --------------------------- */
+// 	// 	if ((buf.find("location")) == std::string::npos)
+// 	// 	{
+// 	// 		streamForLine >> word;
+// 	// 		fieldsIterator = this->_serverFields.find(word);
+// 	// 		if (fieldsIterator == this->_serverFields.end())
+// 	// 			throw Configuration::UnknownToken();
+// 	// 		parseFunc handler = (*fieldsIterator).second;
+// 	// 		while (streamForLine >> word)
+// 	// 		{
+// 	// 			// std::cout << word << std::endl;
+// 	// 			wordsInLine.push_back(word);
+// 	// 		}
+// 	// 		(this->*handler)(wordsInLine);
+// 			// break;
+// 	// 	}	
+// 	// }
+
+// }
 
 // void Configuration::parseAllowedMethods(std::vector<std::string> & methods)
 // {

@@ -30,7 +30,7 @@ const std::string & ParseRequest::getRootDirectory() const { return (_rootDirect
 
 const std::string & ParseRequest::getIndexingFilePath() const { return (_indexingFilePath); }
 
-const std::string & ParseRequest::getErrorFilePath() const { return (_errorFilePath); }
+const std::map<std::string,std::string>  &ParseRequest::getErrorFilePath() const { return (_errorFilePath); }
 
 //=============================================================================
 // Функция parsingStartLine проверяет первую строку запроса на наличие
@@ -237,6 +237,18 @@ void ParseRequest::parsGet()
     findType(this->getStrPath());
 }
 
+error ParseRequest::findLocation()
+{
+    if(this->_locations.count(this->_path) == 0)
+    {
+        this-> _code = "400";
+        return BadRequest;
+    }
+    this->_rootDirectory = this->_locations[this->_path].getRootDirectory();
+    this->_indexingFilePath = this->_locations[this->_path].getIndexingFilePath();
+    this->_cgi = this->_locations[this->_path].getCgi();
+    this->_listOfAllowedMethods = this->_locations[this->_path].getListOfAllowedMethods();
+}
 //=============================================================================
 // главная функция парсинга запроса
 //
@@ -245,39 +257,45 @@ void ParseRequest::parsGet()
 //
 //=============================================================================
 
-error ParseRequest::parsRequest(String request, HostClass host, String NumCode)
+error ParseRequest::parsRequest(String request, Server host, String NumCode)
 {
-    this->_errorFilePath = host.getErrorFilePath();
+    this->_errorFilePath = host.getErrorFilesPath();
     this->_rootDirectory = host.getRootDirectory();
     this->_indexingFilePath = host.getIndexingFilePath();
+    this->_locations = host.getLocations();
     if (NumCode != "200")
-    {    
+    {
         this->_code = NumCode;
         return(BadRequest);
     }
     addArrKeys();
     addTypes();
     String str =  getLine(request);
-    if (parsingStartLine(str) != 200)
+    if (parsingStartLine(str) != OK)
         return(BadRequest);
+    if ( this->_path != "/")
+        if(findLocation() == BadRequest)
+            return BadRequest;//////
     findPath(this->_rootDirectory);
     str =  getLine(request);
     while(str != "")
     {
         if (parsingHeading(str) == BadRequest)
-        {
-            this-> _code = "400";
             return BadRequest;
-        }
-        str =  getLine(request);
+        str = getLine(request);
     }
     if(this->_heading.count("host") == 0)
-       return BadRequest;
-    if(this->_method == "GET")
-        parsGet();
+    {
+        this-> _code = "400";
+        return BadRequest;
+    }
+    
     print(this->_heading);
     if(!request.empty())
         this->_body = request;
+    // if(this->_method == "GET")
+    //     parsGet();  ///сделать функцию которая определяет запрос для cgi или нет 
+
     return OK;
 }
 
@@ -296,12 +314,12 @@ error ParseRequest::parsBodyLength(std::string &request) {
         == String::npos) {
         if ((contentLengthStart = request.find("Content-Length: "))
             == String::npos)
-        {   this-> _code = "200"; 
+        {   this->_code = "200"; 
             return OK;}
     }
     if ((contentLengthEnd = request.find("\r\n", contentLengthStart)) == String::npos) {
         if ((contentLengthEnd = request.find("\r\n", contentLengthStart)) == String::npos)
-           { this-> _code = "200";
+           { this->_code = "200";
                return OK;}
     }
     String contentLengthString = request.substr(contentLengthStart, contentLengthEnd - contentLengthStart);
@@ -309,7 +327,7 @@ error ParseRequest::parsBodyLength(std::string &request) {
 
     if (contentLengthParts.size() != 2)
     {
-        this-> _code = "400";
+        this->_code = "400";
         return BadRequest;
     }
     int i = 0;
@@ -317,13 +335,13 @@ error ParseRequest::parsBodyLength(std::string &request) {
     {
         if(!(isdigit(contentLengthParts[1][i])))
         {   
-            this-> _code = "400";  
+            this->_code = "400";  
             return BadRequest;
         }
         i++;
     }
     _bodyLength = std::stoi(contentLengthParts[1]);
-    this-> _code = "200";
+    this->_code = "200";
     return (OK);
 }
 
@@ -427,7 +445,7 @@ error ParseRequest::dirToString(std::string indexFile)
  {
      struct stat stat1;
     
-     if (root.back() == '/' || stat(root.c_str(), &stat1))
+     if (root.back() == '/' || stat(root.c_str(), &stat1))//!!!
         return(IS_DIR);
        std::ifstream file(root);  
         if (!file.is_open()) 

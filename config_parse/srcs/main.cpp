@@ -1,15 +1,9 @@
 #include "Configuration.hpp"
+#include "Server.hpp"
 
 int main(void)
 {
-	try
-	{
-		Configuration test("default.conf");
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << std::endl;
-	}
+	Server test;
 	
 	return 0;
 }
