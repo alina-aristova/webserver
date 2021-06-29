@@ -9,7 +9,7 @@
 # include <exception>
 # include "Server.hpp"
 
-
+class Server;
 
 class Configuration 
 {
@@ -17,18 +17,21 @@ class Configuration
 	private:
 		std::vector<Server> _servers;
 
-	// 	/* ------------------------------- Parser funcs ------------------------------ */
-
+		/* ----------------------- Парсинг всего конфиг файла ----------------------- */
 		void parseConfig(std::string const & config_file);
-	// 	void parseAllowedMethods(std::vector<std::string> & methods);
-	// 	void parseListen(std::vector<std::string> & port);
-	// 	void parseServerName(std::vector<std::string> & server_names);
-	// 	void parseErrorPage(std::vector<std::string> & error_info);
 
 	public:
-	// 	Configuration();
-	// 	Configuration(std::string const & config_file);
-	
+		Configuration(std::string const & config_file);
+		~Configuration(void) {}
+
+		/*-----------------------------------------------------------------------------
+		 *  Основное взаимодействие с данным классом:
+		 *		1) получить вектор серверов
+		 *		2) внутри сервера определены его поля и locations
+		 *		3) через геттеры получать любые поля
+		 *-----------------------------------------------------------------------------*/
+		std::vector<Server> getServers(void) const {return this->_servers;}	
+
 	class UnknownToken : public std::exception
 	{
 		const char *what(void) const throw()
