@@ -16,7 +16,7 @@
  # include <fstream>
  # include <string>
  # include <sys/stat.h>
- # include "../Includes/parseRequest.hpp"
+ # include "../includes/parseRequest.hpp"
  # define String std::string
  # define Map std::map<std::string,std::string>
  # define Vector std::vector<std::string>

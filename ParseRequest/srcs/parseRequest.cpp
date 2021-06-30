@@ -1,4 +1,4 @@
-#include "parseRequest.hpp"
+#include "../includes/parseRequest.hpp"
 #include "../utils/utils.hpp"
 ParseRequest::ParseRequest() : _bodyLength(0) {}
 
@@ -24,7 +24,7 @@ const unsigned long    &ParseRequest::getSizeFile() const{return(this->_sizeFile
 
 const Map   &ParseRequest::getMap() const{return(this->_heading);}
 
-const bool   ParseRequest::getForCgi() const{return(this->_forCgi);}
+ bool   ParseRequest::getForCgi() const{return(this->_forCgi);}
 
 const Map  &ParseRequest::getType() const{return(this->_types);}
 
@@ -249,11 +249,12 @@ error ParseRequest::findLocation()
     this->_rootDirectory = this->_locations[this->_path].getRootDirectory();
     this->_indexingFilePath = this->_locations[this->_path].getIndexingFilePath();
     this->_cgi = this->_locations[this->_path].getCgi();
-    this->_listOfAllowedMethods = this->_locations[this->_path].getListOfAllowedMethods();
+    this->_listOfAllowedMethods = this->_locations[this->_path].getAllowedMethods();
+    return(OK);
 }
 error ParseRequest::requestForCgi()
 {
-
+    return(OK);
 
 }
 
@@ -264,6 +265,7 @@ error ParseRequest::typeDefinitionMethod()
         this->_forCgi = true;
     else
         requestForNotCgi();
+    return(OK);
 }
 
 error ParseRequest::requestForNotCgi()
@@ -277,6 +279,7 @@ error ParseRequest::requestForNotCgi()
         findType(this->getStrPath());
         
     }
+    return(OK);
 }
 
 //=============================================================================

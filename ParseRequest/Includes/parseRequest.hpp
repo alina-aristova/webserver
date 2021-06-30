@@ -16,7 +16,7 @@
  # include <fstream>
  # include <string>
 #include <sys/stat.h>
-#include "Server.hpp"
+#include "../../config_parse/includes/Server.hpp"
 
  # define String std::string
  # define Map std::map<std::string,std::string>
@@ -151,7 +151,7 @@ class ParseRequest
         const std::string       & getRootDirectory() const;
         const std::string       & getIndexingFilePath() const;
         const std::map<std::string,std::string>   &getErrorFilePath() const;
-        const bool                     getForCgi() const;
+        bool                     getForCgi() const;
         
         const  Map   &getType()const;
         //===========Parsing methods===============

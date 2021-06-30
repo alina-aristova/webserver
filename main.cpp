@@ -1,13 +1,27 @@
-# include "ParseRequest/Includes/parseRequest.hpp"
+#include "ParseRequest/includes/parseRequest.hpp"
+#include "config_parse/includes/Location.hpp"
+#include "config_parse/includes/Server.hpp"
+#include "config_parse/includes/Configuration.hpp"
 #include "ParseRequest/response/response.hpp"
-#include "Server.hpp"
-
 int main()
 {
     // HostClass host;
     // host.setErrorFilePath("/Users/acase/Desktop/Errodr/error.pdf");
     // host.setIndexingFilePath("good.txt");
     // host.setRootDirectory("/Users");
+    std::vector<Server> servers;
+
+	try
+	{
+		Configuration test("default.conf");
+		servers = test.getServers();	
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	if (servers.size() == 0)
+		return 1;
     Server serv;
     ParseRequest parse;    
     Response  response;

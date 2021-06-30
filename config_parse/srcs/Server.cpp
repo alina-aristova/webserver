@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "../includes/Server.hpp"
 
 Server::Server(std::ifstream & ifs, std::string & buf) : _port(DEFAULT_PORT), _hostName(DEFAULT_HOSTNAME), _rootDirectory(DEFAULT_ROOT_DIRECTORY),
 _indexingFilePath(DEFAULT_INDEXING_FILE_PATH), _storageDirectory(DEFAULT_STORAGE_DIRECTORY), _clientMaxBodySize(DEFAULT_MAX_BODY_SIZE)

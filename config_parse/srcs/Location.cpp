@@ -1,4 +1,4 @@
-#include "Location.hpp"
+#include "../includes/Location.hpp"
 #include <algorithm>
 
 Location::Location(std::ifstream & ifs, std::string & buf, Server const & serverPlace):
