@@ -131,6 +131,8 @@ class ParseRequest
         std::map<std::string, Location> _locations;
         std::map<std::string, std::string> _cgi;
         std::vector<std::string>  _listOfAllowedMethods;
+
+        bool _forCgi;
     public: //  private?
         ParseRequest();
         //~ParseRequest();
@@ -149,6 +151,7 @@ class ParseRequest
         const std::string       & getRootDirectory() const;
         const std::string       & getIndexingFilePath() const;
         const std::map<std::string,std::string>   &getErrorFilePath() const;
+        const bool                     getForCgi() const;
         
         const  Map   &getType()const;
         //===========Parsing methods===============
@@ -168,7 +171,12 @@ class ParseRequest
         error                 dirToString(std::string indexFile);
         void                  findNewPath(std::string indexFile);
         void                  parsGet();
-        error                  findLocation();
+        error                 findLocation();
+        error                 typeDefinitionMethod();
+        error                 requestForNotCgi();
+        error                 requestForCgi();
+        
+
 };
 
 #endif

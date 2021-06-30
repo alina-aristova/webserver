@@ -1,4 +1,4 @@
-#include "../Includes/parseRequest.hpp"
+#include "parseRequest.hpp"
 #include "../utils/utils.hpp"
 ParseRequest::ParseRequest() : _bodyLength(0) {}
 
@@ -23,6 +23,8 @@ const String   &ParseRequest::getVersProtocol() const{return(this->_versProtocol
 const unsigned long    &ParseRequest::getSizeFile() const{return(this->_sizeFile);}
 
 const Map   &ParseRequest::getMap() const{return(this->_heading);}
+
+const bool   ParseRequest::getForCgi() const{return(this->_forCgi);}
 
 const Map  &ParseRequest::getType() const{return(this->_types);}
 
@@ -249,6 +251,34 @@ error ParseRequest::findLocation()
     this->_cgi = this->_locations[this->_path].getCgi();
     this->_listOfAllowedMethods = this->_locations[this->_path].getListOfAllowedMethods();
 }
+error ParseRequest::requestForCgi()
+{
+
+
+}
+
+error ParseRequest::typeDefinitionMethod()
+{
+    std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
+    if (this->_cgi.count(fn) == 1)
+        this->_forCgi = true;
+    else
+        requestForNotCgi();
+}
+
+error ParseRequest::requestForNotCgi()
+{
+    if (this->_method == "GET")
+    {
+        if (fileToString(this->getStrPath()) == IS_DIR) 
+        {   
+            dirToString(this->_indexingFilePath);
+        }
+        findType(this->getStrPath());
+        
+    }
+}
+
 //=============================================================================
 // главная функция парсинга запроса
 //
@@ -443,15 +473,16 @@ error ParseRequest::dirToString(std::string indexFile)
 
  error ParseRequest::fileToString(std::string root)
  {
-     struct stat stat1;
+    struct stat stat1;
     
-     if (root.back() == '/' || stat(root.c_str(), &stat1))//!!!
+    if (root.back() == '/' || stat(root.c_str(), &stat1))//!!!
         return(IS_DIR);
-       std::ifstream file(root);  
-        if (!file.is_open()) 
-        {this-> _code = "404";
-            return(NotFound);
-        }
+    std::ifstream file(root);  
+    if (!file.is_open()) 
+    {
+        this-> _code = "404";
+        return(NotFound);
+    }
      std::string   str((std::istreambuf_iterator<char>(file)),
                     std::istreambuf_iterator<char>());
     this->_str = str;
