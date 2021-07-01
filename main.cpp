@@ -34,7 +34,6 @@ int main()
 	}
 	if (servers.size() == 0)
 		return 1;
-    
     // std::cout << "Метод: " << parse.getMethod() << std::endl;
     // std::cout << "Путь до файла: " << parse.getPath() << std::endl;
     // std::cout << "Версия: " << parse.getVersProtocol() << std::endl;
