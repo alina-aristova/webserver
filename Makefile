@@ -1,10 +1,11 @@
-NAME 	= parser
+NAME 	= webserv
 
 -include sabra.mak
+
 SRCS	= $(SABRA)\
-ParseRequest/srcs/ParseRequest.cpp\
-ParseRequest/response/response.cpp\
-main.cpp
+			ParseRequest/srcs/parseRequest.cpp\
+			ParseRequest/response/response.cpp\
+			main.cpp
 
 OBJS 	= $(SRCS:.cpp=.o)
 
@@ -17,9 +18,11 @@ all:
 	@$(MAKE) $(NAME) -j4
 
 %.o:    %.cpp
-	@$(CC) $(CFLAGS) 
+	@$(CC) $(CFLAGS)  -c $< -o $@
 
-
+$(NAME):	$(OBJS)
+		@$(CC) $(OBJS) -o $(NAME)
+		@echo $(NAME) compiled!
 
 clean:
 	@$(RM) $(OBJS)
