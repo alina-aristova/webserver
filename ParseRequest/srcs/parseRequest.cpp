@@ -296,6 +296,8 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     this->_rootDirectory = host.getRootDirectory();
     this->_indexingFilePath = host.getIndexingFilePath();
     this->_locations = host.getLocations();
+	this->_serverName = host.getHostName();
+	this->_serverPort = std::to_string(host.getPort());
     if (NumCode != "200")
     {
         this->_code = NumCode;

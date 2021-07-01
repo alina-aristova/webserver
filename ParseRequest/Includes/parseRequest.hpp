@@ -99,6 +99,7 @@
 // 524 A Timeout Occurred («время ожидания истекло»)[15];
 // 525 SSL Handshake Failed («квитирование SSL не удалось»)[15];
 // 526 Invalid SSL Certificate («недействительный сертификат SSL»)[15].
+
 enum error
 {
     BadRequest = 400,
@@ -106,6 +107,7 @@ enum error
     IS_DIR = 42,
     NotFound = 404
 };
+
 class Server;
 class Location;
 class ParseRequest
@@ -125,6 +127,8 @@ class ParseRequest
         String      _str; // буфер в который считали данные из файла
         String      _strPath; // путь
         unsigned long _sizeFile;
+		String	_serverName;
+		String _serverPort;
 
        std::map<std::string,std::string>      _errorFilePath;
         String      _indexingFilePath;
@@ -139,6 +143,8 @@ class ParseRequest
         //~ParseRequest();
         //==================get/set================
         const String            &getMethod() const;
+        const String            &getServerName() const {return this->_serverName;}
+        const String            &getServerPort() const {return this->_serverPort;}
         const String            &getPath() const;
         const String            &getVersProtocol() const;
         const String            &getBody() const;

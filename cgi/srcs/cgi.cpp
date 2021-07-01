@@ -1,6 +1,7 @@
 #include "cgi.hpp"
 #include <map>
 #include <unistd.h>
+#include <algorithm> 
 
 Cgi::Cgi(std::string cgi_path) : _cgi_path(cgi_path)
 {}
@@ -26,8 +27,6 @@ char **Cgi::createEnv(ParseRequest & request) const
 	env_map["PATH_INFO"] = request.getPath();
 	env_map["PATH_TRANSLATED"] = pwd + env_map["PATH_INFO"];
 	env_map["QUERY_STRING"] = "";
-	// env_map["REMOTE_ADDR"] = 
-	// env_map["REMOTE_HOST"] = 
 	if (env_map["AUTH_TYPE"] == "Basic")
 	{
 		env_map["REMOTE_USER"] = "UIViewController";
@@ -44,12 +43,43 @@ char **Cgi::createEnv(ParseRequest & request) const
 		env_map["SCRIPT_NAME"] = request.getPath().substr(index + 1);
 	else
 		env_map["SCRIPT_NAME"] = request.getPath();
-	/*
-		SERVER_NAME
-		SERVER_PORT
-	*/
-
+	env_map["SERVER_NAME"] = request.getServerName();
+	env_map["SERVER_PORT"] = request.getServerPort();
   	env_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
   	env_map["SERVER_SOFTWARE"]   = "web_server/1.0";
+	for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
+	{
+		std::string head(it->first);
+		size_t found = head.find('-');
+		if (found != std::string::npos)
+			head.replace(found, 1, "_");
+		std::transform(head.begin(), head.end(), head.begin(), toupper);
+		env_map["HTTP_" + head] = it->second;
+	}
+	try
+	{
+		int i = 0;
+		char **env = static_cast<char **>(malloc(sizeof(char *) * (env_map.size() + headers.size()) + 1));
+		for (std::map<std::string, std::string>::iterator it = env_map.begin(); it != env_map.end(); it++)
+		{
+			env[i] = strdup(static_cast<std::string>(it->first + "=" + it->second).c_str());
+			i++;
+		}
+		for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
+		{
+			env[i] = strdup(static_cast<std::string>(it->first + "=" + it->second).c_str());
+			i++;
+		}
+		env[i] = nullptr;
+		for (int i = 0; env[i]; i++)
+		{
+			std::cout << env[i] << std::endl;
+		}
+		return env;
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
 	return NULL;
 }
