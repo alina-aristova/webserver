@@ -260,6 +260,7 @@ error ParseRequest::requestForCgi()
 
 error ParseRequest::typeDefinitionMethod()
 {
+    std::cout << "govno!!!\n";
     std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
     if (this->_cgi.count(fn) == 1)
         this->_forCgi = true;
@@ -272,6 +273,7 @@ error ParseRequest::requestForNotCgi()
 {
     if (this->_method == "GET")
     {
+        std::cout << "govno!!!\n";
         if (fileToString(this->getStrPath()) == IS_DIR) 
         {   
             dirToString(this->_indexingFilePath);
@@ -306,6 +308,7 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     String str =  getLine(request);
     if (parsingStartLine(str) != OK)
         return(BadRequest);
+    std::cout << "govno!!!\n";
     if ( this->_path != "/")
         if(findLocation() == BadRequest)
             return BadRequest;//////
@@ -326,8 +329,7 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     print(this->_heading);
     if(!request.empty())
         this->_body = request;
-    // if(this->_method == "GET")
-    //     parsGet();  ///сделать функцию которая определяет запрос для cgi или нет 
+    typeDefinitionMethod();
 
     return OK;
 }
