@@ -4,36 +4,49 @@
  # include <iostream>
  # include <vector>
  # include <string>
- #include <algorithm>
- #include <exception>
+ # include <algorithm>
+ # include <exception>
 
-bool space(char c)
-{
-    return std::isspace(c);
-}
- 
-bool notspace(char c)
+inline bool space(char c) { return std::isspace(c); }
+
+inline bool notspace(char c)
 {
     return !std::isspace(c);
 }
 
-int del(int c)
+inline int del(int c)
 {
     if(c == '\r' || c == '\n')
         return(1);
     return(0);
 }
 
-bool delim(char c)
+inline bool delim(char c)
 {
     return del(c);
 }
-bool notdelim(char c)
+inline bool notdelim(char c)
 {
     return !del(c);
 }
 
-std::vector<std::string> split(const std::string& s)
+inline int checkColon(int c)
+{
+    if(c == ':')
+        return(1);
+    return(0);
+}
+
+inline bool colon(char c)
+{
+    return checkColon(c);
+}
+inline bool notColon(char c)
+{
+    return !checkColon(c);
+}
+
+inline std::vector<std::string> split(const std::string& s)
 {
     typedef std::string::const_iterator iter;
     std::vector<std::string> res;
@@ -51,7 +64,7 @@ std::vector<std::string> split(const std::string& s)
     return res;
 }
 
-std::vector<std::string> catLine(const std::string& s)
+inline std::vector<std::string> catLine(const std::string& s)
 {
     typedef std::string::const_iterator iter;
     std::vector<std::string> res;
@@ -71,8 +84,29 @@ std::vector<std::string> catLine(const std::string& s)
     }
     return res;
 }
+inline std::vector<std::string> splitByColon(const std::string& s)
+{
+    typedef std::string::const_iterator iter;
+    std::vector<std::string> res;
+    iter i = s.begin();
+    int r = 0;
+    while(i!=s.end())
+    {
+        i = std::find_if(i, s.end(), notColon); 
+        iter j = std::find_if(i, s.end(), colon);
+        if(i!=s.end())
+        {
+            res.push_back(std::string(i, j));
+            //std::cout << res[r] << '\n';
+            i = j;
+            r++;
+        }
+    }
+    return res;
+}
 
-std::string getLine(std::string &request)
+
+inline std::string getLine(std::string &request)
 {
   size_t CRPos = request.find('\r');
   size_t LFPos = request.find('\n');
@@ -91,5 +125,5 @@ std::string getLine(std::string &request)
     }
   }
   return "";
-}
+}      
 #endif

@@ -12,7 +12,7 @@
 
 class HostClass {
 private:
-    int                     _port;
+    int                     _socket;
     std::string             _hostName;
     std::string             _rootDirectory;
     std::string             _indexingFilePath;
@@ -21,14 +21,14 @@ private:
     std::list<std::string>  _listOfAllowedMethods;
 public:
     HostClass();
-    int getPort() const;
+    int getsocket() const;
     const std::string & getHostName() const;
     const std::string & getRootDirectory() const;
     const std::string & getIndexingFilePath() const;
     const std::string & getErrorFilePath() const;
     const std::string & getStorageDirectory() const;
     const std::list<std::string> & getListOfAllowedMethods() const;
-    void setPort(int port);
+    void setsocket(int socket);
     void setHostName(const std::string & hostName);
     void setRootDirectory(const std::string & rootDirectory);
     void setIndexingFilePath(const std::string & indexingFilePath);
