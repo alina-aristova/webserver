@@ -1,4 +1,4 @@
-#include "../Includes/parseRequest.hpp"
+#include "../includes/parseRequest.hpp"
 #include "../utils/utils.hpp"
 ParseRequest::ParseRequest() : _bodyLength(0) {}
 
@@ -241,6 +241,8 @@ void ParseRequest::parsGet()
 
 error ParseRequest::findLocation()
 {
+    if (this->_path.back() != '/')
+        return(OK);
     if(this->_locations.count(this->_path) == 0)
     {
         this-> _code = "400";
@@ -260,7 +262,7 @@ error ParseRequest::requestForCgi()
 
 error ParseRequest::typeDefinitionMethod()
 {
-    std::cout << "govno!!!\n";
+    //std::cout << "govno!!!\n";
     std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
     if (this->_cgi.count(fn) == 1)
         this->_forCgi = true;
@@ -273,13 +275,24 @@ error ParseRequest::requestForNotCgi()
 {
     if (this->_method == "GET")
     {
-        std::cout << "govno!!!\n";
+        //std::cout << "govno!!!\n";
         if (fileToString(this->getStrPath()) == IS_DIR) 
         {   
             dirToString(this->_indexingFilePath);
         }
         findType(this->getStrPath());
         
+    }
+    #include <stdio.h>
+    if (this->_method == "POST")
+    {
+       
+    }
+    if (this->_method == "DELETE")
+    {
+        std::cout << this->_path;
+         if(remove(this->_path.c_str()) == 0)
+            std::cout << "удадилили\n";
     }
     return(OK);
 }
