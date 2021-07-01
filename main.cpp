@@ -14,20 +14,12 @@ int main()
 	try
 	{
 		Configuration test("default.conf");
-		servers = test.getServers();	
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << std::endl;
-	}
-	if (servers.size() == 0)
-		return 1;
-    Server serv;
-    ParseRequest parse;    
-    Response  response;
-    std::string line = "GET /acase/Desktop/testfile/copy.txt HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
-    std::string NumCode = "200";
-    parse.parsRequest(line,serv,NumCode);
+		servers = test.getServers();
+        ParseRequest parse;    
+        Response  response;
+        std::string line = "GET /acase/Desktop/testfile/copy.txt HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
+        std::string NumCode = "200";
+        parse.parsRequest(line, servers[0], NumCode);
     if (parse.getForCgi() == true)
     {
         std::cout << "наш cgi еще не готов:(\nМы не можем выполнить ваш запрос, но мы обязательно его доделаем, приходите позже!\n";
@@ -35,6 +27,14 @@ int main()
     }
     std::string res = response.creatRespons(parse,parse.getCode());
     std::cout << res << std::endl;
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	if (servers.size() == 0)
+		return 1;
+    
     // std::cout << "Метод: " << parse.getMethod() << std::endl;
     // std::cout << "Путь до файла: " << parse.getPath() << std::endl;
     // std::cout << "Версия: " << parse.getVersProtocol() << std::endl;

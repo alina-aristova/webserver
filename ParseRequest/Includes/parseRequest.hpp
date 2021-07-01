@@ -15,8 +15,8 @@
  # include <iostream>
  # include <fstream>
  # include <string>
-#include <sys/stat.h>
-#include "../../config_parse/includes/Server.hpp"
+ # include <sys/stat.h>
+ # include "../../config_parse/includes/Configuration.hpp"
 
  # define String std::string
  # define Map std::map<std::string,std::string>
@@ -107,6 +107,7 @@ enum error
     NotFound = 404
 };
 class Server;
+class Location;
 class ParseRequest
 {
     private:
@@ -175,8 +176,6 @@ class ParseRequest
         error                 typeDefinitionMethod();
         error                 requestForNotCgi();
         error                 requestForCgi();
-        
-
 };
 
 #endif

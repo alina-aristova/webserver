@@ -29,6 +29,7 @@ class Location
 		void parseClientMaxBodySize(std::vector<std::string> & body_size);
 
 	public:
+		Location();
 		Location(std::ifstream & ifs, std::string & buf, Server const & serverPlace);
 		~Location(void) {};
 
