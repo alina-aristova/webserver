@@ -145,7 +145,7 @@ class ParseRequest
         const String            &getStr() const;
         const String            &getStrPath() const;
         const String            &getContentType() const;
-        const Map               &getMap() const;
+        const Map               &getHeading() const;
         const String            &getCode() const;
         int                     getBodyLength() const;
         const unsigned long     &getSizeFile() const;

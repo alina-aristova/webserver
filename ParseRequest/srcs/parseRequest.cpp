@@ -22,7 +22,7 @@ const String   &ParseRequest::getVersProtocol() const{return(this->_versProtocol
 
 const unsigned long    &ParseRequest::getSizeFile() const{return(this->_sizeFile);}
 
-const Map   &ParseRequest::getMap() const{return(this->_heading);}
+const Map   &ParseRequest::getHeading() const {return(this->_heading);}
 
  bool   ParseRequest::getForCgi() const{return(this->_forCgi);}
 
