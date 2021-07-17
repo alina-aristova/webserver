@@ -9,6 +9,7 @@ Cgi::Cgi(ParseRequest &request, std::string const & cgi_path) : _cgi_path(cgi_pa
 	execCgi(request);
 }
 
+/* --------- Create arguments and environment variables for our cgi --------- */
 char **Cgi::createArgv(void) const
 {
 	char **argv = static_cast<char**>(malloc(sizeof(char*) * 2));
@@ -86,7 +87,9 @@ char **Cgi::createEnv(ParseRequest & request) const
 	}
 	return NULL;
 }
+/* -------------------------------------------------------------------------- */
 
+/* ------------------------- Buffer files operations ------------------------ */
 std::string	Cgi::readData(std::string const & file_name) const 
 {
 	std::ifstream file(file_name);
@@ -112,7 +115,9 @@ void	Cgi::putData(const char *data, std::string const & file_name) const
 		file << data;
 	file.close();
 }
+/* -------------------------------------------------------------------------- */
 
+/* ------ Function that execute cgi binary and got result for response ------ */
 void Cgi::execCgi(ParseRequest & request)
 {
 	char **ev = createEnv(request);
@@ -148,3 +153,4 @@ void Cgi::execCgi(ParseRequest & request)
 	
 	/* ------ Дальше нужно обернуть всю инфу в response file в сам респонс ------ */
 }
+/* -------------------------------------------------------------------------- */
