@@ -3,22 +3,12 @@
 
 # include "parseRequest.hpp"
 
-void clearMatrix(char **mat)
-{
-	if (mat)
-	{
-		for (int i = 0; mat[i]; i++)
-			free(mat[i]);
-		free(mat);
-	}
-}
-
 class Cgi
 {
 	private:
 		std::string _cgi_path;
-		const std::string _request_file = ".request_cache";
-		const std::string _response_file = ".response_cache";
+		const std::string _request_file;
+		const std::string _response_file;
 		int _request_fd;
 		int _response_fd;
 
@@ -35,7 +25,7 @@ class Cgi
 
 		class OpenFileError : public std::exception
 		{
-			const char *what() const
+			const char *what() const throw()
 			{
 				return "Can't open file!";
 			}

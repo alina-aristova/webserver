@@ -3,6 +3,7 @@
 #include "config_parse/includes/Server.hpp"
 #include "config_parse/includes/Configuration.hpp"
 #include "ParseRequest/response/response.hpp"
+#include "cgi/includes/cgi.hpp"
 int main()
 {
     // HostClass host;
@@ -25,6 +26,11 @@ int main()
         std::cout << "наш cgi еще не готов:(\nМы не можем выполнить ваш запрос, но мы обязательно его доделаем, приходите позже!\n";
         return(0);
     }
+
+	/* ----------------------- Просто тестирую работу cgi ----------------------- */
+	Cgi cgi(parse, "cgi/test_bin");
+	/* -------------------------------------------------------------------------- */
+
     std::string res = response.creatRespons(parse,parse.getCode());
     std::cout << res << std::endl;
 	}

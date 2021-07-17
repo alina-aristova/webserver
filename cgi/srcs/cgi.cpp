@@ -4,7 +4,18 @@
 #include <fcntl.h>
 #include <algorithm> 
 
-Cgi::Cgi(ParseRequest &request, std::string const & cgi_path) : _cgi_path(cgi_path)
+void freeMat(char **mat)
+{
+	if (mat)
+	{
+		for (int i = 0; mat[i]; i++)
+			free(mat[i]);
+		free(mat);
+	}
+}
+
+Cgi::Cgi(ParseRequest &request, std::string const & cgi_path) : _cgi_path(cgi_path), _request_file("request.cache"),
+	_response_file("response.cache")
 {
 	execCgi(request);
 }
@@ -15,6 +26,8 @@ char **Cgi::createArgv(void) const
 	char **argv = static_cast<char**>(malloc(sizeof(char*) * 2));
 	argv[0] = strdup(this->_cgi_path.c_str());
 	argv[1] = nullptr;
+
+	return argv;
 }
 
 char **Cgi::createEnv(ParseRequest & request) const
@@ -75,10 +88,10 @@ char **Cgi::createEnv(ParseRequest & request) const
 			i++;
 		}
 		env[i] = nullptr;
-		for (int i = 0; env[i]; i++)
-		{
-			std::cout << env[i] << std::endl;
-		}
+		// for (int i = 0; env[i]; i++)
+		// {
+		// 	std::cout << env[i] << std::endl;
+		// }
 		return env;
 	}
 	catch(const std::exception& e)
@@ -126,14 +139,15 @@ void Cgi::execCgi(ParseRequest & request)
 	if (ev == NULL || av == NULL)
 		return;
 	putData(request.getBody().c_str(), this->_request_file);
+	putData("", this->_response_file);
 
 	int pid;
 	int status = 0;
 	this->_request_fd = open(this->_request_file.c_str(), O_RDWR);
 	this->_response_fd = open(this->_response_file.c_str(), O_RDWR);
+	printf("request = %d\nresponse = %d\n", this->_request_fd, this->_response_fd);
 	if (this->_response_fd < 0 || this->_request_fd < 0)
 		throw Cgi::OpenFileError();
-	
 	pid = fork();
 	if (pid)
 	{
@@ -142,14 +156,18 @@ void Cgi::execCgi(ParseRequest & request)
 	}
 	else if (!pid)
 	{
-		dup2(this->_request_fd, 0);
-		dup2(this->_response_fd, 1);
+		// Комментирую только для теста
+	
+		// dup2(this->_request_fd, 0);
+		// dup2(this->_response_fd, 1);
 		status = execve(this->_cgi_path.c_str(), av, ev);
 		close(this->_request_fd);
 		close(this->_response_fd);
 		exit(status);
 	}
 	wait(&status);
+	freeMat(av);
+	freeMat(ev);
 	
 	/* ------ Дальше нужно обернуть всю инфу в response file в сам респонс ------ */
 }
