@@ -1,10 +1,13 @@
 #include "cgi.hpp"
 #include <map>
 #include <unistd.h>
+#include <fcntl.h>
 #include <algorithm> 
 
-Cgi::Cgi(std::string cgi_path) : _cgi_path(cgi_path)
-{}
+Cgi::Cgi(ParseRequest &request, std::string const & cgi_path) : _cgi_path(cgi_path)
+{
+	execCgi(request);
+}
 
 char **Cgi::createArgv(void) const
 {
@@ -82,4 +85,66 @@ char **Cgi::createEnv(ParseRequest & request) const
 		std::cerr << e.what() << std::endl;
 	}
 	return NULL;
+}
+
+std::string	Cgi::readData(std::string const & file_name) const 
+{
+	std::ifstream file(file_name);
+	std::string data;
+	std::string buf;
+
+	if (file.is_open())
+	{
+		while (std::getline(file, buf))
+		{
+			data.append(buf);
+		}
+	}
+	file.close();
+	return data;
+}
+
+void	Cgi::putData(const char *data, std::string const & file_name) const 
+{
+	std::ofstream file(file_name);
+	
+	if (file.is_open())
+		file << data;
+	file.close();
+}
+
+void Cgi::execCgi(ParseRequest & request)
+{
+	char **ev = createEnv(request);
+	char **av = createArgv();
+
+	if (ev == NULL || av == NULL)
+		return;
+	putData(request.getBody().c_str(), this->_request_file);
+
+	int pid;
+	int status = 0;
+	this->_request_fd = open(this->_request_file.c_str(), O_RDWR);
+	this->_response_fd = open(this->_response_file.c_str(), O_RDWR);
+	if (this->_response_fd < 0 || this->_request_fd < 0)
+		throw Cgi::OpenFileError();
+	
+	pid = fork();
+	if (pid)
+	{
+		close(this->_request_fd);
+		close(this->_response_fd);
+	}
+	else if (!pid)
+	{
+		dup2(this->_request_fd, 0);
+		dup2(this->_response_fd, 1);
+		status = execve(this->_cgi_path.c_str(), av, ev);
+		close(this->_request_fd);
+		close(this->_response_fd);
+		exit(status);
+	}
+	wait(&status);
+	
+	/* ------ Дальше нужно обернуть всю инфу в response file в сам респонс ------ */
 }
