@@ -156,10 +156,8 @@ void Cgi::execCgi(ParseRequest & request)
 	}
 	else if (!pid)
 	{
-		// Комментирую только для теста
-	
-		// dup2(this->_request_fd, 0);
-		// dup2(this->_response_fd, 1);
+		dup2(this->_request_fd, 0);
+		dup2(this->_response_fd, 1);
 		status = execve(this->_cgi_path.c_str(), av, ev);
 		close(this->_request_fd);
 		close(this->_response_fd);
