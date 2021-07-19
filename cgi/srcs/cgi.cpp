@@ -38,28 +38,24 @@ char **Cgi::createEnv(ParseRequest & request) const
 
 	getcwd(pwd, 1024);
 	env_map["AUTH_TYPE"] = headers.count("Authorization") != 0 ? headers["Authorization"] : "";
+	env_map["REDIRECT_STATUS"] = "200";
 	env_map["CONTENT_LENGTH"] = std::to_string(request.getBody().length());
 	env_map["CONTENT_TYPE"] = headers.count("Content-type") != 0 ? headers["Content-type"] : "";
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
 	env_map["PATH_INFO"] = request.getPath();
 	env_map["PATH_TRANSLATED"] = pwd + env_map["PATH_INFO"];
 	env_map["QUERY_STRING"] = "";
-	if (env_map["AUTH_TYPE"] == "Basic")
-	{
-		env_map["REMOTE_USER"] = "UIViewController";
-		env_map["REMOTE_IDENT"] = "UIViewController";
-	}
-	else
-	{
-		env_map["REMOTE_USER"] = "";
-		env_map["REMOTE_IDENT"] = "";
-	}
+	env_map["REMOTE_USER"] = headers["Authorization"];
+	env_map["REMOTE_IDENT"] = headers["Authorization"];
 	env_map["REQUEST_METHOD"] = request.getMethod();
-	std::size_t index = request.getPath().find('/');
-	if (index != std::string::npos)
-		env_map["SCRIPT_NAME"] = request.getPath().substr(index + 1);
-	else
+	env_map["REQUEST_URI"] = request.getPath();
+	// std::size_t index = request.getPath().find('/');
+	// if (index != std::string::npos)
+	// 	env_map["SCRIPT_NAME"] = request.getPath().substr(index + 1);
+	// else
 		env_map["SCRIPT_NAME"] = request.getPath();
+	std::cout << env_map["SCRIPT_NAME"] << std::endl;
+	env_map["SCRIPT_FILENAME"] = request.getPath();
 	env_map["SERVER_NAME"] = request.getServerName();
 	env_map["SERVER_PORT"] = request.getServerPort();
   	env_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
@@ -163,7 +159,9 @@ void Cgi::execCgi(ParseRequest & request)
 		close(this->_response_fd);
 		exit(status);
 	}
-	wait(&status);
+	waitpid(pid, &status, 0);
+	std::string result = readData(this->_response_file);
+	std::cout << WEXITSTATUS(status) << std::endl;
 	freeMat(av);
 	freeMat(ev);
 	

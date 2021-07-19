@@ -18,17 +18,18 @@ int main()
 		servers = test.getServers();
         ParseRequest parse;    
         Response  response;
-        std::string line = "GET /acase/Desktop/testfile/copy.txt HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
+        std::string line = "GET ./cgi/cgi_tester HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
         std::string NumCode = "200";
         parse.parsRequest(line, servers[0], NumCode);
+		// std::cout << parse.getForCgi() << std::endl;
     if (parse.getForCgi() == true)
     {
-        std::cout << "наш cgi еще не готов:(\nМы не можем выполнить ваш запрос, но мы обязательно его доделаем, приходите позже!\n";
+        // std::cout << "наш cgi еще не готов:(\nМы не можем выполнить ваш запрос, но мы обязательно его доделаем, приходите позже!\n";
         return(0);
     }
 
 	/* ----------------------- Просто тестирую работу cgi ----------------------- */
-	Cgi cgi(parse, "cgi/test_bin");
+		Cgi cgi(parse, "cgi/cgi_tester");
 	/* -------------------------------------------------------------------------- */
 
     std::string res = response.creatRespons(parse,parse.getCode());
