@@ -49,10 +49,10 @@ char **Cgi::createEnv(ParseRequest & request) const
 	env_map["REMOTE_IDENT"] = headers["Authorization"];
 	env_map["REQUEST_METHOD"] = request.getMethod();
 	env_map["REQUEST_URI"] = request.getPath();
-	// std::size_t index = request.getPath().find('/');
-	// if (index != std::string::npos)
-	// 	env_map["SCRIPT_NAME"] = request.getPath().substr(index + 1);
-	// else
+	std::size_t index = request.getPath().find('/');
+	if (index != std::string::npos)
+		env_map["SCRIPT_NAME"] = request.getPath().substr(index + 1);
+	else
 		env_map["SCRIPT_NAME"] = request.getPath();
 	std::cout << env_map["SCRIPT_NAME"] << std::endl;
 	env_map["SCRIPT_FILENAME"] = request.getPath();
@@ -60,6 +60,7 @@ char **Cgi::createEnv(ParseRequest & request) const
 	env_map["SERVER_PORT"] = request.getServerPort();
   	env_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
   	env_map["SERVER_SOFTWARE"]   = "web_server/1.0";
+
 	for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
 	{
 		std::string head(it->first);
@@ -141,7 +142,7 @@ void Cgi::execCgi(ParseRequest & request)
 	int status = 0;
 	this->_request_fd = open(this->_request_file.c_str(), O_RDWR);
 	this->_response_fd = open(this->_response_file.c_str(), O_RDWR);
-	printf("request = %d\nresponse = %d\n", this->_request_fd, this->_response_fd);
+	// printf("request = %d\nresponse = %d\n", this->_request_fd, this->_response_fd);
 	if (this->_response_fd < 0 || this->_request_fd < 0)
 		throw Cgi::OpenFileError();
 	pid = fork();
@@ -159,8 +160,8 @@ void Cgi::execCgi(ParseRequest & request)
 		close(this->_response_fd);
 		exit(status);
 	}
-	waitpid(pid, &status, 0);
-	std::string result = readData(this->_response_file);
+	wait(&status);
+	// std::string result = readData(this->_response_file);
 	std::cout << WEXITSTATUS(status) << std::endl;
 	freeMat(av);
 	freeMat(ev);
