@@ -14,10 +14,15 @@ void freeMat(char **mat)
 	}
 }
 
-Cgi::Cgi(ParseRequest &request, std::string const & cgi_path) : _cgi_path(cgi_path), _request_file("request.cache"),
+Cgi::Cgi(ParseRequest &request, std::string const & cgi_path, char **ev) : _cgi_path(cgi_path), _request_file("request.cache"),
 	_response_file("response.cache")
 {
-	execCgi(request);
+	execCgi(request, ev);
+}
+
+std::string	Cgi::getCgiResponse(void) const
+{
+	return this->_cgi_response;
 }
 
 /* --------- Create arguments and environment variables for our cgi --------- */
@@ -30,20 +35,26 @@ char **Cgi::createArgv(void) const
 	return argv;
 }
 
-char **Cgi::createEnv(ParseRequest & request) const
+char **Cgi::createEnv(ParseRequest & request, char **ev) const
 {
 	char pwd[1024];
 	std::map<std::string, std::string> env_map;
 	std::map<std::string, std::string> headers(request.getHeading());
 
 	getcwd(pwd, 1024);
+	for(int i = 0; ev[i]; i++)
+	{
+		std::size_t equal = static_cast<std::string>(ev[i]).find("=");
+		env_map[static_cast<std::string>(ev[i]).substr(0, equal)] = static_cast<std::string>(ev[i]).substr(equal, static_cast<std::string>(ev[i]).size());
+	}
 	env_map["AUTH_TYPE"] = headers.count("Authorization") != 0 ? headers["Authorization"] : "";
 	env_map["REDIRECT_STATUS"] = "200";
 	env_map["CONTENT_LENGTH"] = std::to_string(request.getBody().length());
 	env_map["CONTENT_TYPE"] = headers.count("Content-type") != 0 ? headers["Content-type"] : "";
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-	env_map["PATH_INFO"] = request.getPath();
+	env_map["REQUEST_TARGET"] = request.getPath();
 	env_map["PATH_TRANSLATED"] = pwd + env_map["PATH_INFO"];
+	env_map["PATH_INFO"] = request.getPath();
 	env_map["QUERY_STRING"] = "";
 	env_map["REMOTE_USER"] = headers["Authorization"];
 	env_map["REMOTE_IDENT"] = headers["Authorization"];
@@ -54,7 +65,6 @@ char **Cgi::createEnv(ParseRequest & request) const
 		env_map["SCRIPT_NAME"] = request.getPath().substr(index + 1);
 	else
 		env_map["SCRIPT_NAME"] = request.getPath();
-	std::cout << env_map["SCRIPT_NAME"] << std::endl;
 	env_map["SCRIPT_FILENAME"] = request.getPath();
 	env_map["SERVER_NAME"] = request.getServerName();
 	env_map["SERVER_PORT"] = request.getServerPort();
@@ -73,13 +83,8 @@ char **Cgi::createEnv(ParseRequest & request) const
 	try
 	{
 		int i = 0;
-		char **env = static_cast<char **>(malloc(sizeof(char *) * (env_map.size() + headers.size()) + 1));
+		char **env = static_cast<char **>(malloc(sizeof(char *) * env_map.size() + 1));
 		for (std::map<std::string, std::string>::iterator it = env_map.begin(); it != env_map.end(); it++)
-		{
-			env[i] = strdup(static_cast<std::string>(it->first + "=" + it->second).c_str());
-			i++;
-		}
-		for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
 		{
 			env[i] = strdup(static_cast<std::string>(it->first + "=" + it->second).c_str());
 			i++;
@@ -111,6 +116,7 @@ std::string	Cgi::readData(std::string const & file_name) const
 		while (std::getline(file, buf))
 		{
 			data.append(buf);
+			data.append("\n");
 		}
 	}
 	file.close();
@@ -128,9 +134,9 @@ void	Cgi::putData(const char *data, std::string const & file_name) const
 /* -------------------------------------------------------------------------- */
 
 /* ------ Function that execute cgi binary and got result for response ------ */
-void Cgi::execCgi(ParseRequest & request)
+void Cgi::execCgi(ParseRequest & request, char **main_env)
 {
-	char **ev = createEnv(request);
+	char **ev = createEnv(request, main_env);
 	char **av = createArgv();
 
 	if (ev == NULL || av == NULL)
@@ -162,10 +168,10 @@ void Cgi::execCgi(ParseRequest & request)
 	}
 	wait(&status);
 	// std::string result = readData(this->_response_file);
-	std::cout << WEXITSTATUS(status) << std::endl;
+	// std::cout << WEXITSTATUS(status) << std::endl;
 	freeMat(av);
 	freeMat(ev);
-	
+	this->_cgi_response = readData(this->_response_file);
 	/* ------ Дальше нужно обернуть всю инфу в response file в сам респонс ------ */
 }
 /* -------------------------------------------------------------------------- */

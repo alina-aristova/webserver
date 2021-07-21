@@ -324,13 +324,11 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
         this-> _code = "400";
         return BadRequest;
     }
-    std::cout << "Hello" << std::endl;
     print(this->_heading);
     if(!request.empty())
         this->_body = request;
     // if(this->_method == "GET")
     //     parsGet();  ///сделать функцию которая определяет запрос для cgi или нет 
-    std::cout << "World" << std::endl;
 
     return OK;
 }
