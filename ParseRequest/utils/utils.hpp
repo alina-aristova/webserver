@@ -7,49 +7,50 @@
  # include <algorithm>
  # include <exception>
 
-bool space(char c)
+inline bool space(char c)
 {
     return std::isspace(c);
 }
- 
-bool notspace(char c)
+
+inline bool notspace(char c)
 {
     return !std::isspace(c);
 }
 
-int del(int c)
+inline int del(int c)
 {
     if(c == '\r' || c == '\n')
         return(1);
     return(0);
 }
 
-bool delim(char c)
+inline bool delim(char c)
 {
     return del(c);
 }
-bool notdelim(char c)
+
+inline bool notdelim(char c)
 {
     return !del(c);
 }
 
-int checkColon(int c)
+inline int checkColon(int c)
 {
     if(c == ':')
         return(1);
     return(0);
 }
 
-bool colon(char c)
+inline bool colon(char c)
 {
     return checkColon(c);
 }
-bool notColon(char c)
+inline bool notColon(char c)
 {
     return !checkColon(c);
 }
 
-std::vector<std::string> split(const std::string& s)
+inline std::vector<std::string> split(const std::string& s)
 {
     typedef std::string::const_iterator iter;
     std::vector<std::string> res;
@@ -67,7 +68,7 @@ std::vector<std::string> split(const std::string& s)
     return res;
 }
 
-std::vector<std::string> catLine(const std::string& s)
+inline std::vector<std::string> catLine(const std::string& s)
 {
     typedef std::string::const_iterator iter;
     std::vector<std::string> res;
@@ -87,7 +88,7 @@ std::vector<std::string> catLine(const std::string& s)
     }
     return res;
 }
-std::vector<std::string> splitByColon(const std::string& s)
+inline std::vector<std::string> splitByColon(const std::string& s)
 {
     typedef std::string::const_iterator iter;
     std::vector<std::string> res;
@@ -109,35 +110,35 @@ std::vector<std::string> splitByColon(const std::string& s)
 }
 
 
-std::string& trim_left_in_place(std::string& str) {
+inline std::string& trim_left_in_place(std::string& str) {
     size_t i = 0;
     while(i < str.size() && isspace(str[i])) { ++i; };
     return str.erase(0, i);
 }
 
-std::string& trim_right_in_place(std::string& str) {
+inline std::string& trim_right_in_place(std::string& str) {
     size_t i = str.size();
     while(i > 0 && isspace(str[i - 1])) { --i; };
     return str.erase(i, str.size());
 }
 
-std::string& trim_in_place(std::string& str) {
+inline std::string& trim_in_place(std::string& str) {
     return trim_left_in_place(trim_right_in_place(str));
 }
 
-std::string trim_right(std::string str) {
+inline std::string trim_right(std::string str) {
     return trim_right_in_place(str);
 }
 
-std::string trim_left(std::string str) {
+inline std::string trim_left(std::string str) {
     return trim_left_in_place(str);
 }
 
-std::string trim(std::string str) {
+inline std::string trim(std::string str) {
     return trim_left_in_place(trim_right_in_place(str));
 }
 
-std::string getLine(std::string &request)
+inline std::string getLine(std::string &request)
 {
   size_t CRPos = request.find('\r');
   size_t LFPos = request.find('\n');

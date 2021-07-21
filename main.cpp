@@ -10,19 +10,38 @@
 # include <sys/select.h>
 # include <fcntl.h>
 # include <unistd.h>
+# include "config_parse/includes/Configuration.hpp"
 
 # define QLEN 5
 
 int main() {
+    Configuration *ourConfig = new Configuration("/Users/bannette/Desktop/config");
+    std::vector<Server> ourServers = ourConfig->getServers();
 
-    std::map<std::string, HostClass> HostMap;
-    HostMap["server"] = HostClass();
-    std::map<int, std::map<std::string, HostClass> > portServerMap;
-    portServerMap[8000] = HostMap;
+    std::map<std::string, Server *> HostMap;
+    std::vector<Server>::iterator hostMapBeginning = ourServers.begin();
+    for( ;hostMapBeginning != ourServers.end(); hostMapBeginning++) {
+        HostMap[hostMapBeginning->getHostName()] = &(*hostMapBeginning);
+    }
 
+    std::map<int, std::map<std::string, Server *> > portServerMap;
+    std::map<std::string, Server *>::iterator portServerMapBeginning = HostMap.begin();
+    for( ;portServerMapBeginning != HostMap.end(); portServerMapBeginning++) {
+        int port = portServerMapBeginning->second->getPort();
+        if (portServerMap.find(port) != portServerMap.end()) {
+            portServerMap[port][portServerMapBeginning->first] = portServerMapBeginning->second;
+        }
+        else {
+            std::map<std::string, Server *> tempMap;
+            tempMap[portServerMapBeginning->first] = portServerMapBeginning->second;
+            portServerMap[port] = tempMap;
+        }
+    }
+    
+    
     std::map<int, ConnectionClass> socketConnectionMap;
 
-    std::map<int, std::map<std::string, HostClass> > socketServerMap;
+    std::map<int, std::map<std::string, Server *> > socketServerMap;
 
     std::map<int, std::string> socketTypeMap;
 
@@ -30,7 +49,7 @@ int main() {
     FD_ZERO(&current_reading_sockets);
 
     int max_socket_fd = 0;
-    std::map<int, std::map<std::string, HostClass> >::iterator it = portServerMap.begin();
+    std::map<int, std::map<std::string, Server *> >::iterator it = portServerMap.begin();
     for( ; it != portServerMap.end(); it++) {
         int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
         if (socket_fd == -1) {

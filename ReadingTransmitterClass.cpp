@@ -1,8 +1,8 @@
 # include "ReadingTransmitterClass.hpp"
 
 ReadingTransmitterClass::ReadingTransmitterClass(int socket, std::string &responseStatus, ConnectionState &connectionState,
-std::string &writingBuffer, bool & closeConnection)
-: ATransmitterClass(socket, responseStatus, connectionState, writingBuffer, closeConnection) {
+std::string &writingBuffer, bool & closeConnection, std::map<std::string, Server *> availableHosts)
+: ATransmitterClass(socket, responseStatus, connectionState, writingBuffer, closeConnection), _availableHosts(availableHosts) {
     _readingBuffer = std::string("");
     _bufferToBeProcessed = std::string("");
     _host = std::string("default");
@@ -59,7 +59,7 @@ void ReadingTransmitterClass::_processingFirstLine() {
         return ;
     }
 
-    /// Проверяем, что на протокол соответствует пришедшему протоколу
+    /// Проверяем, что нужный протокол соответствует пришедшему протоколу
     if (firstLineParts[2] != "HTTP/1.1") {
         _connectionState = ERROR;
         _responseStatus = "505";
@@ -274,6 +274,25 @@ void ReadingTransmitterClass::_readingBody() {
         _chunkedEncodingReading(unchunkedPartLength);
 }
 
+Server *ReadingTransmitterClass::findRightHost() {
+    std::map<std::string, Server *>::iterator it;
+
+    /// Находим сервер с таким же названием
+    it = _availableHosts.find(_host);
+
+    /// Если такого сервера нет, то возвращаем первый имеющийся хост
+    if (it == _availableHosts.end())
+        it = _availableHosts.begin();
+    return (it->second);
+}
+
+void ReadingTransmitterClass::returnDefaultValues() {
+    _contentLength = 0;
+    _host = "default";
+    _bufferToBeProcessed = "";
+    _readingBodyFunType = CLASSIC;
+}
+
 void ReadingTransmitterClass::operate() {
     /// читаем в буффер
     _readIntoBuffer();
@@ -308,9 +327,15 @@ void ReadingTransmitterClass::operate() {
         std::cout << "--------------------------" << std::endl; // +
         std::cout << "хост - " << _host << std::endl; // +
         // находим нужного хоста
+//        Server *applicableHost = findRightHost();
+//
+//        std::cout << applicableHost->getHostName() << std::endl;
         // формируем ответ ошибки
+
         // возвращаем исходное значение полям класса
+        returnDefaultValues();
         // меняем статус
+        _connectionState = IS_WRITING_RESPONSE;
     }
     else if (_connectionState == IS_FORMING_RESPONSE) {
         std::cout << "статус " << _responseStatus << std::endl; // +
@@ -329,8 +354,14 @@ void ReadingTransmitterClass::operate() {
         std::cout << "--------------------------" << std::endl; // +
         std::cout << "хост - " << _host << std::endl; // +
         // находим нужного хоста
+        Server *applicableHost = findRightHost();
+
+        std::cout << applicableHost->getHostName() << std::endl; // +
         // формируем ответ
+
         // возвращаем исходное значение полей класса
+        returnDefaultValues();
         // меняем статус
+        _connectionState = IS_WRITING_RESPONSE;
     }
 }
