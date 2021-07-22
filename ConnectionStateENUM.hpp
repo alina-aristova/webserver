@@ -7,7 +7,8 @@ enum ConnectionState {
     IS_READING_BODY = 2,
     IS_FORMING_RESPONSE = 3,
     IS_WRITING_RESPONSE = 4,
-    ERROR = 4
+    ERROR_WHILE_READING = 5,
+    CLOSE = 6
 };
 
 #endif

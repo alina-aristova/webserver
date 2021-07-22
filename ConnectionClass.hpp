@@ -3,7 +3,9 @@
 
 # include "ReadingTransmitterClass.hpp"
 # include "WritingTransmitterClass.hpp"
-# include "HostClass.hpp"
+# include "config_parse/includes/Configuration.hpp"
+# include "config_parse/includes/Server.hpp"
+# include "config_parse/includes/Location.hpp"
 # include <iostream>
 # include <map>
 # include "ConnectionStateENUM.hpp"
@@ -15,11 +17,13 @@ private:
     std::string _responseStatus;
     std::string _writingBuff;
     ConnectionState _stateOfConnection;
-    std::map<std::string, HostClass> _hosts;
+    std::map<std::string, Server *> _hosts;
     WritingTransmitterClass *_writer;
     ReadingTransmitterClass *_reader;
 public:
-    ConnectionClass(int socket, std::map<std::string, HostClass> hosts);
+    ConnectionClass(int socket, std::map<std::string, Server *> hosts);
+    ConnectionState getConnectionStatus();
+    void receive();
     void transmit();
 };
 

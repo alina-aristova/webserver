@@ -1,8 +1,8 @@
 # include "ReadingTransmitterClass.hpp"
 
 ReadingTransmitterClass::ReadingTransmitterClass(int socket, std::string &responseStatus, ConnectionState &connectionState,
-std::string &writingBuffer, bool & closeConnection)
-: ATransmitterClass(socket, responseStatus, connectionState, writingBuffer, closeConnection) {
+std::string &writingBuffer, bool & closeConnection, std::map<std::string, Server *> availableHosts)
+: ATransmitterClass(socket, responseStatus, connectionState, writingBuffer, closeConnection), _availableHosts(availableHosts) {
     _readingBuffer = std::string("");
     _bufferToBeProcessed = std::string("");
     _host = std::string("default");
@@ -19,9 +19,17 @@ void ReadingTransmitterClass::_readIntoBuffer() {
     int bytesRead;
     bzero(temporaryBuffer, BUFF_SIZE);
     bytesRead = read(_socket, temporaryBuffer, BUFF_SIZE);
-    if (bytesRead <= 0) {
-        _connectionState = ERROR;
+    if (bytesRead == 0) {
+
+        close(_socket);
+        std::cout << "+" << std::endl;
+        _connectionState = CLOSE;
+        return ;
+    }
+    if (bytesRead < 0) {
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "500";
+//        std::cout << _socket << std::endl;
         size_t endOfLine = _readingBuffer.find("\r\n");
         if (endOfLine == std::string::npos)
             _readingBuffer = "";
@@ -40,7 +48,7 @@ void ReadingTransmitterClass::_processingFirstLine() {
 
     /// Проверяем, что в первой строке три составляющих
     if (firstLineParts.size() != 3) {
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "400";
         _readingBuffer = _readingBuffer.substr(length + 2);
         return ;
@@ -53,15 +61,15 @@ void ReadingTransmitterClass::_processingFirstLine() {
         firstLineParts[0] != "post" &&
         firstLineParts[0] != "DELETE" &&
         firstLineParts[0] != "delete") {
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "400";
         _readingBuffer = _readingBuffer.substr(length + 2);
         return ;
     }
 
-    /// Проверяем, что на протокол соответствует пришедшему протоколу
+    /// Проверяем, что нужный протокол соответствует пришедшему протоколу
     if (firstLineParts[2] != "HTTP/1.1") {
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "505";
         _readingBuffer = _readingBuffer.substr(length + 2);
         return ;
@@ -77,7 +85,7 @@ void ReadingTransmitterClass::_processingHeaders() {
     /// Проверяем наличие хоста и находим хост
     size_t hostBeginning = _readingBuffer.find("Host:");
     if (hostBeginning == std::string::npos) {
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "400";
         size_t headersEnd = 4 + _readingBuffer.find("\r\n\r\n");
         _readingBuffer = _readingBuffer.substr(headersEnd);
@@ -128,7 +136,7 @@ void ReadingTransmitterClass::_processingHeaders() {
             _contentLength = lengthInInt;
         } catch (std::exception & ex) {
             _responseStatus = "400";
-            _connectionState = ERROR;
+            _connectionState = ERROR_WHILE_READING;
             size_t headersEnd = 4 + _readingBuffer.find("\r\n\r\n");
             _readingBuffer = _readingBuffer.substr(headersEnd);
             return ;
@@ -251,7 +259,7 @@ void ReadingTransmitterClass::_chunkedEncodingReading(int & unchunkedPartLength)
         unchunkedPartLength = 0;
 
         /// Меняем статус на ОШИБКУ
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
 
         /// Указываем статус ошибки
         _responseStatus = "402";
@@ -274,6 +282,25 @@ void ReadingTransmitterClass::_readingBody() {
         _chunkedEncodingReading(unchunkedPartLength);
 }
 
+Server *ReadingTransmitterClass::findRightHost() {
+    std::map<std::string, Server *>::iterator it;
+
+    /// Находим сервер с таким же названием
+    it = _availableHosts.find(_host);
+
+    /// Если такого сервера нет, то возвращаем первый имеющийся хост
+    if (it == _availableHosts.end())
+        it = _availableHosts.begin();
+    return (it->second);
+}
+
+void ReadingTransmitterClass::returnDefaultValues() {
+    _contentLength = 0;
+    _host = "default";
+    _bufferToBeProcessed = "";
+    _readingBodyFunType = CLASSIC;
+}
+
 void ReadingTransmitterClass::operate() {
     /// читаем в буффер
     _readIntoBuffer();
@@ -291,46 +318,66 @@ void ReadingTransmitterClass::operate() {
         _readingBody();
 
     /// Обрабатываем ошибки
-    if (_connectionState == ERROR) {
-        std::cout << "статус " << _responseStatus << std::endl; // +
-        std::cout << "------------------------" << std::endl; // +
-        std::cout << "уходит в обработчик" << std::endl; // +
-        std::cout << _bufferToBeProcessed << std::endl; // +
-        std::cout << "-------------------------" << std::endl; // +
-        std::cout << "остается" << std::endl; // +
-        std::cout << _readingBuffer << std::endl; // +
-        std::cout << "-------------------------" << std::endl; // +
-        std::cout << "соединение будет "; // +
-        if (_closeConnection) // +
-            std::cout << "закрыто" << std::endl; // +
-        else // +
-            std::cout << "поддержано" << std::endl; // +
-        std::cout << "--------------------------" << std::endl; // +
-        std::cout << "хост - " << _host << std::endl; // +
+    if (_connectionState == ERROR_WHILE_READING) {
+//        std::cout << "статус " << _responseStatus << std::endl; // +
+//        std::cout << "------------------------" << std::endl; // +
+//        std::cout << "уходит в обработчик" << std::endl; // +
+//        std::cout << _bufferToBeProcessed << std::endl; // +
+//        std::cout << "-------------------------" << std::endl; // +
+//        std::cout << "остается" << std::endl; // +
+//        std::cout << _readingBuffer << std::endl; // +
+//        std::cout << "-------------------------" << std::endl; // +
+//        std::cout << "соединение будет "; // +
+//        if (_closeConnection) // +
+//            std::cout << "закрыто" << std::endl; // +
+//        else // +
+//            std::cout << "поддержано" << std::endl; // +
+//        std::cout << "--------------------------" << std::endl; // +
+//        std::cout << "хост - " << _host << std::endl; // +
         // находим нужного хоста
+        Server *applicableHost = findRightHost();
+
+//        std::cout << applicableHost->getHostName() << std::endl;
         // формируем ответ ошибки
+        ParseRequest requestParser = ParseRequest();
+        requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
+        Response response = Response();
+        std::string numErrorStr = requestParser.getCode();
+        _writingBuffer = response.creatRespons(requestParser, numErrorStr);
         // возвращаем исходное значение полям класса
+        returnDefaultValues();
         // меняем статус
+        _connectionState = IS_WRITING_RESPONSE;
     }
     else if (_connectionState == IS_FORMING_RESPONSE) {
-        std::cout << "статус " << _responseStatus << std::endl; // +
-        std::cout << "------------------------" << std::endl; // +
-        std::cout << "уходит в обработчик" << std::endl; // +
-        std::cout << _bufferToBeProcessed << std::endl; // +
-        std::cout << "-------------------------" << std::endl; // +
-        std::cout << "остается" << std::endl; // +
-        std::cout << _readingBuffer << std::endl; // +
-        std::cout << "-------------------------" << std::endl; // +
-        std::cout << "соединение будет "; // +
-        if (_closeConnection) // +
-            std::cout << "закрыто" << std::endl; // +
-        else // +
-            std::cout << "поддержано" << std::endl; // +
-        std::cout << "--------------------------" << std::endl; // +
-        std::cout << "хост - " << _host << std::endl; // +
+//        std::cout << "статус " << _responseStatus << std::endl; // +
+//        std::cout << "------------------------" << std::endl; // +
+//        std::cout << "уходит в обработчик" << std::endl; // +
+//        std::cout << _bufferToBeProcessed << std::endl; // +
+//        std::cout << "-------------------------" << std::endl; // +
+//        std::cout << "остается" << std::endl; // +
+//        std::cout << _readingBuffer << std::endl; // +
+//        std::cout << "-------------------------" << std::endl; // +
+//        std::cout << "соединение будет "; // +
+//        if (_closeConnection) // +
+//            std::cout << "закрыто" << std::endl; // +
+//        else // +
+//            std::cout << "поддержано" << std::endl; // +
+//        std::cout << "--------------------------" << std::endl; // +
+//        std::cout << "хост - " << _host << std::endl; // +
         // находим нужного хоста
+        Server *applicableHost = findRightHost();
+
+//        std::cout << applicableHost->getHostName() << std::endl; // +
         // формируем ответ
+        ParseRequest requestParser = ParseRequest();
+        requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
+        Response response = Response();
+        std::string numErrorStr = requestParser.getCode();
+        _writingBuffer = response.creatRespons(requestParser, numErrorStr);
         // возвращаем исходное значение полей класса
+        returnDefaultValues();
         // меняем статус
+        _connectionState = IS_WRITING_RESPONSE;
     }
 }

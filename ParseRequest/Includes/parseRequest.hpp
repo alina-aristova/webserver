@@ -12,6 +12,12 @@
  # include <iostream>
  # include <sstream>
  # include <iomanip>
+ # include <iostream>
+ # include <fstream>
+ # include <string>
+ # include <sys/stat.h>
+ # include "../../config_parse/includes/Configuration.hpp"
+
  # define String std::string
  # define Map std::map<std::string,std::string>
  # define Vector std::vector<std::string>
@@ -96,40 +102,80 @@
 enum error
 {
     BadRequest = 400,
-    OK = 200
+    OK = 200,
+    IS_DIR = 42,
+    NotFound = 404
 };
- 
+class Server;
+class Location;
 class ParseRequest
 {
     private:
 
         String      _method;
+        String      _code;
         String      _path;
         String      _versProtocol;
-        String      _body;
-        Map         _heading;
-        Vector      Keys;
-        int         _bodyLength;
+        String      _body; //тело в post
+        String      _contentType; 
+        Map         _heading; //словарь заголовков
+        Map         _types; // доступные расширение файла
+        Vector      _keys; // доступные заголовки
+        int         _bodyLength; // длина тела для post
+        String      _str; // буфер в который считали данные из файла
+        String      _strPath; // путь
+        unsigned long _sizeFile;
+
+       std::map<std::string,std::string>      _errorFilePath;
+        String      _indexingFilePath;
+        String      _rootDirectory;
+        std::map<std::string, Location> _locations;
+        std::map<std::string, std::string> _cgi;
+        std::vector<std::string>  _listOfAllowedMethods;
+
+        bool _forCgi;
     public: //  private?
         ParseRequest();
         //~ParseRequest();
         //==================get/set================
-        const String   &getMethod() const;
-        const String   &getPath() const;
-        const String   &getVersProtocol() const;
-        const String   &getBody() const;
-        const Map       &getMap() const;
-        int             getBodyLength() const;
+        const String            &getMethod() const;
+        const String            &getPath() const;
+        const String            &getVersProtocol() const;
+        const String            &getBody() const;
+        const String            &getStr() const;
+        const String            &getStrPath() const;
+        const String            &getContentType() const;
+        const Map               &getMap() const;
+        const String            &getCode() const;
+        int                     getBodyLength() const;
+        const unsigned long     &getSizeFile() const;
+        const std::string       & getRootDirectory() const;
+        const std::string       & getIndexingFilePath() const;
+        const std::map<std::string,std::string>   &getErrorFilePath() const;
+        bool                     getForCgi() const;
+        
+        const  Map   &getType()const;
         //===========Parsing methods===============
-        error  parsingStartLine(String &line);
-        error  parsingBody(String &line);
-        error  parsingHeading(String res);
-        error  parsRequest(String request);
-        error  parsBody(String request);
-        error   parsBodyLength(std::string &request);
+        error                 parsingStartLine(String &line);
+        error                 parsingBody(String &line);
+        error                 parsingHeading(String res);
+        error                 parsRequest(String request, Server host,String NumCode);
+        error                 parsBody(String request);
+        error                 parsBodyLength(std::string &request);
         std::vector<String>   splitValues(std::string &value);
-        void    addArrKeys(void);
-        bool checkKey(String value);
+        void                  addArrKeys(void);
+        void                  addTypes(void);
+        bool                  checkKey(String value);
+        void                  findType(std::string fn);
+        void                  findPath(std::string root);
+        error                 fileToString(std::string root);
+        error                 dirToString(std::string indexFile);
+        void                  findNewPath(std::string indexFile);
+        void                  parsGet();
+        error                 findLocation();
+        error                 typeDefinitionMethod();
+        error                 requestForNotCgi();
+        error                 requestForCgi();
 };
 
 #endif

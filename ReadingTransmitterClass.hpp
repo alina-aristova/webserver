@@ -3,6 +3,7 @@
 
 # include "ATransmitterClass.hpp"
 # include "ReadingBodyFunctionENUM.hpp"
+# include "config_parse/includes/Server.hpp"
 
 class ReadingTransmitterClass : public ATransmitterClass {
 private:
@@ -11,6 +12,7 @@ private:
     std::string _host;
     std::string _readingBuffer;
     std::string _bufferToBeProcessed;
+    std::map<std::string, Server *> _availableHosts;
     // ---------------------------- основные вспомогательные функции ------------------------------------------- //
     void _readIntoBuffer();
     void _processingFirstLine();
@@ -20,8 +22,13 @@ private:
     void _classicReading();
     void _contentLengthReading();
     void _chunkedEncodingReading(int & unchunkedPartLength);
+    // ----------------------------- поиск правильного хоста -------------------------------------------- //
+    Server   *findRightHost();
+    // ----------------------------- возвращаем дефолтные значния полей ----------------------------------------- //
+    void    returnDefaultValues();
 public:
-    ReadingTransmitterClass(int socket, std::string & responseStatus, ConnectionState & connectionState, std::string & writingBuffer, bool & closeConnection);
+    ReadingTransmitterClass(int socket, std::string & responseStatus, ConnectionState & connectionState,
+        std::string & writingBuffer, bool & closeConnection, std::map<std::string, Server *> availableHosts);
     void operate();
     virtual ~ReadingTransmitterClass();
     const std::string & getReadingBuffer() const;
