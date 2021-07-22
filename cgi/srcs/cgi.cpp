@@ -170,7 +170,7 @@ void Cgi::execCgi(ParseRequest & request, char **main_env, std::string max_body_
 		std::size_t found = this->_cgi_response.find("Status:");
 		this->_cgi_response.replace(found, std::strlen("Status:"), "HTTP/1.1");
 		found = this->_cgi_response.find("\r\n\r\n");
-		std::string content_len = "\nContent-lenth: ";
+		std::string content_len = "\nContent-Length: ";
 		std::string body = this->_cgi_response.substr(this->_cgi_response.find("\r\n\r\n") + 4);
 		if (body.size() > static_cast<size_t>(std::stoi(max_body_size)) * 1024 * 1024)
 			throw BadHttpRequestException();
