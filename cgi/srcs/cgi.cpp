@@ -14,10 +14,10 @@ void freeMat(char **mat)
 	}
 }
 
-Cgi::Cgi(ParseRequest &request, std::string const & cgi_path, char **ev) : _cgi_path(cgi_path), _request_file("request.cache"),
-	_response_file("response.cache")
+Cgi::Cgi(ParseRequest &request, std::string const & cgi_path, char **ev, std::string max_body_size) : _cgi_path(cgi_path),
+ _request_file("request.cache"), _response_file("response.cache")
 {
-	execCgi(request, ev);
+	execCgi(request, ev, max_body_size);
 }
 
 std::string	Cgi::getCgiResponse(void) const
@@ -90,10 +90,6 @@ char **Cgi::createEnv(ParseRequest & request, char **ev) const
 			i++;
 		}
 		env[i] = nullptr;
-		// for (int i = 0; env[i]; i++)
-		// {
-		// 	std::cout << env[i] << std::endl;
-		// }
 		return env;
 	}
 	catch(const std::exception& e)
@@ -134,7 +130,7 @@ void	Cgi::putData(const char *data, std::string const & file_name) const
 /* -------------------------------------------------------------------------- */
 
 /* ------ Function that execute cgi binary and got result for response ------ */
-void Cgi::execCgi(ParseRequest & request, char **main_env)
+void Cgi::execCgi(ParseRequest & request, char **main_env, std::string max_body_size)
 {
 	char **ev = createEnv(request, main_env);
 	char **av = createArgv();
@@ -148,7 +144,6 @@ void Cgi::execCgi(ParseRequest & request, char **main_env)
 	int status = 0;
 	this->_request_fd = open(this->_request_file.c_str(), O_RDWR);
 	this->_response_fd = open(this->_response_file.c_str(), O_RDWR);
-	// printf("request = %d\nresponse = %d\n", this->_request_fd, this->_response_fd);
 	if (this->_response_fd < 0 || this->_request_fd < 0)
 		throw Cgi::OpenFileError();
 	pid = fork();
@@ -167,11 +162,24 @@ void Cgi::execCgi(ParseRequest & request, char **main_env)
 		exit(status);
 	}
 	wait(&status);
-	// std::string result = readData(this->_response_file);
-	// std::cout << WEXITSTATUS(status) << std::endl;
 	freeMat(av);
 	freeMat(ev);
-	this->_cgi_response = readData(this->_response_file);
-	/* ------ Дальше нужно обернуть всю инфу в response file в сам респонс ------ */
+	try
+	{
+		this->_cgi_response = readData(this->_response_file);
+		std::size_t found = this->_cgi_response.find("Status:");
+		this->_cgi_response.replace(found, std::strlen("Status:"), "HTTP/1.1");
+		found = this->_cgi_response.find("\r\n\r\n");
+		std::string content_len = "\nContent-lenth: ";
+		std::string body = this->_cgi_response.substr(this->_cgi_response.find("\r\n\r\n") + 4);
+		if (body.size() > static_cast<size_t>(std::stoi(max_body_size)) * 1024 * 1024)
+			throw BadHttpRequestException();
+		content_len += std::to_string(body.length()) + "\r\n\r\n";
+		this->_cgi_response.replace(found, std::strlen("\r\n\r\n"), content_len);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
 }
 /* -------------------------------------------------------------------------- */

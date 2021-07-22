@@ -17,11 +17,11 @@ class Cgi
 		char	**createEnv(ParseRequest &request, char **ev) const;
 		std::string	readData(std::string const & file_name) const;
 		void	putData(const char *data, std::string const & file_name) const;
-		void	execCgi(ParseRequest &request, char **ev);
+		void	execCgi(ParseRequest &request, char **ev, std::string max_body_size);
 		Cgi();
 	
 	public:
-		Cgi(ParseRequest &request, std::string const & cgi_path, char **ev);
+		Cgi(ParseRequest &request, std::string const & cgi_path, char **ev, std::string max_body_size);
 		~Cgi() {}
 
 		std::string getCgiResponse(void) const;
@@ -31,6 +31,13 @@ class Cgi
 			const char *what() const throw()
 			{
 				return "Can't open file!";
+			}
+		};
+		class BadHttpRequestException : public std::exception
+		{
+			const char *what() const throw()
+			{
+				return "Request Entity Too Large";
 			}
 		};
 };

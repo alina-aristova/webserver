@@ -21,14 +21,14 @@ int main(int ac, char **av, char **ev)
         ParseRequest parse;    
         Response  response;
 		std::string res;
-        std::string line = "POST /cgi HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
+        std::string line = "POST /cgi HTTP/1.1\r\nHost: bannette\r\nContent-length: 16\r\n\r\n123456789012\r\n\r\n";
         std::string NumCode = "200";
         parse.parsRequest(line, servers[0], NumCode);
 		std::cout << parse.getBody() << std::endl;
     if (parse.getForCgi() == false)
     {
 		/* ----------------------- Просто тестирую работу cgi ----------------------- */
-		Cgi cgi(parse, "cgi/cgi_tester", ev);
+		Cgi cgi(parse, "cgi/cgi_tester", ev, servers[0].getLocations()[parse.getPath()].getMaxBodySize());
 		/* -------------------------------------------------------------------------- */
 		res = cgi.getCgiResponse();
 		// res = response.creatRespons(parse, parse.getCode(), cgi.getCgiResponse());
