@@ -22,6 +22,11 @@ int main() {
     std::map<std::string, Server *> HostMap;
     std::vector<Server>::iterator hostMapBeginning = ourServers.begin();
     for( ;hostMapBeginning != ourServers.end(); hostMapBeginning++) {
+        std::map<std::string, Server *>::iterator currentHost = HostMap.find(hostMapBeginning->getHostName());
+        if (currentHost != HostMap.end() && currentHost->second->getPort() == hostMapBeginning->getPort()) {
+            std::cout << "Syntax Error!" << std::endl;
+            return (0);
+        }
         HostMap[hostMapBeginning->getHostName()] = &(*hostMapBeginning);
     }
 
@@ -38,8 +43,8 @@ int main() {
             portServerMap[port] = tempMap;
         }
     }
-    
-    
+
+
     std::map<int, ConnectionClass> socketConnectionMap;
 
     std::map<int, std::map<std::string, Server *> > socketServerMap;

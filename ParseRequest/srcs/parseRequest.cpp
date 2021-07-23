@@ -1,4 +1,4 @@
-#include "../includes/parseRequest.hpp"
+#include "../Includes/parseRequest.hpp"
 #include "../utils/utils.hpp"
 ParseRequest::ParseRequest() : _bodyLength(0) {}
 

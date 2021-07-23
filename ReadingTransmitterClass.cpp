@@ -20,9 +20,7 @@ void ReadingTransmitterClass::_readIntoBuffer() {
     bzero(temporaryBuffer, BUFF_SIZE);
     bytesRead = read(_socket, temporaryBuffer, BUFF_SIZE);
     if (bytesRead == 0) {
-
         close(_socket);
-        std::cout << "+" << std::endl;
         _connectionState = CLOSE;
         return ;
     }
@@ -37,7 +35,8 @@ void ReadingTransmitterClass::_readIntoBuffer() {
             _readingBuffer = _readingBuffer.substr(endOfLine + 2);
         return ;
     }
-    _readingBuffer += std::string(temporaryBuffer);
+    _readingBuffer += std::string(temporaryBuffer, bytesRead);
+
 }
 
 void ReadingTransmitterClass::_processingFirstLine() {
@@ -180,6 +179,7 @@ void ReadingTransmitterClass::_contentLengthReading() {
     /// Находим длину запроса, понадобится для обработки
     size_t totalLengthOfRequest = _readingBuffer.find("\r\n\r\n") + 4 + _contentLength;
 
+    std::cout << totalLengthOfRequest << " " << _readingBuffer.size() << std::endl;
     /// Проверяем настал ли момент начинать обработку текущего запроса
     if (totalLengthOfRequest > _readingBuffer.size())
         return ;
@@ -319,21 +319,21 @@ void ReadingTransmitterClass::operate() {
 
     /// Обрабатываем ошибки
     if (_connectionState == ERROR_WHILE_READING) {
-//        std::cout << "статус " << _responseStatus << std::endl; // +
-//        std::cout << "------------------------" << std::endl; // +
-//        std::cout << "уходит в обработчик" << std::endl; // +
-//        std::cout << _bufferToBeProcessed << std::endl; // +
-//        std::cout << "-------------------------" << std::endl; // +
-//        std::cout << "остается" << std::endl; // +
-//        std::cout << _readingBuffer << std::endl; // +
-//        std::cout << "-------------------------" << std::endl; // +
-//        std::cout << "соединение будет "; // +
-//        if (_closeConnection) // +
-//            std::cout << "закрыто" << std::endl; // +
-//        else // +
-//            std::cout << "поддержано" << std::endl; // +
-//        std::cout << "--------------------------" << std::endl; // +
-//        std::cout << "хост - " << _host << std::endl; // +
+        std::cout << "статус " << _responseStatus << std::endl; // +
+        std::cout << "------------------------" << std::endl; // +
+        std::cout << "уходит в обработчик" << std::endl; // +
+        std::cout << _bufferToBeProcessed << std::endl; // +
+        std::cout << "-------------------------" << std::endl; // +
+        std::cout << "остается" << std::endl; // +
+        std::cout << _readingBuffer << std::endl; // +
+        std::cout << "-------------------------" << std::endl; // +
+        std::cout << "соединение будет "; // +
+        if (_closeConnection) // +
+            std::cout << "закрыто" << std::endl; // +
+        else // +
+            std::cout << "поддержано" << std::endl; // +
+        std::cout << "--------------------------" << std::endl; // +
+        std::cout << "хост - " << _host << std::endl; // +
         // находим нужного хоста
         Server *applicableHost = findRightHost();
 
@@ -343,6 +343,8 @@ void ReadingTransmitterClass::operate() {
         requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
         Response response = Response();
         std::string numErrorStr = requestParser.getCode();
+        if (numErrorStr == "400")
+            _closeConnection = true;
         _writingBuffer = response.creatRespons(requestParser, numErrorStr);
         // возвращаем исходное значение полям класса
         returnDefaultValues();
@@ -350,21 +352,21 @@ void ReadingTransmitterClass::operate() {
         _connectionState = IS_WRITING_RESPONSE;
     }
     else if (_connectionState == IS_FORMING_RESPONSE) {
-//        std::cout << "статус " << _responseStatus << std::endl; // +
-//        std::cout << "------------------------" << std::endl; // +
-//        std::cout << "уходит в обработчик" << std::endl; // +
-//        std::cout << _bufferToBeProcessed << std::endl; // +
-//        std::cout << "-------------------------" << std::endl; // +
-//        std::cout << "остается" << std::endl; // +
-//        std::cout << _readingBuffer << std::endl; // +
-//        std::cout << "-------------------------" << std::endl; // +
-//        std::cout << "соединение будет "; // +
-//        if (_closeConnection) // +
-//            std::cout << "закрыто" << std::endl; // +
-//        else // +
-//            std::cout << "поддержано" << std::endl; // +
-//        std::cout << "--------------------------" << std::endl; // +
-//        std::cout << "хост - " << _host << std::endl; // +
+        std::cout << "статус " << _responseStatus << std::endl; // +
+        std::cout << "------------------------" << std::endl; // +
+        std::cout << "уходит в обработчик" << std::endl; // +
+        std::cout << _bufferToBeProcessed << std::endl; // +
+        std::cout << "-------------------------" << std::endl; // +
+        std::cout << "остается" << std::endl; // +
+        std::cout << _readingBuffer << std::endl; // +
+        std::cout << "-------------------------" << std::endl; // +
+        std::cout << "соединение будет "; // +
+        if (_closeConnection) // +
+            std::cout << "закрыто" << std::endl; // +
+        else // +
+            std::cout << "поддержано" << std::endl; // +
+        std::cout << "--------------------------" << std::endl; // +
+        std::cout << "хост - " << _host << std::endl; // +
         // находим нужного хоста
         Server *applicableHost = findRightHost();
 
@@ -372,8 +374,11 @@ void ReadingTransmitterClass::operate() {
         // формируем ответ
         ParseRequest requestParser = ParseRequest();
         requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
+
         Response response = Response();
         std::string numErrorStr = requestParser.getCode();
+        if (numErrorStr == "400")
+            _closeConnection = true;
         _writingBuffer = response.creatRespons(requestParser, numErrorStr);
         // возвращаем исходное значение полей класса
         returnDefaultValues();
