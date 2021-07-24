@@ -17,6 +17,7 @@ class Cgi
 		char	**createEnv(ParseRequest &request, char **ev) const;
 		std::string	readData(std::string const & file_name) const;
 		void	putData(const char *data, std::string const & file_name) const;
+		std::string makeHeader(std::string data, std::string const & max_body_size) const;
 		void	execCgi(ParseRequest &request, char **ev, std::string max_body_size);
 		Cgi();
 	
@@ -38,6 +39,13 @@ class Cgi
 			const char *what() const throw()
 			{
 				return "Request Entity Too Large";
+			}
+		};
+		class BadCGIException : public std::exception
+		{
+			const char *what() const throw()
+			{
+				return "CGI error";
 			}
 		};
 };

@@ -28,7 +28,7 @@ int main(int ac, char **av, char **ev)
 		if (parse.getForCgi() == false)
 		{
 			/* ----------------------- Просто тестирую работу cgi ----------------------- */
-			Cgi cgi(parse, "cgi/cgi_tester", ev, servers[0].getLocations()[parse.getPath()].getMaxBodySize());
+			Cgi cgi(parse, "cgi/test_bin", ev, servers[0].getLocations()[parse.getPath()].getMaxBodySize());
 			/* -------------------------------------------------------------------------- */
 			res = cgi.getCgiResponse();
 			// res = response.creatRespons(parse, parse.getCode(), cgi.getCgiResponse());

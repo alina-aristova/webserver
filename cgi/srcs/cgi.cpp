@@ -127,6 +127,27 @@ void	Cgi::putData(const char *data, std::string const & file_name) const
 		file << data;
 	file.close();
 }
+
+std::string Cgi::makeHeader(std::string data, std::string const & max_body_size) const
+{
+	std::size_t found;
+	std::string content_len = "\nContent-Length: ";
+	
+	if (data.find("Content-Type:") == std::string::npos)
+		throw BadCGIException();
+	if ((found = data.find("Status:")) != std::string::npos)
+		data.replace(found, std::strlen("Status:"), "HTTP/1.1");
+	else
+		data.insert(0, "HTTP/1.1 200 OK\n");
+	found = data.find("\r\n\r\n");
+	std::string body = data.substr(data.find("\r\n\r\n") + 4);
+	if (body.size() > static_cast<size_t>(std::stoi(max_body_size)) * 1024 * 1024)
+		throw BadHttpRequestException();
+	content_len += std::to_string(body.length()) + "\r\n\r\n";
+	data.replace(found, std::strlen("\r\n\r\n"), content_len);
+
+	return data;
+}
 /* -------------------------------------------------------------------------- */
 
 /* ------ Function that execute cgi binary and got result for response ------ */
@@ -166,16 +187,10 @@ void Cgi::execCgi(ParseRequest & request, char **main_env, std::string max_body_
 	freeMat(ev);
 	try
 	{
-		this->_cgi_response = readData(this->_response_file);
-		std::size_t found = this->_cgi_response.find("Status:");
-		this->_cgi_response.replace(found, std::strlen("Status:"), "HTTP/1.1");
-		found = this->_cgi_response.find("\r\n\r\n");
-		std::string content_len = "\nContent-Length: ";
-		std::string body = this->_cgi_response.substr(this->_cgi_response.find("\r\n\r\n") + 4);
-		if (body.size() > static_cast<size_t>(std::stoi(max_body_size)) * 1024 * 1024)
-			throw BadHttpRequestException();
-		content_len += std::to_string(body.length()) + "\r\n\r\n";
-		this->_cgi_response.replace(found, std::strlen("\r\n\r\n"), content_len);
+		if (WEXITSTATUS(status) != 0)
+			throw BadCGIException();
+		std::string data = readData(this->_response_file);
+		this->_cgi_response = makeHeader(data, max_body_size);
 	}
 	catch(const std::exception& e)
 	{
