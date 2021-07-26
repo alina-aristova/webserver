@@ -37,6 +37,7 @@ class Location
 		std::string getRootDirectory(void) const {return _rootDirectory;}
 		std::string getIndexingFilePath(void) const {return _indexingFilePath;}
 		std::string		getStorageDirectory(void) const {return _storageDirectory;}
+		std::string	getMaxBodySize(void) const {return _clientMaxBodySize;}
 		std::vector<std::string>  getAllowedMethods(void) const {return _allowedMethods;}
 		std::map<std::string, std::string> getCgi(void) const {return _cgi;}
 

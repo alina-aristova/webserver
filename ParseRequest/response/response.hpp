@@ -48,7 +48,7 @@ class Response
         const int               &getINumError() const;
         const unsigned long     &getIFileLength() const;
         //===========Parsing methods===============
-        String                  creatRespons(ParseRequest &Request, std::string numError);
+        String                  creatRespons(ParseRequest &Request, std::string numError, std::string result);
         String                  descriptionError(std::string numError);
         String                  getResponse(std::string Method, std::string numError);
         int                     findFile(std::string NewPath );
