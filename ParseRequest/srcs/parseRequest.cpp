@@ -22,7 +22,11 @@ const String   &ParseRequest::getVersProtocol() const{return(this->_versProtocol
 
 const unsigned long    &ParseRequest::getSizeFile() const{return(this->_sizeFile);}
 
+<<<<<<< HEAD
 const Map   &ParseRequest::getMap() const{return(this->_heading);}
+=======
+const Map   &ParseRequest::getHeading() const {return(this->_heading);}
+>>>>>>> sabra
 
  bool   ParseRequest::getForCgi() const{return(this->_forCgi);}
 
@@ -182,7 +186,6 @@ void ParseRequest::addArrKeys()
     this->_keys.push_back("content-type");
     this->_keys.push_back("content-version");
     this->_keys.push_back("title");
-//    this->_keys.push_back("connection");
 }
 
 //=============================================================================
@@ -242,8 +245,6 @@ void ParseRequest::parsGet()
 
 error ParseRequest::findLocation()
 {
-    if (this->_path.back() != '/')
-        return(OK);
     if(this->_locations.count(this->_path) == 0)
     {
         this-> _code = "400";
@@ -255,6 +256,7 @@ error ParseRequest::findLocation()
     this->_listOfAllowedMethods = this->_locations[this->_path].getAllowedMethods();
     return(OK);
 }
+
 error ParseRequest::requestForCgi()
 {
     return(OK);
@@ -263,7 +265,6 @@ error ParseRequest::requestForCgi()
 
 error ParseRequest::typeDefinitionMethod()
 {
-    //std::cout << "govno!!!\n";
     std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
     if (this->_cgi.count(fn) == 1)
         this->_forCgi = true;
@@ -308,6 +309,38 @@ error ParseRequest::requestForNotCgi()
 
 error ParseRequest::parsRequest(String request, Server host, String NumCode)
 {
+    std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
+    if (this->_cgi.count(fn) == 1)
+        this->_forCgi = true;
+    else
+        requestForNotCgi();
+    return(OK);
+}
+
+error ParseRequest::requestForNotCgi()
+{
+    if (this->_method == "GET")
+    {
+        if (fileToString(this->getStrPath()) == IS_DIR) 
+        {   
+            dirToString(this->_indexingFilePath);
+        }
+        findType(this->getStrPath());
+        
+    }
+    return(OK);
+}
+
+//=============================================================================
+// главная функция парсинга запроса
+//
+//
+//
+//
+//=============================================================================
+
+error ParseRequest::parsRequest(String request, Server host, String NumCode)
+{
     this->_errorFilePath = host.getErrorFilesPath();
     this->_rootDirectory = host.getRootDirectory();
     this->_indexingFilePath = host.getIndexingFilePath();
@@ -322,7 +355,6 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     String str =  getLine(request);
     if (parsingStartLine(str) != OK)
         return(BadRequest);
-//    std::cout << "govno!!!\n";
     if ( this->_path != "/")
         if(findLocation() == BadRequest)
             return BadRequest;//////
@@ -342,8 +374,8 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     print(this->_heading);
     if(!request.empty())
         this->_body = request;
-    typeDefinitionMethod();
-
+    // if(this->_method == "GET")
+    //     parsGet();  ///сделать функцию которая определяет запрос для cgi или нет
     return OK;
 }
 

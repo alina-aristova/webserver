@@ -44,10 +44,12 @@ inline bool colon(char c)
 {
     return checkColon(c);
 }
+
 inline bool notColon(char c)
 {
     return !checkColon(c);
 }
+
 
 inline std::vector<std::string> split(const std::string& s)
 {
@@ -87,6 +89,7 @@ inline std::vector<std::string> catLine(const std::string& s)
     }
     return res;
 }
+
 inline std::vector<std::string> splitByColon(const std::string& s)
 {
     typedef std::string::const_iterator iter;
@@ -107,7 +110,6 @@ inline std::vector<std::string> splitByColon(const std::string& s)
     }
     return res;
 }
-
 
 inline std::string& trim_left_in_place(std::string& str) {
     size_t i = 0;

@@ -111,10 +111,11 @@ String                  Response::creatRespons(ParseRequest &Request, std::strin
     this->_contentType = Request.getContentType();
     this->_FileLength = std::to_string(Request.getSizeFile());
     if(this->_NumError != "200")
+<<<<<<< HEAD
         check = findFile(this->_errorFilePath[this->_NumError]);//?
      else
          this->_File = Request.getStr();
-//    std::cout << "111govno!!!\n";
+
     this->_versProtocol = Request.getVersProtocol();
     this->_descriptionError = descriptionError(this->_NumError);
     
