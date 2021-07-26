@@ -275,55 +275,23 @@ error ParseRequest::requestForNotCgi()
     if (this->_method == "GET")
     {
         //std::cout << "govno!!!\n";
-        if (fileToString(this->getStrPath()) == IS_DIR) 
-        {   
+        if (fileToString(this->getStrPath()) == IS_DIR)
+        {
             dirToString(this->_indexingFilePath);
         }
         findType(this->getStrPath());
-        
+
     }
     #include <stdio.h>
     if (this->_method == "POST")
     {
-       
+
     }
     if (this->_method == "DELETE")
     {
         std::cout << this->_path;
          if(remove(this->_path.c_str()) == 0)
             std::cout << "удадилили\n";
-    }
-    return(OK);
-}
-
-//=============================================================================
-// главная функция парсинга запроса
-//
-//
-//
-//
-//=============================================================================
-
-error ParseRequest::parsRequest(String request, Server host, String NumCode)
-{
-    std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
-    if (this->_cgi.count(fn) == 1)
-        this->_forCgi = true;
-    else
-        requestForNotCgi();
-    return(OK);
-}
-
-error ParseRequest::requestForNotCgi()
-{
-    if (this->_method == "GET")
-    {
-        if (fileToString(this->getStrPath()) == IS_DIR) 
-        {   
-            dirToString(this->_indexingFilePath);
-        }
-        findType(this->getStrPath());
-        
     }
     return(OK);
 }

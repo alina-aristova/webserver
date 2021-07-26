@@ -1,7 +1,7 @@
 #ifndef CGI_HPP
 # define CGI_HPP
 
-# include "parseRequest.hpp"
+# include "../../ParseRequest/Includes/parseRequest.hpp"
 
 class Cgi
 {

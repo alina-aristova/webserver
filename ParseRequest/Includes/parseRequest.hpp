@@ -107,10 +107,7 @@ enum error
     IS_DIR = 42,
     NotFound = 404
 };
-<<<<<<< HEAD
-=======
 
->>>>>>> sabra
 class Server;
 class Location;
 class ParseRequest
@@ -130,12 +127,8 @@ class ParseRequest
         String      _str; // буфер в который считали данные из файла
         String      _strPath; // путь
         unsigned long _sizeFile;
-<<<<<<< HEAD
-=======
 		String	_serverName;
 		String _serverPort;
->>>>>>> sabra
-
        std::map<std::string,std::string>      _errorFilePath;
         String      _indexingFilePath;
         String      _rootDirectory;
@@ -149,22 +142,16 @@ class ParseRequest
         //~ParseRequest();
         //==================get/set================
         const String            &getMethod() const;
-<<<<<<< HEAD
-=======
         const String            &getServerName() const {return this->_serverName;}
         const String            &getServerPort() const {return this->_serverPort;}
->>>>>>> sabra
         const String            &getPath() const;
         const String            &getVersProtocol() const;
         const String            &getBody() const;
         const String            &getStr() const;
         const String            &getStrPath() const;
         const String            &getContentType() const;
-<<<<<<< HEAD
         const Map               &getMap() const;
-=======
         const Map               &getHeading() const;
->>>>>>> sabra
         const String            &getCode() const;
         int                     getBodyLength() const;
         const unsigned long     &getSizeFile() const;

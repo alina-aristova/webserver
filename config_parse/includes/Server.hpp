@@ -76,6 +76,5 @@ class Server
 			}
 	    };
 	};
-};
 
 #endif

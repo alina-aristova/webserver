@@ -101,10 +101,9 @@ int                  Response::findFile(std::string NewPath)
 //=============================================================================
 
 
-String                  Response::creatRespons(ParseRequest &Request, std::string numError, std::string result)
+String                  Response::creatRespons(ParseRequest &Request, std::string numError)
 {
-	if (result.length() != 0)
-		return result;
+	String result;
     int check = 0;
     this->_errorFilePath = Request.getErrorFilePath();
     this->_types = Request.getType();

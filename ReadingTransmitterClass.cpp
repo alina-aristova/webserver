@@ -375,9 +375,6 @@ void ReadingTransmitterClass::operate() {
         ParseRequest requestParser = ParseRequest();
         requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
         std::string numErrorStr = requestParser.getCode();
-        if (requestParser.getForCgi()) {
-
-        }
         Response response = Response();
         if (numErrorStr == "400")
             _closeConnection = true;
