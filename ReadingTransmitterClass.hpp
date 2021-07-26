@@ -4,6 +4,7 @@
 # include "ATransmitterClass.hpp"
 # include "ReadingBodyFunctionENUM.hpp"
 # include "config_parse/includes/Server.hpp"
+# include "cgi/includes/cgi.hpp"
 
 class ReadingTransmitterClass : public ATransmitterClass {
 private:
