@@ -241,16 +241,22 @@ void ParseRequest::parsGet()
 
 error ParseRequest::findLocation()
 {
-    if(this->_locations.count(this->_path) == 0)
-    {
-        this-> _code = "400";
-        return BadRequest;
-    }
-    this->_rootDirectory = this->_locations[this->_path].getRootDirectory();
-    this->_indexingFilePath = this->_locations[this->_path].getIndexingFilePath();
-    this->_cgi = this->_locations[this->_path].getCgi();
-    this->_listOfAllowedMethods = this->_locations[this->_path].getAllowedMethods();
-    return(OK);
+	int i = 1;
+
+	while( this->_path[i] != '/' )
+	i++;
+	this->_locationName = this->_path.substr(0,i);
+	std::cout << this->_locationName << "\n";
+	if(this->_locations.count(this->_locationName) == 0)
+	{
+		this-> _code = "400";
+		return BadRequest;
+	}
+	this->_rootDirectory = this->_locations[this->_locationName].getRootDirectory();
+	this->_indexingFilePath = this->_locations[this->_locationName].getIndexingFilePath();
+	this->_cgi = this->_locations[this->_locationName].getCgi();
+	this->_listOfAllowedMethods = this->_locations[this->_locationName].getAllowedMethods();
+	return(OK);
 }
 error ParseRequest::requestForCgi()
 {
@@ -309,7 +315,7 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     if (parsingStartLine(str) != OK)
         return(BadRequest);
     if ( this->_path != "/")
-        if(findLocation() == BadRequest)
+		if(findLocation() == BadRequest)
             return BadRequest;//////
     findPath(this->_rootDirectory);
     str =  getLine(request);

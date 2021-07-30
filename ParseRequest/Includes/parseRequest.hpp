@@ -129,6 +129,7 @@ class ParseRequest
         unsigned long _sizeFile;
 		String	_serverName;
 		String _serverPort;
+		String _locationName;
 
        std::map<std::string,std::string>      _errorFilePath;
         String      _indexingFilePath;
@@ -151,6 +152,7 @@ class ParseRequest
         const String            &getStr() const;
         const String            &getStrPath() const;
         const String            &getContentType() const;
+		const String			&getLocationName() const {return this->_locationName;}
         const Map               &getHeading() const;
         const String            &getCode() const;
         int                     getBodyLength() const;
