@@ -21,8 +21,10 @@ private:
     WritingTransmitterClass *_writer;
     ReadingTransmitterClass *_reader;
 public:
+    char **env;
     ConnectionClass(int socket, std::map<std::string, Server *> hosts);
     ConnectionState getConnectionStatus();
+    void setEnv(char **env);
     void receive();
     void transmit();
 };

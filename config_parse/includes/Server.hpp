@@ -73,8 +73,8 @@ class Server
 			const char *what(void) const throw()
 			{
 				return "SyntaxError!";
-			}
-	    };
+			}		
 	};
+};
 
 #endif

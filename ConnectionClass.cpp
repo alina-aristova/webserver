@@ -12,6 +12,7 @@ void ConnectionClass::receive() {
     || _stateOfConnection == IS_READING_BODY
     || _stateOfConnection == ERROR_WHILE_READING
     || _stateOfConnection == IS_FORMING_RESPONSE) {
+        _reader->env = this->env;
         _reader->operate();
         _stateOfConnection = _reader->getConnectionState();
     }
@@ -25,3 +26,6 @@ void ConnectionClass::transmit() {
 }
 
 ConnectionState ConnectionClass::getConnectionStatus() { return _stateOfConnection; }
+
+void ConnectionClass::setEnv(char **env) { this->env = env; }
+

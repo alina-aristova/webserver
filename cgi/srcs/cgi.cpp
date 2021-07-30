@@ -1,4 +1,4 @@
-#include "cgi.hpp"
+#include "../includes/cgi.hpp"
 #include <map>
 #include <unistd.h>
 #include <fcntl.h>
@@ -66,8 +66,8 @@ char **Cgi::createEnv(ParseRequest & request, char **ev) const
 	else
 		env_map["SCRIPT_NAME"] = request.getPath();
 	env_map["SCRIPT_FILENAME"] = request.getPath();
-	env_map["SERVER_NAME"] = request.getServerName();
-	env_map["SERVER_PORT"] = request.getServerPort();
+	env_map["SERVER_NAME"] = "localhost"; /*request.getServerName();*/
+	env_map["SERVER_PORT"] = "8080";/*request.getServerPort();*/
   	env_map["SERVER_PROTOCOL"]   = "HTTP/1.1";
   	env_map["SERVER_SOFTWARE"]   = "web_server/1.0";
 
@@ -163,6 +163,7 @@ void Cgi::execCgi(ParseRequest & request, char **main_env, std::string max_body_
 
 	int pid;
 	int status = 0;
+	std::cout << this->_cgi_path << std::endl;
 	this->_request_fd = open(this->_request_file.c_str(), O_RDWR);
 	this->_response_fd = open(this->_response_file.c_str(), O_RDWR);
 	if (this->_response_fd < 0 || this->_request_fd < 0)

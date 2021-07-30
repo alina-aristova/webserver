@@ -22,8 +22,7 @@ const String   &ParseRequest::getVersProtocol() const{return(this->_versProtocol
 
 const unsigned long    &ParseRequest::getSizeFile() const{return(this->_sizeFile);}
 
-//const Map   &ParseRequest::getMap() const{return(this->_heading);}
-const Map   &ParseRequest::getHeading() const {return(this->_heading);}
+const Map   &ParseRequest::getMap() const{return(this->_heading);}
 
  bool   ParseRequest::getForCgi() const{return(this->_forCgi);}
 
@@ -242,18 +241,13 @@ void ParseRequest::parsGet()
 
 error ParseRequest::findLocation()
 {
-    if(this->_locations.count(this->_path) == 0)
-    {
-        this-> _code = "400";
-        return BadRequest;
-    }
-    this->_rootDirectory = this->_locations[this->_path].getRootDirectory();
-    this->_indexingFilePath = this->_locations[this->_path].getIndexingFilePath();
-    this->_cgi = this->_locations[this->_path].getCgi();
-    this->_listOfAllowedMethods = this->_locations[this->_path].getAllowedMethods();
+
+    this->_rootDirectory = this->_locations[this->_locationName].getRootDirectory();
+    this->_indexingFilePath = this->_locations[this->_locationName].getIndexingFilePath();
+    this->_cgi = this->_locations[this->_locationName].getCgi();
+    this->_listOfAllowedMethods = this->_locations[this->_locationName].getAllowedMethods();
     return(OK);
 }
-
 error ParseRequest::requestForCgi()
 {
     return(OK);
@@ -262,11 +256,13 @@ error ParseRequest::requestForCgi()
 
 error ParseRequest::typeDefinitionMethod()
 {
+    //std::cout << "govno!!!\n";
     std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
     if (this->_cgi.count(fn) == 1)
         this->_forCgi = true;
     else
         requestForNotCgi();
+    this->_rashirenie = fn;
     return(OK);
 }
 
@@ -275,17 +271,17 @@ error ParseRequest::requestForNotCgi()
     if (this->_method == "GET")
     {
         //std::cout << "govno!!!\n";
-        if (fileToString(this->getStrPath()) == IS_DIR)
-        {
+        if (fileToString(this->getStrPath()) == IS_DIR) 
+        {   
             dirToString(this->_indexingFilePath);
         }
         findType(this->getStrPath());
-
+        
     }
     #include <stdio.h>
     if (this->_method == "POST")
     {
-
+       
     }
     if (this->_method == "DELETE")
     {
@@ -320,9 +316,20 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     String str =  getLine(request);
     if (parsingStartLine(str) != OK)
         return(BadRequest);
-    if ( this->_path != "/")
-        if(findLocation() == BadRequest)
-            return BadRequest;//////
+    std::cout << "govno!!!\n";
+    int i = 1;
+   // int count = 0;
+   while(this->_path[i] && this->_path[i] != '/' )
+        i++;
+    this->_locationName = this->_path.substr(0,i);
+    std::cout << this->_locationName << "\n";
+    if(this->_locations.count(this->_locationName) != 0)
+    {
+        std::cout << "stop123\n";
+        findLocation();
+    }
+
+    std::cout << "stop\n";
     findPath(this->_rootDirectory);
     str =  getLine(request);
     while(str != "")
@@ -331,16 +338,18 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
             return BadRequest;
         str = getLine(request);
     }
+    std::cout << "stop1\n";
     if(this->_heading.count("host") == 0)
     {
         this-> _code = "400";
         return BadRequest;
     }
+    std::cout << "stop2\n";
     print(this->_heading);
     if(!request.empty())
         this->_body = request;
-    // if(this->_method == "GET")
-    //     parsGet();  ///сделать функцию которая определяет запрос для cgi или нет
+    typeDefinitionMethod();
+
     return OK;
 }
 

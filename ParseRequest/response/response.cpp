@@ -103,7 +103,6 @@ int                  Response::findFile(std::string NewPath)
 
 String                  Response::creatRespons(ParseRequest &Request, std::string numError)
 {
-	String result;
     int check = 0;
     this->_errorFilePath = Request.getErrorFilePath();
     this->_types = Request.getType();
@@ -115,13 +114,14 @@ String                  Response::creatRespons(ParseRequest &Request, std::strin
         check = findFile(this->_errorFilePath[this->_NumError]);//?
      else
          this->_File = Request.getStr();
-
+    std::cout << "111govno!!!\n";
     this->_versProtocol = Request.getVersProtocol();
     this->_descriptionError = descriptionError(this->_NumError);
     
     
+    std::string result ;
     if (check == ERROR)
-        result = this->_versProtocol + " " + this->_NumError + " " + this->_descriptionError + "\r\n\r\n";
+        result = this->_versProtocol + " " + this->_NumError + " " + this->_descriptionError + "\r\n";
     else if (this->_NumError == "200")
         result = this->_versProtocol + " " + this->_NumError + " " + this->_descriptionError + "\r\n" + "Content-Length: " + this->_FileLength + "\r\n" 
         + "Content-Type: " + this->_contentType + "\r\n\r\n" + this->_File + "\r\n\r\n";

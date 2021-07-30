@@ -345,7 +345,18 @@ void ReadingTransmitterClass::operate() {
         std::string numErrorStr = requestParser.getCode();
         if (numErrorStr == "400")
             _closeConnection = true;
-        _writingBuffer = response.creatRespons(requestParser, numErrorStr);
+        if (requestParser.getForCgi() == false)
+        {
+//            std::cout << "++++";
+//            /* ----------------------- Просто тестирую работу cgi ----------------------- */
+            std::string cgiUri = "." + requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
+            Cgi cgi(requestParser, cgiUri, this->env, applicableHost->getLocations()[requestParser.getLocationName()].getMaxBodySize());
+//            /* -------------------------------------------------------------------------- */
+            _writingBuffer = cgi.getCgiResponse();
+//            // res = response.creatRespons(parse, parse.getCode(), cgi.getCgiResponse());
+        }
+        else
+            _writingBuffer = response.creatRespons(requestParser, numErrorStr);
         // возвращаем исходное значение полям класса
         returnDefaultValues();
         // меняем статус
@@ -376,9 +387,21 @@ void ReadingTransmitterClass::operate() {
         requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
         std::string numErrorStr = requestParser.getCode();
         Response response = Response();
+        if (requestParser.getForCgi() == false)
+        {
+//            std::cout << "++++";
+            /* ----------------------- Просто тестирую работу cgi ----------------------- */
+            std::string cgiUri = "." + requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
+            Cgi cgi(requestParser, cgiUri, this->env, applicableHost->getLocations()[requestParser.getLocationName()].getMaxBodySize());
+//            /* -------------------------------------------------------------------------- */
+            _writingBuffer = cgi.getCgiResponse();
+            // res = response.creatRespons(parse, parse.getCode(), cgi.getCgiResponse());
+        }
+        else
+            _writingBuffer = response.creatRespons(requestParser, numErrorStr);
         if (numErrorStr == "400")
             _closeConnection = true;
-        _writingBuffer = response.creatRespons(requestParser, numErrorStr);
+//        _writingBuffer = response.creatRespons(requestParser, numErrorStr);
         // возвращаем исходное значение полей класса
         returnDefaultValues();
         // меняем статус

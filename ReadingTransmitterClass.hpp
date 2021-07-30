@@ -28,6 +28,7 @@ private:
     // ----------------------------- возвращаем дефолтные значния полей ----------------------------------------- //
     void    returnDefaultValues();
 public:
+    char **env;
     ReadingTransmitterClass(int socket, std::string & responseStatus, ConnectionState & connectionState,
         std::string & writingBuffer, bool & closeConnection, std::map<std::string, Server *> availableHosts);
     void operate();

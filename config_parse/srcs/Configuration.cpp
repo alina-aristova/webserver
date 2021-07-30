@@ -22,12 +22,15 @@ void Configuration::parseConfig(std::string const & config_file)
 			continue;
 		if (buf == "{")
 		{
-			Server serverBlock(ifs, buf);
-			this->_servers.push_back(serverBlock);
-			// catch(const std::exception& e)
-			// {
-			// 	std::cerr << e.what() << std::endl;
-			// }
+			try
+			{
+				Server serverBlock(ifs, buf);
+				this->_servers.push_back(serverBlock);
+			}
+			catch(const std::exception& e)
+			{
+				std::cerr << e.what() << std::endl;
+			}
 		}
 	}
 }

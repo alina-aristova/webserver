@@ -50,12 +50,6 @@ void Server::parseServerBlock(std::ifstream & ifs, std::string & buf)
 			if (fieldsIterator == this->_parseServerFields.end())
 				throw Server::UnknownToken();
 			parseFunc handler = (*fieldsIterator).second;
-			if (word.find("listen") != std::string::npos
-			|| word.find("server_name") != std::string::npos
-			|| word.find("root") != std::string::npos
-			|| word.find("index") != std::string::npos
-			|| word.find("cgi") != std::string::npos)
-				this->_parseServerFields.erase(fieldsIterator);
 			while (streamForLine >> word)
 			{
 				// std::cout << word << std::endl;

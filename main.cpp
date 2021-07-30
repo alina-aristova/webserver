@@ -16,7 +16,9 @@
 
 # define QLEN 5
 
-int main() {
+
+
+int main(int argc, char **argv, char **env) {
     Configuration *ourConfig = new Configuration("/Users/bannette/Desktop/config");
     std::vector <Server> ourServers = ourConfig->getServers();
 
@@ -121,6 +123,7 @@ int main() {
                     socketTypeMap[new_socket] = "reading/writing";
                     ++iter;
                 } else {
+                    socketConnectionMap.at(iter->first).setEnv(env);
                     socketConnectionMap.at(iter->first).receive();
                     if (socketConnectionMap.at(iter->first).getConnectionStatus() == CLOSE) {
                         socketConnectionMap.erase(iter->first);
@@ -140,6 +143,7 @@ int main() {
 //                std::cout << "our socket is fd of " << iter->first << std::endl;
 //                std::cout << "our socket is fd of " << iter->first << std::endl;
 //                std::cout << "our socket is fd of " << iter->first << std::endl;
+                socketConnectionMap.at(iter->first).setEnv(env);
                 socketConnectionMap.at(iter->first).transmit();
                 if (socketConnectionMap.at(iter->first).getConnectionStatus() == CLOSE) {
                     socketConnectionMap.erase(iter->first);
@@ -191,7 +195,7 @@ int main() {
 //		if (parse.getForCgi() == false)
 //		{
 //			/* ----------------------- Просто тестирую работу cgi ----------------------- */
-//			Cgi cgi(parse, "cgi/test_bin", ev, servers[0].getLocations()[parse.getPath()].getMaxBodySize());
+//			Cgi cgi(parse, "cgi/cgi_tester", ev, servers[0].getLocations()[parse.getLocationName()].getMaxBodySize());
 //			/* -------------------------------------------------------------------------- */
 //			res = cgi.getCgiResponse();
 //			// res = response.creatRespons(parse, parse.getCode(), cgi.getCgiResponse());
