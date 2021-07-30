@@ -1,4 +1,4 @@
-#include "ParseRequest/includes/parseRequest.hpp"
+#include "ParseRequest/Includes/parseRequest.hpp"
 #include "config_parse/includes/Location.hpp"
 #include "config_parse/includes/Server.hpp"
 #include "config_parse/includes/Configuration.hpp"
@@ -17,9 +17,11 @@ int main()
 		servers = test.getServers();
         ParseRequest parse;    
         Response  response;
-        std::string line = "DELETE /acase/Desktop/testfile/good.txt HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
+        std::string line = "POST /acase/Desktop/testfile/good.txt HTTP/1.1\r\nHost: bannette\r\nContent-length: 12\r\n\r\n123456789012\r\n\r\n";
         std::string NumCode = "200";
+        
         parse.parsRequest(line, servers[0], NumCode);
+        std::cout << parse.getBody() << "\n";
     if (parse.getForCgi() == true)
     {
         std::cout << "наш cgi еще не готов:(\nМы не можем выполнить ваш запрос, но мы обязательно его доделаем, приходите позже!\n";

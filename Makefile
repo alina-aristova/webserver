@@ -5,7 +5,7 @@ NAME 	= webserv
 SRCS	= $(SABRA)\
 			ParseRequest/srcs/parseRequest.cpp\
 			ParseRequest/response/response.cpp\
-			main.cpp
+			main_reserv.cpp
 
 OBJS 	= $(SRCS:.cpp=.o)
 

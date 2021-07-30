@@ -1,4 +1,4 @@
-#include "../includes/parseRequest.hpp"
+#include "../Includes/parseRequest.hpp"
 #include "../utils/utils.hpp"
 ParseRequest::ParseRequest() : _bodyLength(0) {}
 
@@ -241,17 +241,24 @@ void ParseRequest::parsGet()
 
 error ParseRequest::findLocation()
 {
-    if (this->_path.back() != '/')
-        return(OK);
-    if(this->_locations.count(this->_path) == 0)
+    // if (this->_path.back() != '/')
+    //     return(OK);
+    int i = 1;
+    std::string str;
+
+    while( this->_path[i] != '/' )  
+        i++;
+    str = this->_path.substr(0,i);
+    std::cout << str << "\n";
+    if(this->_locations.count(str) == 0)
     {
         this-> _code = "400";
         return BadRequest;
     }
-    this->_rootDirectory = this->_locations[this->_path].getRootDirectory();
-    this->_indexingFilePath = this->_locations[this->_path].getIndexingFilePath();
-    this->_cgi = this->_locations[this->_path].getCgi();
-    this->_listOfAllowedMethods = this->_locations[this->_path].getAllowedMethods();
+    this->_rootDirectory = this->_locations[str].getRootDirectory();
+    this->_indexingFilePath = this->_locations[str].getIndexingFilePath();
+    this->_cgi = this->_locations[str].getCgi();
+    this->_listOfAllowedMethods = this->_locations[str].getAllowedMethods();
     return(OK);
 }
 error ParseRequest::requestForCgi()
@@ -340,8 +347,11 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     }
     
     print(this->_heading);
+    std::cout << "STOP!!!\n";
     if(!request.empty())
         this->_body = request;
+    std::cout << this->_body;
+    std::cout << "STOP\n";
     typeDefinitionMethod();
 
     return OK;
