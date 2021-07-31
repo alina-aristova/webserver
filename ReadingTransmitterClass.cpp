@@ -345,7 +345,7 @@ void ReadingTransmitterClass::operate() {
         std::string numErrorStr = requestParser.getCode();
         if (numErrorStr == "400")
             _closeConnection = true;
-        if (requestParser.getForCgi() == false)
+        if (requestParser.getForCgi())
         {
 //            std::cout << "++++";
 //            /* ----------------------- Просто тестирую работу cgi ----------------------- */
@@ -387,7 +387,7 @@ void ReadingTransmitterClass::operate() {
         requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
         std::string numErrorStr = requestParser.getCode();
         Response response = Response();
-        if (requestParser.getForCgi() == false)
+        if (requestParser.getForCgi())
         {
 //            std::cout << "++++";
             /* ----------------------- Просто тестирую работу cgi ----------------------- */
