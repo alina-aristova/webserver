@@ -19,7 +19,7 @@ void WritingTransmitterClass::operate() {
 
     /// проверить не записалось ли все
     /// если записалось, то отчистить буффер и сменить статус
-    if (bytes_written >= _writingBuffer.size()) {
+    if (bytes_written >= (int)_writingBuffer.size()) {
         std::cout << bytes_written << "=" << _writingBuffer.size() << _socket << std::endl;
         _connectionState = IS_PROCESSING_FIRST_LINE;
         _writingBuffer = "";

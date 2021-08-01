@@ -204,7 +204,7 @@ void ReadingTransmitterClass::_chunkedEncodingReading(int & unchunkedPartLength)
     std::string bodyPart = _readingBuffer.substr(beginningOfBody);
 
     /// Если прочитано меньше, чем можно по чанку, читаем еще
-    if (bodyPart.size() < unchunkedPartLength)
+    if ((int)bodyPart.size() < unchunkedPartLength)
         return ;
 
     /// Находим текущий чанк

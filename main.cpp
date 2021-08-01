@@ -19,7 +19,9 @@
 
 
 int main(int argc, char **argv, char **env) {
-    Configuration *ourConfig = new Configuration("/Users/bannette/Desktop/config");
+	(void)argc;
+	(void)argv;
+    Configuration *ourConfig = new Configuration("default.conf");
     std::vector <Server> ourServers = ourConfig->getServers();
 
     std::map < std::string, Server * > HostMap;

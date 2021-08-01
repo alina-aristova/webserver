@@ -1,8 +1,8 @@
 # include "ATransmitterClass.hpp"
 
 ATransmitterClass::ATransmitterClass(int socket, std::string &responseStatus, ConnectionState connectionState,
-std::string &writingBuffer, bool & closeConnection) : _socket(socket), _responseStatus(responseStatus), _connectionState(connectionState),
-_writingBuffer(writingBuffer), _closeConnection(closeConnection) {}
+std::string &writingBuffer, bool & closeConnection) : _socket(socket), _responseStatus(responseStatus),
+_writingBuffer(writingBuffer), _closeConnection(closeConnection), _connectionState(connectionState) {}
 
 ATransmitterClass::~ATransmitterClass() {}
 

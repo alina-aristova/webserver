@@ -5,14 +5,18 @@ NAME 	= webserv
 SRCS	= $(SABRA)\
 			ParseRequest/srcs/parseRequest.cpp\
 			ParseRequest/response/response.cpp\
-			main.cpp
+			ATransmitterClass.cpp \
+			ConnectionClass.cpp \
+			ReadingTransmitterClass.cpp \
+			WritingTransmitterClass.cpp \
+			main.cpp \
 
 OBJS 	= $(SRCS:.cpp=.o)
 
 CC 		= clang++
 RM		= rm -rf
-CFLAGS	= -Wall -Werror -Wextra -g -std=c++98 -pedantic
-INCLUDES = -I config_parse/includes -I cgi/includes -I parseRequest/Includes
+CFLAGS	= -Wall -Werror -Wextra -g -std=c++98 
+INCLUDES = -I config_parse/includes -I cgi/includes -I parseRequest/Includes 
 
 all:
 	@$(MAKE) $(NAME) -j4
