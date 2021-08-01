@@ -17,11 +17,11 @@ class ATransmitterClass {
 protected:
     int _socket;
     std::string & _responseStatus;
-    ConnectionState & _connectionState;
-    std::string & _writingBuffer;
+    std::string &_writingBuffer;
     bool & _closeConnection;
 public:
-    ATransmitterClass(int socket, std::string & responseStatus, ConnectionState & connectionState, std::string & writingBuffer, bool & closeConnection);
+    ConnectionState _connectionState;
+    ATransmitterClass(int socket, std::string & responseStatus, ConnectionState connectionState, std::string &writingBuffer, bool & closeConnection);
     virtual void operate() = 0;
     int getsocket() const;
     const std::string & getResponseStatus() const;

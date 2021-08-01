@@ -29,11 +29,12 @@ private:
     void    returnDefaultValues();
 public:
     char **env;
-    ReadingTransmitterClass(int socket, std::string & responseStatus, ConnectionState & connectionState,
+    ReadingTransmitterClass(int socket, std::string & responseStatus, ConnectionState connectionState,
         std::string & writingBuffer, bool & closeConnection, std::map<std::string, Server *> availableHosts);
     void operate();
     virtual ~ReadingTransmitterClass();
     const std::string & getReadingBuffer() const;
+
 };
 
 #endif
