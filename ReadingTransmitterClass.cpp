@@ -415,8 +415,6 @@ void ReadingTransmitterClass::operate() {
         else
             _writingBuffer = response.creatRespons(requestParser, numErrorStr);
 
-
-        std::cout << "***** buff_size " << _writingBuffer.size() << std::endl;
         /// возвращаем исходное значение полей класса
         returnDefaultValues();
 

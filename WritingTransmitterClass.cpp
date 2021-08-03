@@ -11,16 +11,15 @@ void WritingTransmitterClass::operate() {
     /// записать сколько получится
     bytes_written = write(_socket, _writingBuffer.c_str(), _writingBuffer.size());
 
-//    std::cout << std::endl << "*******************************************" << std::endl;
-//    std::cout << "******   Part of out response     *********" << std::endl;
-//    std::cout << "*******************************************" << std::endl;
-//    std::cout << _writingBuffer.substr(0, bytes_written) << std::endl; // +
-//    std::cout << "*******************************************" << std::endl << std::endl;
+    std::cout << std::endl << "*******************************************" << std::endl;
+    std::cout << "******   Part of out response     *********" << std::endl;
+    std::cout << "*******************************************" << std::endl;
+    std::cout << _writingBuffer.substr(0, bytes_written) << std::endl; // +
+    std::cout << "*******************************************" << std::endl << std::endl;
 
     /// проверить не записалось ли все
     /// если записалось, то отчистить буффер и сменить статус
     if (bytes_written >= (int)_writingBuffer.size()) {
-        std::cout << bytes_written << "=" << _writingBuffer.size() << _socket << std::endl;
         _connectionState = IS_PROCESSING_FIRST_LINE;
         _writingBuffer = "";
         if (_closeConnection)

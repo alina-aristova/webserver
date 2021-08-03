@@ -272,8 +272,30 @@ error ParseRequest::requestForNotCgi()
     {
         //std::cout << "govno!!!\n";
         if (fileToString(this->getStrPath()) == IS_DIR) 
-        {   
-            dirToString(this->_indexingFilePath);
+        {
+            if (this->_indexingFilePath.find("index.html") != std::string::npos)
+            {
+                DIR *myDirectory = opendir(this->getStrPath().c_str());
+
+                std::stringstream ss;
+                struct dirent* entity;
+                entity = readdir(myDirectory);
+                ss << "<!DOCTYPE html>" << std::endl;
+                ss << "<html>\n<body>" << std::endl;
+                while (entity != NULL) {
+                    ss << "<p><a href=\"./" << entity->d_name << "\">" << entity->d_name << "</a></p>" << std::endl;
+                    entity = readdir(myDirectory);
+                }
+                ss << "</body>\n</html>" << std::endl;
+                std::cout << "+++++++" << std::endl;
+                this->_str = ss.str();
+                this->_sizeFile = _str.size();
+                this->_code = "200";
+                this->_contentType = "html";
+                closedir(myDirectory);
+            }
+            else
+                dirToString(this->_indexingFilePath);
         }
         findType(this->getStrPath());
         
@@ -483,7 +505,7 @@ error ParseRequest::dirToString(std::string indexFile)
                     std::istreambuf_iterator<char>());
     this->_str = str;
     this->_sizeFile = str.size();
-    this-> _code = "200";
+    this->_code = "200";
     return(OK);
 }
 
