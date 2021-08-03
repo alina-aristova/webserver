@@ -276,23 +276,24 @@ error ParseRequest::requestForNotCgi()
             if (this->_indexingFilePath.find("index.html") != std::string::npos)
             {
                 DIR *myDirectory = opendir(this->getStrPath().c_str());
-
                 std::stringstream ss;
-                struct dirent* entity;
-                entity = readdir(myDirectory);
-                ss << "<!DOCTYPE html>" << std::endl;
-                ss << "<html>\n<body>" << std::endl;
-                while (entity != NULL) {
-                    ss << "<p><a href=\"./" << entity->d_name << "\">" << entity->d_name << "</a></p>" << std::endl;
+                if (myDirectory != nullptr)
+                {
+                    struct dirent* entity;
                     entity = readdir(myDirectory);
+                    ss << "<!DOCTYPE html>" << std::endl;
+                    ss << "<html>\n<body>" << std::endl;
+                    while (entity != NULL) {
+                        ss << "<p><a href=\"./" << entity->d_name << "\">" << entity->d_name << "</a></p>" << std::endl;
+                        entity = readdir(myDirectory);
+                    }
+                    ss << "</body>\n</html>" << std::endl;
+                    closedir(myDirectory);
                 }
-                ss << "</body>\n</html>" << std::endl;
-                std::cout << "+++++++" << std::endl;
                 this->_str = ss.str();
                 this->_sizeFile = _str.size();
                 this->_code = "200";
                 this->_contentType = "html";
-                closedir(myDirectory);
             }
             else
                 dirToString(this->_indexingFilePath);
@@ -303,7 +304,41 @@ error ParseRequest::requestForNotCgi()
     #include <stdio.h>
     if (this->_method == "POST")
     {
-       
+        std::string boundaryStr = this->_body.substr(0, this->_body.find("\r\n"));
+        size_t boundaryStrSize = boundaryStr.size() + 2;
+        size_t fileNameStartIndex = this->_body.find("filename=\"") + 10;
+        size_t fileNameLength = this->_body.substr(fileNameStartIndex).find("\"");
+        std::string fileName = this->_body.substr(fileNameStartIndex, fileNameLength);
+        //std::cout << "*****************************" << std::endl;
+        //std::cout << fileName << std::endl;
+        //std::cout << "*****************************" << std::endl;
+        //std::cout << getStrPath() << std::endl;
+        //std::cout << "*****************************" << std::endl;
+        //std::cout << this->_body;
+        this->_body = this->_body.substr(this->_body.find("\r\n\r\n") + 4);
+        size_t bodySize = this->_body.size() - boundaryStrSize - 4;
+        this->_body = this->_body.substr(0, bodySize);
+        //std::cout << "*****************************" << std::endl;
+
+        std::string pathStr = getStrPath();
+        if (pathStr[pathStr.size() - 1] != '/')
+            pathStr += '/';
+        std::fstream fs;
+        fs.open(pathStr + fileName, std::fstream::in | std::fstream::out | std::fstream::app);
+        if (fs.is_open()) {
+            fs << this->_body << std::endl;
+            fs.close();
+            this->_str = "";
+            this->_sizeFile = _str.size();
+            this->_code = "200";
+            this->_contentType = "html";
+        }
+        else {
+            this->_code = "400";
+            this->_sizeFile = 0;
+            this->_str = "";
+            return (BadRequest);
+        }
     }
     if (this->_method == "DELETE")
     {

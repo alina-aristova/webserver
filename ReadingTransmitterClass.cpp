@@ -304,7 +304,7 @@ void ReadingTransmitterClass::returnDefaultValues() {
 void ReadingTransmitterClass::operate() {
     /// читаем в буффер
     _readIntoBuffer();
-    std::cout << _connectionState << std::endl;
+
     /// обрабатываем первую строку
     if (_connectionState == IS_PROCESSING_FIRST_LINE && _readingBuffer.find("\r\n") != std::string::npos)
         _processingFirstLine();
