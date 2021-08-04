@@ -343,8 +343,11 @@ error ParseRequest::requestForNotCgi()
     if (this->_method == "DELETE")
     {
         std::cout << this->_path;
-         if(remove(this->_path.c_str()) == 0)
+        findPath(this->_rootDirectory);
+         if(remove((getStrPath()).c_str()) == 0)
             std::cout << "удадилили\n";
+         else
+             std::cout << "------------------------" << std::endl << "не удалили" << std::endl;
     }
     return(OK);
 }
