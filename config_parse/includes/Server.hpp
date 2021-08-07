@@ -21,6 +21,7 @@ class Server
 
 	private:
 		int _port;
+		bool _autoindex;
 		std::string	_hostName;
 		std::string		_rootDirectory;
 		std::string		_indexingFilePath;
@@ -41,6 +42,7 @@ class Server
 		void parseErrorPage(std::vector<std::string> & error_info);
 		void parseCgi(std::vector<std::string> & cgi_line);
 		void parseClientMaxBodySize(std::vector<std::string> & body_size);
+		void parseAutoIndex(std::vector<std::string> & index);
 
 	public:
 		Server(void);
@@ -49,6 +51,7 @@ class Server
 
 		/* ------------------------------- Интерфейсы ------------------------------- */
 		int		getPort(void) const {return _port;}
+		bool	getAutoIndex(void) const {return _autoindex;}
 		std::string getHostName(void) const {return _hostName;}
 		std::string getRootDirectory(void) const {return _rootDirectory;}
 		std::string getIndexingFilePath(void) const {return _indexingFilePath;}
