@@ -39,6 +39,7 @@ class Location
 		std::string		getStorageDirectory(void) const {return _storageDirectory;}
 		std::vector<std::string>  getAllowedMethods(void) const {return _allowedMethods;}
 		std::map<std::string, std::string> getCgi(void) const {return _cgi;}
+		std::string getMaxBodySize(void) const {return _clientMaxBodySize;}
 
 		/* ------------------------------- Исключения ------------------------------- */
 		class UnknownToken : public std::exception

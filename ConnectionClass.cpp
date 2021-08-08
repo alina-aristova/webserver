@@ -6,12 +6,26 @@ _writer(new WritingTransmitterClass(_socket, _responseStatus, _stateOfConnection
 _reader(new ReadingTransmitterClass(_socket, _responseStatus, _stateOfConnection, _writingBuff, _closeConnection, _hosts)) {
 }
 
-void ConnectionClass::transmit() {
+void ConnectionClass::receive() {
     if (_stateOfConnection == IS_PROCESSING_FIRST_LINE
     || _stateOfConnection == IS_PROCESSING_HEADERS
     || _stateOfConnection == IS_READING_BODY
-    || _stateOfConnection == ERROR
-    || _stateOfConnection == IS_FORMING_RESPONSE)
+    || _stateOfConnection == ERROR_WHILE_READING
+    || _stateOfConnection == IS_FORMING_RESPONSE) {
+        _reader->env = this->env;
         _reader->operate();
-//    _writer.operate();
+        _stateOfConnection = _reader->getConnectionState();
+    }
 }
+
+void ConnectionClass::transmit() {
+    if (_stateOfConnection == IS_WRITING_RESPONSE) {
+        _writer->operate();
+        _stateOfConnection = _writer->getConnectionState();
+    }
+}
+
+ConnectionState ConnectionClass::getConnectionStatus() { return _stateOfConnection; }
+
+void ConnectionClass::setEnv(char **env) { this->env = env; }
+

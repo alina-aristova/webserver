@@ -2,6 +2,7 @@
 # define WRITINGTRANSMITTER_CLASS_HPP
 
 # include "ATransmitterClass.hpp"
+# include "unistd.h"
 
 class WritingTransmitterClass : public ATransmitterClass {
 public:

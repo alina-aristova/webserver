@@ -19,9 +19,15 @@ void ReadingTransmitterClass::_readIntoBuffer() {
     int bytesRead;
     bzero(temporaryBuffer, BUFF_SIZE);
     bytesRead = read(_socket, temporaryBuffer, BUFF_SIZE);
-    if (bytesRead <= 0) {
-        _connectionState = ERROR;
+    if (bytesRead == 0) {
+        close(_socket);
+        _connectionState = CLOSE;
+        return ;
+    }
+    if (bytesRead < 0) {
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "500";
+//        std::cout << _socket << std::endl;
         size_t endOfLine = _readingBuffer.find("\r\n");
         if (endOfLine == std::string::npos)
             _readingBuffer = "";
@@ -29,7 +35,8 @@ void ReadingTransmitterClass::_readIntoBuffer() {
             _readingBuffer = _readingBuffer.substr(endOfLine + 2);
         return ;
     }
-    _readingBuffer += std::string(temporaryBuffer);
+    _readingBuffer += std::string(temporaryBuffer, bytesRead);
+
 }
 
 void ReadingTransmitterClass::_processingFirstLine() {
@@ -40,7 +47,7 @@ void ReadingTransmitterClass::_processingFirstLine() {
 
     /// Проверяем, что в первой строке три составляющих
     if (firstLineParts.size() != 3) {
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "400";
         _readingBuffer = _readingBuffer.substr(length + 2);
         return ;
@@ -53,7 +60,7 @@ void ReadingTransmitterClass::_processingFirstLine() {
         firstLineParts[0] != "post" &&
         firstLineParts[0] != "DELETE" &&
         firstLineParts[0] != "delete") {
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "400";
         _readingBuffer = _readingBuffer.substr(length + 2);
         return ;
@@ -61,7 +68,7 @@ void ReadingTransmitterClass::_processingFirstLine() {
 
     /// Проверяем, что нужный протокол соответствует пришедшему протоколу
     if (firstLineParts[2] != "HTTP/1.1") {
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "505";
         _readingBuffer = _readingBuffer.substr(length + 2);
         return ;
@@ -77,7 +84,7 @@ void ReadingTransmitterClass::_processingHeaders() {
     /// Проверяем наличие хоста и находим хост
     size_t hostBeginning = _readingBuffer.find("Host:");
     if (hostBeginning == std::string::npos) {
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
         _responseStatus = "400";
         size_t headersEnd = 4 + _readingBuffer.find("\r\n\r\n");
         _readingBuffer = _readingBuffer.substr(headersEnd);
@@ -128,7 +135,7 @@ void ReadingTransmitterClass::_processingHeaders() {
             _contentLength = lengthInInt;
         } catch (std::exception & ex) {
             _responseStatus = "400";
-            _connectionState = ERROR;
+            _connectionState = ERROR_WHILE_READING;
             size_t headersEnd = 4 + _readingBuffer.find("\r\n\r\n");
             _readingBuffer = _readingBuffer.substr(headersEnd);
             return ;
@@ -172,6 +179,7 @@ void ReadingTransmitterClass::_contentLengthReading() {
     /// Находим длину запроса, понадобится для обработки
     size_t totalLengthOfRequest = _readingBuffer.find("\r\n\r\n") + 4 + _contentLength;
 
+    std::cout << totalLengthOfRequest << " " << _readingBuffer.size() << std::endl;
     /// Проверяем настал ли момент начинать обработку текущего запроса
     if (totalLengthOfRequest > _readingBuffer.size())
         return ;
@@ -196,7 +204,7 @@ void ReadingTransmitterClass::_chunkedEncodingReading(int & unchunkedPartLength)
     std::string bodyPart = _readingBuffer.substr(beginningOfBody);
 
     /// Если прочитано меньше, чем можно по чанку, читаем еще
-    if (bodyPart.size() < unchunkedPartLength)
+    if (bodyPart.size() < (size_t)unchunkedPartLength)
         return ;
 
     /// Находим текущий чанк
@@ -251,7 +259,7 @@ void ReadingTransmitterClass::_chunkedEncodingReading(int & unchunkedPartLength)
         unchunkedPartLength = 0;
 
         /// Меняем статус на ОШИБКУ
-        _connectionState = ERROR;
+        _connectionState = ERROR_WHILE_READING;
 
         /// Указываем статус ошибки
         _responseStatus = "402";
@@ -310,7 +318,7 @@ void ReadingTransmitterClass::operate() {
         _readingBody();
 
     /// Обрабатываем ошибки
-    if (_connectionState == ERROR) {
+    if (_connectionState == ERROR_WHILE_READING) {
         std::cout << "статус " << _responseStatus << std::endl; // +
         std::cout << "------------------------" << std::endl; // +
         std::cout << "уходит в обработчик" << std::endl; // +
@@ -327,11 +335,28 @@ void ReadingTransmitterClass::operate() {
         std::cout << "--------------------------" << std::endl; // +
         std::cout << "хост - " << _host << std::endl; // +
         // находим нужного хоста
-//        Server *applicableHost = findRightHost();
-//
+        Server *applicableHost = findRightHost();
+
 //        std::cout << applicableHost->getHostName() << std::endl;
         // формируем ответ ошибки
-
+        ParseRequest requestParser = ParseRequest();
+        requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
+        Response response = Response();
+        std::string numErrorStr = requestParser.getCode();
+        if (numErrorStr == "400")
+            _closeConnection = true;
+        if (requestParser.getForCgi())
+        {
+//            std::cout << "++++";
+//            /* ----------------------- Просто тестирую работу cgi ----------------------- */
+            std::string cgiUri = "." + requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
+            Cgi cgi(requestParser, cgiUri, this->env, applicableHost->getLocations()[requestParser.getLocationName()].getMaxBodySize());
+//            /* -------------------------------------------------------------------------- */
+            _writingBuffer = cgi.getCgiResponse();
+//            // res = response.creatRespons(parse, parse.getCode(), cgi.getCgiResponse());
+        }
+        else
+            _writingBuffer = response.creatRespons(requestParser, numErrorStr);
         // возвращаем исходное значение полям класса
         returnDefaultValues();
         // меняем статус
@@ -356,9 +381,27 @@ void ReadingTransmitterClass::operate() {
         // находим нужного хоста
         Server *applicableHost = findRightHost();
 
-        std::cout << applicableHost->getHostName() << std::endl; // +
+//        std::cout << applicableHost->getHostName() << std::endl; // +
         // формируем ответ
-
+        ParseRequest requestParser = ParseRequest();
+        requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
+        std::string numErrorStr = requestParser.getCode();
+        Response response = Response();
+        if (requestParser.getForCgi())
+        {
+//            std::cout << "++++";
+            /* ----------------------- Просто тестирую работу cgi ----------------------- */
+            std::string cgiUri = "." + requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
+            Cgi cgi(requestParser, cgiUri, this->env, applicableHost->getLocations()[requestParser.getLocationName()].getMaxBodySize());
+//            /* -------------------------------------------------------------------------- */
+            _writingBuffer = cgi.getCgiResponse();
+            // res = response.creatRespons(parse, parse.getCode(), cgi.getCgiResponse());
+        }
+        else
+            _writingBuffer = response.creatRespons(requestParser, numErrorStr);
+        if (numErrorStr == "400")
+            _closeConnection = true;
+//        _writingBuffer = response.creatRespons(requestParser, numErrorStr);
         // возвращаем исходное значение полей класса
         returnDefaultValues();
         // меняем статус

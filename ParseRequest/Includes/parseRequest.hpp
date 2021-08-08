@@ -116,8 +116,10 @@ class ParseRequest
         String      _code;
         String      _path;
         String      _versProtocol;
+        String      _rashirenie;
         String      _body; //тело в post
-        String      _contentType; 
+        String      _contentType;
+        String _locationName;
         Map         _heading; //словарь заголовков
         Map         _types; // доступные расширение файла
         Vector      _keys; // доступные заголовки
@@ -139,13 +141,18 @@ class ParseRequest
         //~ParseRequest();
         //==================get/set================
         const String            &getMethod() const;
+
+
         const String            &getPath() const;
         const String            &getVersProtocol() const;
         const String            &getBody() const;
         const String            &getStr() const;
         const String            &getStrPath() const;
         const String            &getContentType() const;
+        const String			&getLocationName() const {return this->_locationName;}
+        const std::string       &getRashirenie() const { return this->_rashirenie; }
         const Map               &getMap() const;
+        const Map               &getHeading() const {return this->_heading;};
         const String            &getCode() const;
         int                     getBodyLength() const;
         const unsigned long     &getSizeFile() const;
@@ -153,6 +160,7 @@ class ParseRequest
         const std::string       & getIndexingFilePath() const;
         const std::map<std::string,std::string>   &getErrorFilePath() const;
         bool                     getForCgi() const;
+
         
         const  Map   &getType()const;
         //===========Parsing methods===============

@@ -1,4 +1,4 @@
-#include "../includes/parseRequest.hpp"
+#include "../Includes/parseRequest.hpp"
 #include "../utils/utils.hpp"
 ParseRequest::ParseRequest() : _bodyLength(0) {}
 
@@ -220,7 +220,7 @@ error ParseRequest::parsingHeading(String request)
 	}
     std::vector<String> temp = split(request);
     String key = temp[0].erase(temp[0].size() - 1);
-    if(!checkKey(key) || this->_heading.count(key) == 1)
+    if(this->_heading.count(key) == 1)
     {
         this-> _code = "400";
         return BadRequest;
@@ -241,17 +241,12 @@ void ParseRequest::parsGet()
 
 error ParseRequest::findLocation()
 {
-    if (this->_path.back() != '/')
-        return(OK);
-    if(this->_locations.count(this->_path) == 0)
-    {
-        this-> _code = "400";
-        return BadRequest;
-    }
-    this->_rootDirectory = this->_locations[this->_path].getRootDirectory();
-    this->_indexingFilePath = this->_locations[this->_path].getIndexingFilePath();
-    this->_cgi = this->_locations[this->_path].getCgi();
-    this->_listOfAllowedMethods = this->_locations[this->_path].getAllowedMethods();
+
+    this->_rootDirectory = this->_locations[this->_locationName].getRootDirectory();
+    std::cout <<  this->_rootDirectory<< "rooot\n";
+    this->_indexingFilePath = this->_locations[this->_locationName].getIndexingFilePath();
+    this->_cgi = this->_locations[this->_locationName].getCgi();
+    this->_listOfAllowedMethods = this->_locations[this->_locationName].getAllowedMethods();
     return(OK);
 }
 error ParseRequest::requestForCgi()
@@ -264,10 +259,16 @@ error ParseRequest::typeDefinitionMethod()
 {
     //std::cout << "govno!!!\n";
     std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
+    std::cout << fn << "fn"<< std::endl;
     if (this->_cgi.count(fn) == 1)
+    {
+         
         this->_forCgi = true;
+        std::cout << this->_forCgi<< "this->_forCgi"<< std::endl;
+    }
     else
         requestForNotCgi();
+    this->_rashirenie = fn;
     return(OK);
 }
 
@@ -275,8 +276,8 @@ error ParseRequest::requestForNotCgi()
 {
     if (this->_method == "GET")
     {
-        //std::cout << "govno!!!\n";
-        if (fileToString(this->getStrPath()) == IS_DIR) 
+        std::cout <<this->_strPath<<  "!!!!!!!!!!!!!!!!!!!\n";
+        if (fileToString(this->_strPath) == IS_DIR) 
         {   
             dirToString(this->_indexingFilePath);
         }
@@ -322,9 +323,19 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     if (parsingStartLine(str) != OK)
         return(BadRequest);
     std::cout << "govno!!!\n";
-    if ( this->_path != "/")
-        if(findLocation() == BadRequest)
-            return BadRequest;//////
+    int i = 1;
+   // int count = 0;
+   while(this->_path[i] && this->_path[i] != '/' )
+        i++;
+    this->_locationName = this->_path.substr(0,i);
+    std::cout << this->_locationName << "\n";
+    if(this->_locations.count(this->_locationName) != 0)
+    {
+        std::cout << "stop123\n";
+        findLocation();
+    }
+
+    std::cout << this->_rootDirectory <<"stop\n";
     findPath(this->_rootDirectory);
     str =  getLine(request);
     while(str != "")
@@ -333,12 +344,13 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
             return BadRequest;
         str = getLine(request);
     }
+    std::cout << "stop1\n";
     if(this->_heading.count("host") == 0)
     {
         this-> _code = "400";
         return BadRequest;
     }
-    
+    std::cout << "stop2\n";
     print(this->_heading);
     if(!request.empty())
         this->_body = request;
@@ -468,6 +480,7 @@ error ParseRequest::dirToString(std::string indexFile)
 {
     findNewPath(indexFile);
     std::ifstream file(this->_strPath);  
+     std::cout  << "|"<< this->_strPath << "|"<< std::endl;
     if (!file.is_open()) 
     {
         this->_code = "404";
@@ -495,6 +508,7 @@ error ParseRequest::dirToString(std::string indexFile)
     
     if (root.back() == '/' || stat(root.c_str(), &stat1))//!!!
         return(IS_DIR);
+    std::cout  << "|"<< root << "|"<< std::endl;
     std::ifstream file(root);  
     if (!file.is_open()) 
     {

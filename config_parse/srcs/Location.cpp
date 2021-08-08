@@ -101,6 +101,7 @@ void Location::parseCgi(std::vector<std::string> & cgi_line)
 	try
 	{
 		std::string cgi_excention = cgi_line[0];
+		cgi_excention.erase(0, 2);
 		this->_cgi[cgi_excention] = cgi_line[1].erase(cgi_line[1].find(';'));
 	}
 	catch(const std::exception& e)

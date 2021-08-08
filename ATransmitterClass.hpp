@@ -8,6 +8,8 @@
 # include "ConnectionStateENUM.hpp"
 # include "ParseRequest/utils/utils.hpp"
 # include <cstdlib>
+# include "ParseRequest/Includes/parseRequest.hpp"
+# include "ParseRequest/response/response.hpp"
 
 # define BUFF_SIZE 1024
 
