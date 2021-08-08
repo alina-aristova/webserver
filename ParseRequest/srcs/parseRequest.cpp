@@ -412,7 +412,10 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     std::cout << "stop2\n";
     print(this->_heading);
     if(!request.empty())
+	{
+		std::cout << "Hello Govno!" << std::endl;
         this->_body = request;
+	}
     typeDefinitionMethod();
 
     return OK;
