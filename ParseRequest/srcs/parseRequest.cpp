@@ -246,6 +246,7 @@ error ParseRequest::findLocation()
     this->_indexingFilePath = this->_locations[this->_locationName].getIndexingFilePath();
     this->_cgi = this->_locations[this->_locationName].getCgi();
     this->_listOfAllowedMethods = this->_locations[this->_locationName].getAllowedMethods();
+    this->_autoindex = this->_locations[this->_locationName].getAutoIndex();
     return(OK);
 }
 error ParseRequest::requestForCgi()
@@ -371,6 +372,7 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     this->_rootDirectory = host.getRootDirectory();
     this->_indexingFilePath = host.getIndexingFilePath();
     this->_locations = host.getLocations();
+    this->_autoindex = host.getAutoIndex();
     if (NumCode != "200")
     {
         this->_code = NumCode;

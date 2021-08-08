@@ -129,7 +129,7 @@ class ParseRequest
         String      _str; // буфер в который считали данные из файла
         String      _strPath; // путь
         unsigned long _sizeFile;
-
+        bool			_autoindex;
        std::map<std::string,std::string>      _errorFilePath;
         String      _indexingFilePath;
         String      _rootDirectory;
@@ -163,7 +163,7 @@ class ParseRequest
         const std::map<std::string,std::string>   &getErrorFilePath() const;
         bool                     getForCgi() const;
 
-        
+        bool	getAutoIndex(void) const {return _autoindex;}
         const  Map   &getType()const;
         //===========Parsing methods===============
         error                 parsingStartLine(String &line);
