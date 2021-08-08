@@ -1,7 +1,7 @@
 #include "../includes/Location.hpp"
 #include <algorithm>
 Location::Location(){}
-Location::Location(std::ifstream & ifs, std::string & buf, Server const & serverPlace):
+Location::Location(std::ifstream & ifs, std::string & buf, Server const & serverPlace): _autoindex(true),
 _rootDirectory(serverPlace.getRootDirectory()), _indexingFilePath(serverPlace.getIndexingFilePath()), 
 _storageDirectory(serverPlace.getStorageDirectory()), _clientMaxBodySize(DEFAULT_MAX_BODY_SIZE),
 _allowedMethods(serverPlace.getAllowedMethods())
@@ -11,6 +11,7 @@ _allowedMethods(serverPlace.getAllowedMethods())
 	_parseDirectiveFields["index"] = &Location::parseIndexingFilePath;
 	_parseDirectiveFields["cgi"] = &Location::parseCgi;
 	_parseDirectiveFields["client_max_body_size"] = &Location::parseClientMaxBodySize;
+	_parseDirectiveFields["autoindex"] = &Location::parseAutoIndex;
 
 	parseLocationBlock(ifs, buf);
 }
@@ -39,6 +40,24 @@ void Location::parseLocationBlock(std::ifstream & ifs, std::string & buf)
 			wordsInLine.push_back(word);
 		}
 		(this->*handler)(wordsInLine);
+	}
+}
+
+void Location::parseAutoIndex(std::vector<std::string> & index)
+{
+	if (index.size() != 1)
+		throw SyntaxError();
+	try
+	{
+		index[0].erase(index[0].find(";"));
+		if (index[0] == "off")
+			this->_autoindex = false;
+		else if (index[0] != "on")
+			throw SyntaxError();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
 	}
 }
 

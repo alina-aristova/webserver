@@ -12,6 +12,7 @@ class Location
 	typedef void (Location::*parseFunc)(std::vector<std::string> &);
 
 	private:
+		bool			_autoindex;
 		std::string		_rootDirectory;
 		std::string		_indexingFilePath;
 		std::string		_storageDirectory;
@@ -27,6 +28,7 @@ class Location
 		void parseIndexingFilePath(std::vector<std::string> & index);
 		void parseCgi(std::vector<std::string> & cgi_line);
 		void parseClientMaxBodySize(std::vector<std::string> & body_size);
+		void parseAutoIndex(std::vector<std::string> & index);
 
 	public:
 		Location();
@@ -34,6 +36,7 @@ class Location
 		~Location(void) {};
 
 		/* ------------------------------- Интерфейсы ------------------------------- */
+		bool	getAutoIndex(void) const {return _autoindex;}
 		std::string getRootDirectory(void) const {return _rootDirectory;}
 		std::string getIndexingFilePath(void) const {return _indexingFilePath;}
 		std::string		getStorageDirectory(void) const {return _storageDirectory;}
