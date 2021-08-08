@@ -1,6 +1,6 @@
 #include "../includes/Server.hpp"
 
-Server::Server(std::ifstream & ifs, std::string & buf) : _port(DEFAULT_PORT), _hostName(DEFAULT_HOSTNAME), _rootDirectory(DEFAULT_ROOT_DIRECTORY),
+Server::Server(std::ifstream & ifs, std::string & buf) : _port(DEFAULT_PORT), _autoindex(true), _hostName(DEFAULT_HOSTNAME), _rootDirectory(DEFAULT_ROOT_DIRECTORY),
 _indexingFilePath(DEFAULT_INDEXING_FILE_PATH), _storageDirectory(DEFAULT_STORAGE_DIRECTORY), _clientMaxBodySize(DEFAULT_MAX_BODY_SIZE)
 {
 	_allowedMethods.push_back("ADD");
@@ -13,6 +13,7 @@ _indexingFilePath(DEFAULT_INDEXING_FILE_PATH), _storageDirectory(DEFAULT_STORAGE
 	_parseServerFields["error_page"] = &Server::parseErrorPage;
 	_parseServerFields["cgi"] = &Server::parseCgi;
 	_parseServerFields["client_max_body_size"] = &Server::parseClientMaxBodySize;
+	_parseServerFields["autoindex"] = &Server::parseAutoIndex;
 	parseServerBlock(ifs, buf);
 }
 
@@ -72,6 +73,24 @@ void Server::parseListen(std::vector<std::string> & port)
 	catch(const std::exception& e)
 	{
 		std::cerr << "Syntax Error!" << std::endl;
+	}
+}
+
+void Server::parseAutoIndex(std::vector<std::string> & index)
+{
+	if (index.size() != 1)
+		throw SyntaxError();
+	try
+	{
+		index[0].erase(index[0].find(";"));
+		if (index[0] == "off")
+			this->_autoindex = false;
+		else if (index[0] != "on")
+			throw SyntaxError();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
 	}
 }
 
