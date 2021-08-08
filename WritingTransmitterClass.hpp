@@ -6,7 +6,7 @@
 
 class WritingTransmitterClass : public ATransmitterClass {
 public:
-    WritingTransmitterClass(int socket, std::string & responseStatus, ConnectionState & connectionState,
+    WritingTransmitterClass(int socket, std::string & responseStatus, ConnectionState connectionState,
                             std::string & writingBuffer, bool & closeConnection);
     virtual ~WritingTransmitterClass();
     void operate();

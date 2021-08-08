@@ -16,6 +16,8 @@
  # include <fstream>
  # include <string>
  # include <sys/stat.h>
+ # include <sys/types.h>
+ # include <dirent.h>
  # include "../../config_parse/includes/Configuration.hpp"
 
  # define String std::string

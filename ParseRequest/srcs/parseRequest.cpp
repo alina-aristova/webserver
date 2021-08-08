@@ -243,7 +243,6 @@ error ParseRequest::findLocation()
 {
 
     this->_rootDirectory = this->_locations[this->_locationName].getRootDirectory();
-    std::cout <<  this->_rootDirectory<< "rooot\n";
     this->_indexingFilePath = this->_locations[this->_locationName].getIndexingFilePath();
     this->_cgi = this->_locations[this->_locationName].getCgi();
     this->_listOfAllowedMethods = this->_locations[this->_locationName].getAllowedMethods();
@@ -276,10 +275,33 @@ error ParseRequest::requestForNotCgi()
 {
     if (this->_method == "GET")
     {
-        std::cout <<this->_strPath<<  "!!!!!!!!!!!!!!!!!!!\n";
-        if (fileToString(this->_strPath) == IS_DIR) 
-        {   
-            dirToString(this->_indexingFilePath);
+        //std::cout << "govno!!!\n";
+        if (fileToString(this->getStrPath()) == IS_DIR) 
+        {
+            if (this->_indexingFilePath.find("index.html") != std::string::npos)
+            {
+                DIR *myDirectory = opendir(this->getStrPath().c_str());
+                std::stringstream ss;
+                if (myDirectory != nullptr)
+                {
+                    struct dirent* entity;
+                    entity = readdir(myDirectory);
+                    ss << "<!DOCTYPE html>" << std::endl;
+                    ss << "<html>\n<body>" << std::endl;
+                    while (entity != NULL) {
+                        ss << "<p><a href=\"./" << entity->d_name << "\">" << entity->d_name << "</a></p>" << std::endl;
+                        entity = readdir(myDirectory);
+                    }
+                    ss << "</body>\n</html>" << std::endl;
+                    closedir(myDirectory);
+                }
+                this->_str = ss.str();
+                this->_sizeFile = _str.size();
+                this->_code = "200";
+                this->_contentType = "html";
+            }
+            else
+                dirToString(this->_indexingFilePath);
         }
         findType(this->getStrPath());
         
@@ -287,13 +309,50 @@ error ParseRequest::requestForNotCgi()
     #include <stdio.h>
     if (this->_method == "POST")
     {
-       
+        std::string boundaryStr = this->_body.substr(0, this->_body.find("\r\n"));
+        size_t boundaryStrSize = boundaryStr.size() + 2;
+        size_t fileNameStartIndex = this->_body.find("filename=\"") + 10;
+        size_t fileNameLength = this->_body.substr(fileNameStartIndex).find("\"");
+        std::string fileName = this->_body.substr(fileNameStartIndex, fileNameLength);
+        //std::cout << "*****************************" << std::endl;
+        //std::cout << fileName << std::endl;
+        //std::cout << "*****************************" << std::endl;
+        //std::cout << getStrPath() << std::endl;
+        //std::cout << "*****************************" << std::endl;
+        //std::cout << this->_body;
+        this->_body = this->_body.substr(this->_body.find("\r\n\r\n") + 4);
+        size_t bodySize = this->_body.size() - boundaryStrSize - 4;
+        this->_body = this->_body.substr(0, bodySize);
+        //std::cout << "*****************************" << std::endl;
+
+        std::string pathStr = getStrPath();
+        if (pathStr[pathStr.size() - 1] != '/')
+            pathStr += '/';
+        std::fstream fs;
+        fs.open(pathStr + fileName, std::fstream::in | std::fstream::out | std::fstream::app);
+        if (fs.is_open()) {
+            fs << this->_body << std::endl;
+            fs.close();
+            this->_str = "";
+            this->_sizeFile = _str.size();
+            this->_code = "200";
+            this->_contentType = "html";
+        }
+        else {
+            this->_code = "400";
+            this->_sizeFile = 0;
+            this->_str = "";
+            return (BadRequest);
+        }
     }
     if (this->_method == "DELETE")
     {
         std::cout << this->_path;
-         if(remove(this->_path.c_str()) == 0)
+        findPath(this->_rootDirectory);
+         if(remove((getStrPath()).c_str()) == 0)
             std::cout << "удадилили\n";
+         else
+             std::cout << "------------------------" << std::endl << "не удалили" << std::endl;
     }
     return(OK);
 }
@@ -335,7 +394,7 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
         findLocation();
     }
 
-    std::cout << this->_rootDirectory <<"stop\n";
+    std::cout << "stop\n";
     findPath(this->_rootDirectory);
     str =  getLine(request);
     while(str != "")
@@ -490,7 +549,7 @@ error ParseRequest::dirToString(std::string indexFile)
                     std::istreambuf_iterator<char>());
     this->_str = str;
     this->_sizeFile = str.size();
-    this-> _code = "200";
+    this->_code = "200";
     return(OK);
 }
 

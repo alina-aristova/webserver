@@ -16,11 +16,11 @@ private:
     bool _closeConnection;
     std::string _responseStatus;
     std::string _writingBuff;
-    ConnectionState _stateOfConnection;
     std::map<std::string, Server *> _hosts;
+public:
     WritingTransmitterClass *_writer;
     ReadingTransmitterClass *_reader;
-public:
+    ConnectionState _stateOfConnection;
     char **env;
     ConnectionClass(int socket, std::map<std::string, Server *> hosts);
     ConnectionState getConnectionStatus();

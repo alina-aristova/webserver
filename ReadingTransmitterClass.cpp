@@ -1,10 +1,11 @@
 # include "ReadingTransmitterClass.hpp"
 
-ReadingTransmitterClass::ReadingTransmitterClass(int socket, std::string &responseStatus, ConnectionState &connectionState,
+ReadingTransmitterClass::ReadingTransmitterClass(int socket, std::string &responseStatus, ConnectionState connectionState,
 std::string &writingBuffer, bool & closeConnection, std::map<std::string, Server *> availableHosts)
 : ATransmitterClass(socket, responseStatus, connectionState, writingBuffer, closeConnection), _availableHosts(availableHosts) {
     _readingBuffer = std::string("");
     _bufferToBeProcessed = std::string("");
+    _connectionState = IS_PROCESSING_FIRST_LINE;
     _host = std::string("default");
     _readingBodyFunType = CLASSIC;
     _contentLength = 0;
@@ -204,7 +205,7 @@ void ReadingTransmitterClass::_chunkedEncodingReading(int & unchunkedPartLength)
     std::string bodyPart = _readingBuffer.substr(beginningOfBody);
 
     /// Если прочитано меньше, чем можно по чанку, читаем еще
-    if (bodyPart.size() < (size_t)unchunkedPartLength)
+    if ((int)bodyPart.size() < unchunkedPartLength)
         return ;
 
     /// Находим текущий чанк
@@ -319,6 +320,10 @@ void ReadingTransmitterClass::operate() {
 
     /// Обрабатываем ошибки
     if (_connectionState == ERROR_WHILE_READING) {
+        /// выводим что у нас вышло в запросе ///
+        std::cout << std::endl;
+        std::cout << "*************   Request      *************" << std::endl;
+        std::cout << "******************************************" << std::endl;
         std::cout << "статус " << _responseStatus << std::endl; // +
         std::cout << "------------------------" << std::endl; // +
         std::cout << "уходит в обработчик" << std::endl; // +
@@ -334,36 +339,44 @@ void ReadingTransmitterClass::operate() {
             std::cout << "поддержано" << std::endl; // +
         std::cout << "--------------------------" << std::endl; // +
         std::cout << "хост - " << _host << std::endl; // +
-        // находим нужного хоста
+        std::cout << "******************************************" << std::endl;
+
+        /// находим нужного хоста
         Server *applicableHost = findRightHost();
 
-//        std::cout << applicableHost->getHostName() << std::endl;
-        // формируем ответ ошибки
+        /// формируем ответ ошибки
         ParseRequest requestParser = ParseRequest();
         requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
         Response response = Response();
         std::string numErrorStr = requestParser.getCode();
+
+        /// Если плохой статус, закрываем приложение
         if (numErrorStr == "400")
             _closeConnection = true;
+        /// Проверяем тип запроса и если надо запускаем CGI, в любом случае формируем response
         if (requestParser.getForCgi())
         {
-//            std::cout << "++++";
-//            /* ----------------------- Просто тестирую работу cgi ----------------------- */
             std::string cgiUri = "." + requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
             Cgi cgi(requestParser, cgiUri, this->env, applicableHost->getLocations()[requestParser.getLocationName()].getMaxBodySize());
-//            /* -------------------------------------------------------------------------- */
             _writingBuffer = cgi.getCgiResponse();
-//            // res = response.creatRespons(parse, parse.getCode(), cgi.getCgiResponse());
         }
         else
             _writingBuffer = response.creatRespons(requestParser, numErrorStr);
-        // возвращаем исходное значение полям класса
+        /// возвращаем исходное значение полям класса
         returnDefaultValues();
-        // меняем статус
+        /// меняем статус
         _connectionState = IS_WRITING_RESPONSE;
     }
     else if (_connectionState == IS_FORMING_RESPONSE) {
+        /// выводим что у нас вышло в запросе ///
+        std::cout << std::endl;
+        std::cout << "******************************************" << std::endl;
+        std::cout << "*************   Request      *************" << std::endl;
+        std::cout << "******************************************" << std::endl;
         std::cout << "статус " << _responseStatus << std::endl; // +
+        std::cout << "------------------------" << std::endl; // +
+        std::cout << "файловый дескриптор" << std::endl; // +
+        std::cout << _socket << std::endl; // +
         std::cout << "------------------------" << std::endl; // +
         std::cout << "уходит в обработчик" << std::endl; // +
         std::cout << _bufferToBeProcessed << std::endl; // +
@@ -378,33 +391,35 @@ void ReadingTransmitterClass::operate() {
             std::cout << "поддержано" << std::endl; // +
         std::cout << "--------------------------" << std::endl; // +
         std::cout << "хост - " << _host << std::endl; // +
-        // находим нужного хоста
+        std::cout << "******************************************" << std::endl << std::endl;
+
+        /// находим нужного хоста
         Server *applicableHost = findRightHost();
 
-//        std::cout << applicableHost->getHostName() << std::endl; // +
-        // формируем ответ
+        /// формируем ответ
         ParseRequest requestParser = ParseRequest();
         requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);
         std::string numErrorStr = requestParser.getCode();
         Response response = Response();
+
+        /// Если плохой статус, закрываем приложение
+        if (numErrorStr == "400")
+            _closeConnection = true;
+
+        /// Проверяем тип запроса и если надо запускаем CGI, в любом случае формируем response
         if (requestParser.getForCgi())
         {
-//            std::cout << "++++";
-            /* ----------------------- Просто тестирую работу cgi ----------------------- */
             std::string cgiUri = "." + requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
             Cgi cgi(requestParser, cgiUri, this->env, applicableHost->getLocations()[requestParser.getLocationName()].getMaxBodySize());
-//            /* -------------------------------------------------------------------------- */
             _writingBuffer = cgi.getCgiResponse();
-            // res = response.creatRespons(parse, parse.getCode(), cgi.getCgiResponse());
         }
         else
             _writingBuffer = response.creatRespons(requestParser, numErrorStr);
-        if (numErrorStr == "400")
-            _closeConnection = true;
-//        _writingBuffer = response.creatRespons(requestParser, numErrorStr);
-        // возвращаем исходное значение полей класса
+
+        /// возвращаем исходное значение полей класса
         returnDefaultValues();
-        // меняем статус
+
+        /// меняем статус
         _connectionState = IS_WRITING_RESPONSE;
     }
 }
