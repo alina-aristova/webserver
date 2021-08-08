@@ -21,7 +21,7 @@
 int main(int argc, char **argv, char **env) {
     (void)argc;
     (void)argv;
-    Configuration *ourConfig = new Configuration("/Users/acase/Desktop/web/default.conf");
+    Configuration *ourConfig = new Configuration("default.conf");
     std::vector <Server> ourServers = ourConfig->getServers();
 
     std::map < std::string, Server * > HostMap;
