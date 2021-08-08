@@ -1,4 +1,3 @@
-
 # include <iostream>
 # include <string>
 # include "ReadingTransmitterClass.hpp"
@@ -170,3 +169,5 @@ int main(int argc, char **argv, char **env) {
         max_socket_fd = temp_max_fd;
     }
 }
+
+

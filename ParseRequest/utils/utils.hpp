@@ -28,6 +28,7 @@ inline bool delim(char c)
 {
     return del(c);
 }
+
 inline bool notdelim(char c)
 {
     return !del(c);
