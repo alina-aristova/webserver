@@ -19,6 +19,7 @@ void ReadingTransmitterClass::_readIntoBuffer() {
     char temporaryBuffer[BUFF_SIZE];
     int bytesRead;
     bzero(temporaryBuffer, BUFF_SIZE);
+    fcntl(_socket, F_SETFL, O_NONBLOCK);
     bytesRead = read(_socket, temporaryBuffer, BUFF_SIZE);
     if (bytesRead == 0) {
         close(_socket);

@@ -9,6 +9,7 @@ void WritingTransmitterClass::operate() {
     int bytes_written = 0;
 
     /// записать сколько получится
+    fcntl(_socket, F_SETFL, O_NONBLOCK);
     bytes_written = write(_socket, _writingBuffer.c_str(), _writingBuffer.size());
 
     std::cout << std::endl << "*******************************************" << std::endl;
@@ -23,7 +24,10 @@ void WritingTransmitterClass::operate() {
         _connectionState = IS_PROCESSING_FIRST_LINE;
         _writingBuffer = "";
         if (_closeConnection)
+        {
             _connectionState = CLOSE;
+            close(_socket);
+        }
         return ;
     }
 

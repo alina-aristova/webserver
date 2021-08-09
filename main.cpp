@@ -49,7 +49,7 @@ int main(int argc, char **argv, char **env) {
     }
 
 
-    std::map<int, ConnectionClass> socketConnectionMap;
+    std::map<int, ConnectionClass *> socketConnectionMap;
 
     std::map<int, std::map<std::string, Server *> > socketServerMap;
 
@@ -120,15 +120,15 @@ int main(int argc, char **argv, char **env) {
                         max_socket_fd = new_socket;
                     ConnectionClass *newConnection = new ConnectionClass(new_socket, socketServerMap.at(iter->first));
                     socketConnectionMap.insert(
-                            std::make_pair(new_socket, *newConnection));
+                            std::make_pair(new_socket, newConnection));
                     socketTypeMap[new_socket] = "reading/writing";
                     ++iter;
                 }
                 else {
-                    socketConnectionMap.at(iter->first).setEnv(env);
-                    socketConnectionMap.at(iter->first)._reader->_connectionState = socketConnectionMap.at(iter->first)._stateOfConnection;
-                    socketConnectionMap.at(iter->first).receive();
-                    if (socketConnectionMap.at(iter->first).getConnectionStatus() == CLOSE) {
+                    socketConnectionMap.at(iter->first)->setEnv(env);
+                    socketConnectionMap.at(iter->first)->_reader->_connectionState = socketConnectionMap.at(iter->first)->_stateOfConnection;
+                    socketConnectionMap.at(iter->first)->receive();
+                    if (socketConnectionMap.at(iter->first)->getConnectionStatus() == CLOSE) {
                         socketConnectionMap.erase(iter->first);
                         socketServerMap.erase(iter->first);
                         socketTypeMap.erase(iter++);
@@ -144,9 +144,10 @@ int main(int argc, char **argv, char **env) {
         iter = socketTypeMap.begin();
         for (; iter != socketTypeMap.end();) {
             if (FD_ISSET(iter->first, &ready_writing_sockets)) {
-                socketConnectionMap.at(iter->first).setEnv(env);
-                socketConnectionMap.at(iter->first).transmit();
-                if (socketConnectionMap.at(iter->first).getConnectionStatus() == CLOSE) {
+                socketConnectionMap.at(iter->first)->setEnv(env);
+                socketConnectionMap.at(iter->first)->transmit();
+                if (socketConnectionMap.at(iter->first)->getConnectionStatus() == CLOSE) {
+                    delete socketConnectionMap.at(iter->first);
                     socketConnectionMap.erase(iter->first);
                     socketServerMap.erase(iter->first);
                     socketTypeMap.erase(iter++);

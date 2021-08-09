@@ -32,3 +32,7 @@ ConnectionState ConnectionClass::getConnectionStatus() { return _stateOfConnecti
 
 void ConnectionClass::setEnv(char **env) { this->env = env; }
 
+ConnectionClass::~ConnectionClass() {
+    delete _reader;
+    delete _writer;
+}

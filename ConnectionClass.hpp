@@ -24,6 +24,7 @@ public:
     char **env;
     ConnectionClass(int socket, std::map<std::string, Server *> hosts);
     ConnectionState getConnectionStatus();
+    ~ConnectionClass();
     void setEnv(char **env);
     void receive();
     void transmit();
