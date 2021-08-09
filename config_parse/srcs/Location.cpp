@@ -1,7 +1,7 @@
 #include "../includes/Location.hpp"
 #include <algorithm>
 Location::Location(){}
-Location::Location(std::ifstream & ifs, std::string & buf, Server const & serverPlace): _autoindex(true),
+Location::Location(std::ifstream & ifs, std::string & buf, Server const & serverPlace): _autoindex(serverPlace.getAutoIndex()),
 _rootDirectory(serverPlace.getRootDirectory()), _indexingFilePath(serverPlace.getIndexingFilePath()), 
 _storageDirectory(serverPlace.getStorageDirectory()), _clientMaxBodySize(DEFAULT_MAX_BODY_SIZE),
 _allowedMethods(serverPlace.getAllowedMethods())
