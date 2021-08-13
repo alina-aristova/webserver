@@ -69,7 +69,7 @@ char **Cgi::createEnv(ParseRequest & request, char **ev) const
 	env_map["REMOTE_IDENT"] = headers["Authorization"];
 	env_map["REQUEST_METHOD"] = request.getMethod();
 	env_map["REQUEST_URI"] = request.getPath();
-	env_map["COOKIE"] = headers["Cookie"];
+	env_map["COOKIE"] = headers["cookie"];
 	std::size_t index = request.getPath().find('/');
 	if (index != std::string::npos)
 		env_map["SCRIPT_NAME"] = request.getPath().substr(index + 1);
@@ -174,8 +174,7 @@ void Cgi::execCgi(ParseRequest & request, char **main_env, std::string max_body_
 	int pid;
 	int status = 0;
 	std::cout << this->_cgi_path << std::endl;
-	// this->_request_fd = open(this->_request_file.c_str(), O_RDWR);
-	this->_request_fd = open("for_py.html", O_RDWR);
+	this->_request_fd = open(this->_request_file.c_str(), O_RDWR);
 	this->_response_fd = open(this->_response_file.c_str(), O_RDWR);
 	if (this->_response_fd < 0 || this->_request_fd < 0)
 		throw Cgi::OpenFileError();
@@ -190,7 +189,8 @@ void Cgi::execCgi(ParseRequest & request, char **main_env, std::string max_body_
 		dup2(this->_request_fd, 0);
 		dup2(this->_response_fd, 1);
 		if (this->_cgi_path.find(".py"))
-			status = execve("/usr/local/bin/python3", &av[0], ev);
+			// status = execve("/usr/local/bin/python3", &av[0], ev);
+			status = execve("/opt/homebrew/bin/python3", &av[0], ev);
 		else
 			status = execve(this->_cgi_path.c_str(), av, ev);
 		close(this->_request_fd);

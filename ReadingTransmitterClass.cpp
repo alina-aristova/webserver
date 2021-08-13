@@ -357,7 +357,11 @@ void ReadingTransmitterClass::operate() {
         /// Проверяем тип запроса и если надо запускаем CGI, в любом случае формируем response
         if (requestParser.getForCgi())
         {
-            std::string cgiUri = "." + requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
+            std::string cgiUri = requestParser.getRootDirectory();
+			std::size_t found = cgiUri.find_last_of("/");
+			if (found == cgiUri.size() - 1)
+				cgiUri.erase(found);
+			cgiUri += requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
             Cgi cgi(requestParser, cgiUri, this->env, applicableHost->getLocations()[requestParser.getLocationName()].getMaxBodySize());
             _writingBuffer = cgi.getCgiResponse();
         }
@@ -410,7 +414,11 @@ void ReadingTransmitterClass::operate() {
         /// Проверяем тип запроса и если надо запускаем CGI, в любом случае формируем response
         if (requestParser.getForCgi())
         {
-            std::string cgiUri = "." + requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
+            std::string cgiUri = requestParser.getRootDirectory();
+			std::size_t found = cgiUri.find_last_of("/");
+			if (found == cgiUri.size() - 1)
+				cgiUri.erase(found);
+			cgiUri += requestParser.getLocationName() +  applicableHost->getLocations()[requestParser.getLocationName()].getCgi()[requestParser.getRashirenie()];
             Cgi cgi(requestParser, cgiUri, this->env, applicableHost->getLocations()[requestParser.getLocationName()].getMaxBodySize());
             _writingBuffer = cgi.getCgiResponse();
         }
