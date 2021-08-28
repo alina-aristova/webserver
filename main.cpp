@@ -23,29 +23,39 @@ int main(int argc, char **argv, char **env) {
     Configuration *ourConfig = new Configuration("default.conf");
     std::vector <Server> ourServers = ourConfig->getServers();
 
-    std::map < std::string, Server * > HostMap;
+    std::map<int, std::map<std::string, Server *> > portServerMap;
     std::vector<Server>::iterator hostMapBeginning = ourServers.begin();
     for (; hostMapBeginning != ourServers.end(); hostMapBeginning++) {
+        std::map < std::string, Server * > HostMap;
         std::map<std::string, Server *>::iterator currentHost = HostMap.find(hostMapBeginning->getHostName());
         if (currentHost != HostMap.end() && currentHost->second->getPort() == hostMapBeginning->getPort()) {
             std::cout << "Syntax Error!" << std::endl;
             return (0);
         }
         HostMap[hostMapBeginning->getHostName()] = &(*hostMapBeginning);
-    }
 
-    std::map<int, std::map<std::string, Server *> > portServerMap;
-    std::map<std::string, Server *>::iterator portServerMapBeginning = HostMap.begin();
-    for (; portServerMapBeginning != HostMap.end(); portServerMapBeginning++) {
-        int port = portServerMapBeginning->second->getPort();
+        int port = HostMap.begin()->second->getPort();
         if (portServerMap.find(port) != portServerMap.end()) {
-            portServerMap[port][portServerMapBeginning->first] = portServerMapBeginning->second;
+            portServerMap[port][HostMap.begin()->first] = HostMap.begin()->second;
         } else {
             std::map < std::string, Server * > tempMap;
-            tempMap[portServerMapBeginning->first] = portServerMapBeginning->second;
+            tempMap[HostMap.begin()->first] = HostMap.begin()->second;
             portServerMap[port] = tempMap;
         }
     }
+
+//    std::map<int, std::map<std::string, Server *> > portServerMap;
+//    std::map<std::string, Server *>::iterator portServerMapBeginning = HostMap.begin();
+//    for (; portServerMapBeginning != HostMap.end(); portServerMapBeginning++) {
+//        int port = portServerMapBeginning->second->getPort();
+//        if (portServerMap.find(port) != portServerMap.end()) {
+//            portServerMap[port][portServerMapBeginning->first] = portServerMapBeginning->second;
+//        } else {
+//            std::map < std::string, Server * > tempMap;
+//            tempMap[portServerMapBeginning->first] = portServerMapBeginning->second;
+//            portServerMap[port] = tempMap;
+//        }
+//    }
 
 
     std::map<int, ConnectionClass> socketConnectionMap;
@@ -96,6 +106,7 @@ int main(int argc, char **argv, char **env) {
         if (socket_fd > max_socket_fd)
             max_socket_fd = socket_fd;
     }
+
 
     while (true) {
         ready_reading_sockets = current_reading_sockets;
