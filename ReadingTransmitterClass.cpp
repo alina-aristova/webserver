@@ -412,6 +412,7 @@ void ReadingTransmitterClass::operate() {
             _closeConnection = true;
 
         /// Проверяем тип запроса и если надо запускаем CGI, в любом случае формируем response
+		std::cout << requestParser.getForCgi() << std::endl;
         if (requestParser.getForCgi())
         {
             std::string cgiUri = requestParser.getRootDirectory();

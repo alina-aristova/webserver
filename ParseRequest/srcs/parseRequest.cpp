@@ -257,17 +257,20 @@ error ParseRequest::requestForCgi()
 
 error ParseRequest::typeDefinitionMethod()
 {
-    //std::cout << "govno!!!\n";
     std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
+	std::cout << this->_path.find_last_of(".") + 1 << std::endl;
     std::cout << fn << "fn"<< std::endl;
-    if (this->_cgi.count(fn) == 1)
+    if (this->_path.find_last_of(".") != std::string::npos && this->_cgi.count(fn) == 1)
     {
-         
         this->_forCgi = true;
         std::cout << this->_forCgi<< "this->_forCgi"<< std::endl;
     }
     else
+	{
+		this->_forCgi = false;
         requestForNotCgi();
+	}
+	std::cout << "Ошибка! " << this->_forCgi << std::endl;
     this->_rashirenie = fn;
     return(OK);
 }
@@ -279,7 +282,7 @@ error ParseRequest::requestForNotCgi()
         //std::cout << "govno!!!\n";
         if (fileToString(this->getStrPath()) == IS_DIR) 
         {
-            if (this->_indexingFilePath.find("index.html") != std::string::npos)
+            if (this->_autoindex == true)
             {
                 DIR *myDirectory = opendir(this->getStrPath().c_str());
                 std::stringstream ss;
