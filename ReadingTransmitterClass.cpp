@@ -401,6 +401,8 @@ void ReadingTransmitterClass::operate() {
         /// находим нужного хоста
         Server *applicableHost = findRightHost();
 
+        applicableHost->getHostName();
+
         /// формируем ответ
         ParseRequest requestParser = ParseRequest();
         requestParser.parsRequest(_bufferToBeProcessed, *applicableHost, _responseStatus);

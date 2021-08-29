@@ -30,7 +30,10 @@ void WritingTransmitterClass::operate() {
         }
         return ;
     }
-
+    else if (bytes_written <= 0) {
+        _connectionState = CLOSE;
+        close(_socket);
+    }
     /// сдвинуть буффер
     _writingBuffer = _writingBuffer.substr(bytes_written);
 }

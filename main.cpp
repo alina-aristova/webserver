@@ -28,11 +28,11 @@ int main(int argc, char **argv, char **env) {
     std::vector<Server>::iterator hostMapBeginning = ourServers.begin();
     for (; hostMapBeginning != ourServers.end(); hostMapBeginning++) {
         std::map < std::string, Server * > HostMap;
-        std::map<std::string, Server *>::iterator currentHost = HostMap.find(hostMapBeginning->getHostName());
-        if (currentHost != HostMap.end() && currentHost->second->getPort() == hostMapBeginning->getPort()) {
-            std::cout << "Syntax Error!" << std::endl;
-            return (0);
-        }
+//        std::map<std::string, Server *>::iterator currentHost = HostMap.find(hostMapBeginning->getHostName());
+//        if (currentHost != HostMap.end() && currentHost->second->getPort() == hostMapBeginning->getPort()) {
+//            std::cout << "Syntax Error!" << std::endl;
+//            return (0);
+//        }
         HostMap[hostMapBeginning->getHostName()] = &(*hostMapBeginning);
 
         int port = HostMap.begin()->second->getPort();

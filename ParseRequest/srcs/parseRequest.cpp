@@ -274,12 +274,13 @@ error ParseRequest::typeDefinitionMethod()
 
 error ParseRequest::requestForNotCgi()
 {
+
     if (this->_method == "GET")
     {
         //std::cout << "govno!!!\n";
         if (fileToString(this->getStrPath()) == IS_DIR) 
         {
-            if (this->_indexingFilePath.find("index.html") != std::string::npos)
+            if (this->_autoindex)
             {
                 DIR *myDirectory = opendir(this->getStrPath().c_str());
                 std::stringstream ss;
@@ -310,10 +311,28 @@ error ParseRequest::requestForNotCgi()
     #include <stdio.h>
     if (this->_method == "POST")
     {
+        if (this->_body.find("\r\n") == std::string::npos) {
+            this->_code = "400";
+            this->_sizeFile = 0;
+            this->_str = "";
+            return (BadRequest);
+        }
         std::string boundaryStr = this->_body.substr(0, this->_body.find("\r\n"));
         size_t boundaryStrSize = boundaryStr.size() + 2;
         size_t fileNameStartIndex = this->_body.find("filename=\"") + 10;
+        if (this->_body.find("filename=\"") == std::string::npos) {
+            this->_code = "400";
+            this->_sizeFile = 0;
+            this->_str = "";
+            return (BadRequest);
+        }
         size_t fileNameLength = this->_body.substr(fileNameStartIndex).find("\"");
+        if (fileNameLength == std::string::npos) {
+            this->_code = "400";
+            this->_sizeFile = 0;
+            this->_str = "";
+            return (BadRequest);
+        }
         std::string fileName = this->_body.substr(fileNameStartIndex, fileNameLength);
         //std::cout << "*****************************" << std::endl;
         //std::cout << fileName << std::endl;
@@ -322,6 +341,12 @@ error ParseRequest::requestForNotCgi()
         //std::cout << "*****************************" << std::endl;
         //std::cout << this->_body;
         this->_body = this->_body.substr(this->_body.find("\r\n\r\n") + 4);
+        if (this->_body.find("\r\n\r\n") == std::string::npos) {
+            this->_code = "400";
+            this->_sizeFile = 0;
+            this->_str = "";
+            return (BadRequest);
+        }
         size_t bodySize = this->_body.size() - boundaryStrSize - 4;
         this->_body = this->_body.substr(0, bodySize);
         //std::cout << "*****************************" << std::endl;
