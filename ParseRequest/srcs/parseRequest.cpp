@@ -247,6 +247,8 @@ error ParseRequest::findLocation()
     this->_cgi = this->_locations[this->_locationName].getCgi();
     this->_listOfAllowedMethods = this->_locations[this->_locationName].getAllowedMethods();
     this->_autoindex = this->_locations[this->_locationName].getAutoIndex();
+    this->_clientMaxBodySize = this->_locations[this->_locationName].getMaxBodySize();
+    this->_allowedMethods = this->_locations[this->_locationName].getAllowedMethods();
     return(OK);
 }
 error ParseRequest::requestForCgi()
@@ -378,10 +380,13 @@ error ParseRequest::requestForNotCgi()
         std::cout << this->_path;
         findPath(this->_rootDirectory);
          if(remove((getStrPath()).c_str()) == 0)
-            std::cout << "удадилили\n";
+            this->_code = "200";
          else
-             std::cout << "------------------------" << std::endl << "не удалили" << std::endl;
-        this->_code = "200";
+         {
+            this->_code = "404";
+            return (BadRequest);
+
+         }
         this->_sizeFile = 0;
     }
     return(OK);
@@ -402,6 +407,8 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     this->_indexingFilePath = host.getIndexingFilePath();
     this->_locations = host.getLocations();
     this->_autoindex = host.getAutoIndex();
+    this->_clientMaxBodySize = host.getMaxBodySize();
+    this->_allowedMethods = host.getAllowedMethods();
     if (NumCode != "200")
     {
         this->_code = NumCode;
@@ -440,12 +447,28 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
         this-> _code = "400";
         return BadRequest;
     }
+    // typedef std::string::const_iterator iter;
+    // iter = this->_allowedMethods.find(this->_method);
+    if (std::find(this->_allowedMethods.begin(), this->_allowedMethods.end(), this->_method) == this->_allowedMethods.end())
+    {
+        this-> _code = "405";
+        return BadRequest;
+    }   
+  
     std::cout << "stop2\n";
     print(this->_heading);
     if(!request.empty())
 	{
 		std::cout << "Hello Govno!" << std::endl;
         this->_body = request;
+        if(atoi(this->_clientMaxBodySize.c_str()) != -1)
+        {
+            if( this->_body.size() > (unsigned long)atoi(this->_clientMaxBodySize.c_str()))
+            {
+                this-> _code = "413";
+                return BadRequest;
+            }
+        }
 	}
     typeDefinitionMethod();
 

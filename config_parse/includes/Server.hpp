@@ -60,6 +60,8 @@ class Server
 		std::vector<std::string>  getAllowedMethods(void) const {return _allowedMethods;}
 		std::map<std::string, std::string> getCgi(void) const {return _cgi;}
 		std::map<std::string, Location> getLocations(void) const {return _locations;}
+		std::string getMaxBodySize(void) const {return _clientMaxBodySize;}
+
 
 
 		/* ------------------------------- Исключения ------------------------------- */

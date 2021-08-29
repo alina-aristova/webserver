@@ -65,6 +65,11 @@ String                  Response::descriptionError(std::string numError)
   if(numError == "200")  this->_descriptionError = "OK";
   if(numError == "404")  this->_descriptionError = "Not Found";
   if(numError == "400")  this->_descriptionError = "Bad request";
+  if(numError == "413")  this->_descriptionError = "Payload Too Large";
+  if(numError == "505")  this->_descriptionError = "HTTP Version Not Supported";
+  if(numError == "500")  this->_descriptionError = "Internal Server Error";
+  if(numError == "405")  this->_descriptionError = "Method Not Allowed";
+ 
     return(this->_descriptionError);
 }
 
@@ -121,9 +126,9 @@ String                  Response::creatRespons(ParseRequest &Request, std::strin
     
     std::string result ;
     if (check == ERROR)
-        result = "HTTP/1.1" + " " + this->_NumError + " " + this->_descriptionError + "\r\n\r\n";
+        result = "HTTP/1.1 " + this->_NumError + " " + this->_descriptionError + "\r\n\r\n";
     else if (this->_NumError == "200")
-        result = "HTTP/1.1" + " " + this->_NumError + " " + this->_descriptionError + "\r\n" + "Content-Length: " + this->_FileLength + "\r\n" 
+        result = "HTTP/1.1 " + this->_NumError + " " + this->_descriptionError + "\r\n" + "Content-Length: " + this->_FileLength + "\r\n" 
         + "Content-Type: " + this->_contentType + "\r\n\r\n" + this->_File + "\r\n\r\n";
     else
         result = "HTTP/1.1 "+ this->_NumError + " " + this->_descriptionError + "\r\n" + "Content-Length: " + this->_FileLength + "\r\n" 

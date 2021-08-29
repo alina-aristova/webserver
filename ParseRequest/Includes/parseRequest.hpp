@@ -18,6 +18,7 @@
  # include <sys/stat.h>
  # include <sys/types.h>
  # include <dirent.h>
+ # include <stdlib.h>
  # include "../../config_parse/includes/Configuration.hpp"
 
  # define String std::string
@@ -128,8 +129,10 @@ class ParseRequest
         int         _bodyLength; // длина тела для post
         String      _str; // буфер в который считали данные из файла
         String      _strPath; // путь
+        std::string		_clientMaxBodySize;
         unsigned long _sizeFile;
         bool			_autoindex;
+        std::vector<std::string>  _allowedMethods;
        std::map<std::string,std::string>      _errorFilePath;
         String      _indexingFilePath;
         String      _rootDirectory;
@@ -160,8 +163,11 @@ class ParseRequest
         const unsigned long     &getSizeFile() const;
         const std::string       & getRootDirectory() const;
         const std::string       & getIndexingFilePath() const;
+        std::string getMaxBodySize(void) const {return _clientMaxBodySize;}
+
         const std::map<std::string,std::string>   &getErrorFilePath() const;
         bool                     getForCgi() const;
+        std::vector<std::string>  getAllowedMethods(void) const {return _allowedMethods;}
 
         bool	getAutoIndex(void) const {return _autoindex;}
         const  Map   &getType()const;
