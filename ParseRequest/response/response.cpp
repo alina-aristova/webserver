@@ -123,8 +123,7 @@ String                  Response::creatRespons(ParseRequest &Request, std::strin
     if (check == ERROR)
         result = "HTTP/1.1 " + this->_NumError + " " + this->_descriptionError + "\r\n\r\n";
     else if (this->_NumError == "200")
-        result = "HTTP/1.1 " + this->_NumError + " " + this->_descriptionError + "\r\n" + "Content-Length: " + this->_FileLength + "\r\n" 
-        + "Content-Type: " + this->_contentType + "\r\n\r\n" + this->_File + "\r\n\r\n";
+        result = "HTTP/1.1 " + this->_NumError + " " + this->_descriptionError + "\r\n" + "Content-Length: " + this->_FileLength + "\r\n" + "Content-Type: " + this->_contentType + "\r\n\r\n" + this->_File + "\r\n\r\n";
     else
         result = "HTTP/1.1 "+ this->_NumError + " " + this->_descriptionError + "\r\n" + "Content-Length: " + this->_FileLength + "\r\n" 
         + "Content-Type: " + this->_contentType + "\r\n\r\n" + this->_File + "\r\n\r\n";
