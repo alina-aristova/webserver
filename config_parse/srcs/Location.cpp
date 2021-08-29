@@ -60,6 +60,7 @@ void Location::parseAllowedMethods(std::vector<std::string> & methods)
 		throw SyntaxError();
 	std::string element;
 	std::vector<std::string>::iterator it = methods.begin();
+    this->_allowedMethods.clear();
 	while (it != methods.end())
 	{
 		element = *it;

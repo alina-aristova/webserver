@@ -449,6 +449,11 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     }
     // typedef std::string::const_iterator iter;
     // iter = this->_allowedMethods.find(this->_method);
+    std::vector<std::string>::iterator it = this->_allowedMethods.begin();
+    for (; it != this->_allowedMethods.end(); it++) {
+        std::cout << *it << " " << std::endl;
+    }
+    std::cout << this->_method << std::endl;
     if (std::find(this->_allowedMethods.begin(), this->_allowedMethods.end(), this->_method) == this->_allowedMethods.end())
     {
         this-> _code = "405";
@@ -461,6 +466,7 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
 	{
 		std::cout << "Hello Govno!" << std::endl;
         this->_body = request;
+        std::cout << "<-------------- " << this->_clientMaxBodySize.c_str() << std::endl;
         if(atoi(this->_clientMaxBodySize.c_str()) != -1)
         {
 

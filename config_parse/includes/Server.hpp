@@ -11,7 +11,7 @@
 # define DEFAULT_INDEXING_FILE_PATH "/index.html"
 # define DEFAULT_ERROR_FILE_PAGE "/404.html"
 # define DEFAULT_STORAGE_DIRECTORY "/storage/"
-# define DEFAULT_MAX_BODY_SIZE "1m"
+# define DEFAULT_MAX_BODY_SIZE "-1"
 
 class Location;
 
