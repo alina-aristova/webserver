@@ -32,6 +32,8 @@ class Configuration
 		 *-----------------------------------------------------------------------------*/
 		std::vector<Server> getServers(void) const {return this->_servers;}	
 
+		int result_code;
+
 	class UnknownToken : public std::exception
 	{
 		const char *what(void) const throw()
