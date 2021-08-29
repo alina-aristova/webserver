@@ -313,7 +313,7 @@ error ParseRequest::requestForNotCgi()
         findType(this->getStrPath());
         
     }
-    else if (this->_method == "POST")
+    if (this->_method == "POST")
     {
         if (this->_body.find("\r\n") == std::string::npos) {
             this->_code = "400";
@@ -375,7 +375,7 @@ error ParseRequest::requestForNotCgi()
             return (BadRequest);
         }
     }
-    else if (this->_method == "DELETE")
+    if (this->_method == "DELETE")
     {
         std::cout << this->_path;
         findPath(this->_rootDirectory);

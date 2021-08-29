@@ -51,13 +51,6 @@ String Response::findType(std::string fn)
     return( this->_contentType);
 }
 
-//=============================================================================
-//
-//
-//
-//
-//
-//=============================================================================
 
 String                  Response::descriptionError(std::string numError)
 {
@@ -73,13 +66,6 @@ String                  Response::descriptionError(std::string numError)
     return(this->_descriptionError);
 }
 
-//=============================================================================
-//
-//
-//
-//
-//
-//=============================================================================
 
 int                  Response::findFile(std::string NewPath)
 {
@@ -96,14 +82,6 @@ int                  Response::findFile(std::string NewPath)
     this->_contentType = findType(NewPath);
     return(SUCCESS);
 }
-
-//=============================================================================
-//
-//
-//
-//
-//
-//=============================================================================
 
 
 String                  Response::creatRespons(ParseRequest &Request, std::string numError)

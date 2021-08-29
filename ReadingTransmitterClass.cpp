@@ -264,7 +264,7 @@ void ReadingTransmitterClass::_chunkedEncodingReading(int & unchunkedPartLength)
         _connectionState = ERROR_WHILE_READING;
 
         /// Указываем статус ошибки
-        _responseStatus = "402";
+        _responseStatus = "400";
 
         /// Отставляем в буффере только то, что относится к следующему запросу
         size_t newBeginning = _readingBuffer.substr(beginningOfBody + unchunkedPartLength).find("\r\n");

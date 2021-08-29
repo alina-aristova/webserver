@@ -47,41 +47,27 @@ void Location::parseAutoIndex(std::vector<std::string> & index)
 {
 	if (index.size() != 1)
 		throw SyntaxError();
-	try
-	{
-		index[0].erase(index[0].find(";"));
-		if (index[0] == "off")
-			this->_autoindex = false;
-		else if (index[0] != "on")
-			throw SyntaxError();
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-	}
+	index[0].erase(index[0].find(";"));
+	if (index[0] == "off")
+		this->_autoindex = false;
+	else if (index[0] != "on")
+		throw SyntaxError();
 }
 
 void Location::parseAllowedMethods(std::vector<std::string> & methods)
 {
 	if (methods.size() == 0)
 		throw SyntaxError();
-	try
+	std::string element;
+	std::vector<std::string>::iterator it = methods.begin();
+	while (it != methods.end())
 	{
-		std::string element;
-		std::vector<std::string>::iterator it = methods.begin();
-		while (it != methods.end())
-		{
-			element = *it;
-			if (element.find(';') != std::string::npos)
-				this->_allowedMethods.push_back(element.erase(element.find(';')));
-			else
-				this->_allowedMethods.push_back(element);
-			it++;
-		}
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << "Syntax Error!" << std::endl;
+		element = *it;
+		if (element.find(';') != std::string::npos)
+			this->_allowedMethods.push_back(element.erase(element.find(';')));
+		else
+			this->_allowedMethods.push_back(element);
+		it++;
 	}
 }
 
@@ -103,42 +89,22 @@ void Location::parseIndexingFilePath(std::vector<std::string> & index)
 {
 	if (index.size() != 1)
 		throw SyntaxError();
-	try
-	{
-		this->_indexingFilePath= index[0].erase(index[0].find(';'));
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << "Syntax Error!" << std::endl;
-	}
+	this->_indexingFilePath= index[0].erase(index[0].find(';'));
 }
 
 void Location::parseCgi(std::vector<std::string> & cgi_line)
 {
 	if (cgi_line.size() != 2)
 		throw SyntaxError();
-	try
-	{
-		std::string cgi_excention = cgi_line[0];
-		cgi_excention.erase(0, 2);
-		this->_cgi[cgi_excention] = cgi_line[1].erase(cgi_line[1].find(';'));
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << "Syntax Error!" << std::endl;
-	}
+	std::string cgi_excention = cgi_line[0];
+	cgi_excention.erase(0, 2);
+	this->_cgi[cgi_excention] = cgi_line[1].erase(cgi_line[1].find(';'));
 }
 
 void Location::parseClientMaxBodySize(std::vector<std::string> & body_size)
 {
 	if (body_size.size() != 1)
 		throw SyntaxError();
-	try
-	{
-		this->_clientMaxBodySize = body_size[0].erase(body_size[0].find(';'));
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << "Syntax Error!" << std::endl;
-	}
+	this->_clientMaxBodySize = body_size[0].erase(body_size[0].find(';'));
+	std::stoi(this->_clientMaxBodySize);
 }

@@ -21,7 +21,13 @@
 int main(int argc, char **argv, char **env) {
 	(void)argc;
 	(void)argv;
+	
     Configuration *ourConfig = new Configuration("default.conf");
+	if (ourConfig->result_code == -1)
+	{
+		std::cout << "Syntax Error!" << std::endl;
+		return 1;
+	}
     std::vector <Server> ourServers = ourConfig->getServers();
 
     std::map<int, std::map<std::string, Server *> > portServerMap;

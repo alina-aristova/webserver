@@ -1,6 +1,6 @@
 #include "../includes/Configuration.hpp"
 
-Configuration::Configuration(std::string const & config_file)
+Configuration::Configuration(std::string const & config_file) : result_code(0)
 {
 	parseConfig(config_file);
 }
@@ -29,7 +29,7 @@ void Configuration::parseConfig(std::string const & config_file)
 			}
 			catch(const std::exception& e)
 			{
-				std::cerr << e.what() << std::endl;
+				result_code = -1;
 			}
 		}
 	}
