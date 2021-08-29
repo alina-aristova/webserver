@@ -76,13 +76,7 @@ error ParseRequest::parsingStartLine(String &line)
 
 }
 
-void print(Map m) // функция для тестирования мапы
-{
-    Map::iterator it;
-    
-    for (it=m.begin(); it!=m.end(); it++)
-    std::cout << "Ключ: " << it->first << "| Значение: " << it->second << '\n';
-}
+
 
 void ParseRequest::addTypes()
 {
@@ -260,19 +254,16 @@ error ParseRequest::requestForCgi()
 error ParseRequest::typeDefinitionMethod()
 {
     std::string fn = this->_path.substr(this->_path.find_last_of(".") + 1);
-	std::cout << this->_path.find_last_of(".") + 1 << std::endl;
-    std::cout << fn << "fn"<< std::endl;
     if (this->_path.find_last_of(".") != std::string::npos && this->_cgi.count(fn) == 1)
     {
         this->_forCgi = true;
-        std::cout << this->_forCgi<< "this->_forCgi"<< std::endl;
+
     }
     else
 	{
 		this->_forCgi = false;
         requestForNotCgi();
 	}
-	std::cout << "Ошибка! " << this->_forCgi << std::endl;
     this->_rashirenie = fn;
     return(OK);
 }
@@ -282,7 +273,6 @@ error ParseRequest::requestForNotCgi()
 
     if (this->_method == "GET")
     {
-        //std::cout << "govno!!!\n";
         if (fileToString(this->getStrPath()) == IS_DIR) 
         {
             if (this->_autoindex)
@@ -338,12 +328,7 @@ error ParseRequest::requestForNotCgi()
             return (BadRequest);
         }
         std::string fileName = this->_body.substr(fileNameStartIndex, fileNameLength);
-        //std::cout << "*****************************" << std::endl;
-        //std::cout << fileName << std::endl;
-        //std::cout << "*****************************" << std::endl;
-        //std::cout << getStrPath() << std::endl;
-        //std::cout << "*****************************" << std::endl;
-        //std::cout << this->_body;
+
         if (this->_body.find("\r\n\r\n") == std::string::npos) {
             this->_code = "400";
             this->_sizeFile = 0;
@@ -353,7 +338,6 @@ error ParseRequest::requestForNotCgi()
         this->_body = this->_body.substr(this->_body.find("\r\n\r\n") + 4);
         size_t bodySize = this->_body.size() - boundaryStrSize - 4;
         this->_body = this->_body.substr(0, bodySize);
-        //std::cout << "*****************************" << std::endl;
 
         std::string pathStr = getStrPath();
         if (pathStr[pathStr.size() - 1] != '/')
@@ -419,20 +403,14 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
     String str =  getLine(request);
     if (parsingStartLine(str) != OK)
         return(BadRequest);
-    std::cout << "govno!!!\n";
     int i = 1;
-   // int count = 0;
    while(this->_path[i] && this->_path[i] != '/' )
         i++;
     this->_locationName = this->_path.substr(0,i);
-    std::cout << this->_locationName << "\n";
     if(this->_locations.count(this->_locationName) != 0)
     {
-        std::cout << "stop123\n";
         findLocation();
     }
-
-    std::cout << "stop\n";
     findPath(this->_rootDirectory);
     str =  getLine(request);
     while(str != "")
@@ -441,32 +419,20 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
             return BadRequest;
         str = getLine(request);
     }
-    std::cout << "stop1\n";
     if(this->_heading.count("host") == 0)
     {
         this-> _code = "400";
         return BadRequest;
     }
-    // typedef std::string::const_iterator iter;
-    // iter = this->_allowedMethods.find(this->_method);
-    std::vector<std::string>::iterator it = this->_allowedMethods.begin();
-    for (; it != this->_allowedMethods.end(); it++) {
-        std::cout << *it << " " << std::endl;
-    }
-    std::cout << this->_method << std::endl;
     if (std::find(this->_allowedMethods.begin(), this->_allowedMethods.end(), this->_method) == this->_allowedMethods.end())
     {
         this-> _code = "405";
         return BadRequest;
     }   
-  
-    std::cout << "stop2\n";
-    print(this->_heading);
+
     if(!request.empty())
 	{
-		std::cout << "Hello Govno!" << std::endl;
         this->_body = request;
-        std::cout << "<-------------- " << this->_clientMaxBodySize.c_str() << std::endl;
         if(atoi(this->_clientMaxBodySize.c_str()) != -1)
         {
 
@@ -589,8 +555,7 @@ void ParseRequest::findType(std::string fn)
 error ParseRequest::dirToString(std::string indexFile)
 {
     findNewPath(indexFile);
-    std::ifstream file(this->_strPath);  
-     std::cout  << "|"<< this->_strPath << "|"<< std::endl;
+    std::ifstream file(this->_strPath);
     if (!file.is_open()) 
     {
         this->_code = "404";
@@ -609,9 +574,9 @@ error ParseRequest::dirToString(std::string indexFile)
  {
     struct stat stat1;
     
-    if (root.back() == '/' || stat(root.c_str(), &stat1))//!!!
+    if (root.back() == '/' || stat(root.c_str(), &stat1))
         return(IS_DIR);
-    std::cout  << "|"<< root << "|"<< std::endl;
+
     std::ifstream file(root);  
     if (!file.is_open()) 
     {

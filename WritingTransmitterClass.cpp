@@ -12,11 +12,11 @@ void WritingTransmitterClass::operate() {
     fcntl(_socket, F_SETFL, O_NONBLOCK);
     bytes_written = write(_socket, _writingBuffer.c_str(), _writingBuffer.size());
 
-//    std::cout << std::endl << "*******************************************" << std::endl;
-//    std::cout << "******   Part of out response     *********" << std::endl;
-//    std::cout << "*******************************************" << std::endl;
-//    std::cout << _writingBuffer.substr(0, bytes_written) << std::endl; // +
-//    std::cout << "*******************************************" << std::endl << std::endl;
+    std::cout << std::endl << "*******************************************" << std::endl;
+    std::cout << "******   Part of out response     *********" << std::endl;
+    std::cout << "*******************************************" << std::endl;
+    std::cout << _writingBuffer.substr(0, bytes_written) << std::endl; // +
+    std::cout << "*******************************************" << std::endl << std::endl;
 
     /// проверить не записалось ли все
     /// если записалось, то отчистить буффер и сменить статус

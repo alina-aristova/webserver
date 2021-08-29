@@ -97,7 +97,6 @@ String                  Response::creatRespons(ParseRequest &Request, std::strin
         check = findFile(this->_errorFilePath[this->_NumError]);//?
      else
          this->_File = Request.getStr();
-    std::cout << "111govno!!!\n";
     this->_versProtocol = Request.getVersProtocol();
     this->_descriptionError = descriptionError(this->_NumError);
     

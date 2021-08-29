@@ -44,10 +44,7 @@ void Server::parseServerBlock(std::ifstream & ifs, std::string & buf)
 				throw Server::UnknownToken();
 			parseFunc handler = (*fieldsIterator).second;
 			while (streamForLine >> word)
-			{
-				// std::cout << word << std::endl;
 				wordsInLine.push_back(word);
-			}
 			(this->*handler)(wordsInLine);
 		}	
 	}

@@ -35,10 +35,7 @@ void Location::parseLocationBlock(std::ifstream & ifs, std::string & buf)
 			throw Location::UnknownToken();
 		parseFunc handler = (*fieldsIterator).second;
 		while (streamForLine >> word)
-		{
-			// std::cout << "PARSED IN LOCATION: " << word << std::endl;
 			wordsInLine.push_back(word);
-		}
 		(this->*handler)(wordsInLine);
 	}
 }

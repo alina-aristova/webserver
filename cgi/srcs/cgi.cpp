@@ -171,7 +171,6 @@ void Cgi::execCgi(ParseRequest & request, char **main_env, std::string max_body_
 	putData(request.getBody().c_str(), this->_request_file);
 	putData("", this->_response_file);
 
-	std::cout << "Я ушел в cgi" << std::endl;
 	int pid;
 	int status = 0;
 	std::cout << this->_cgi_path << std::endl;
@@ -190,10 +189,7 @@ void Cgi::execCgi(ParseRequest & request, char **main_env, std::string max_body_
 		dup2(this->_request_fd, 0);
 		dup2(this->_response_fd, 1);
 		if (this->_cgi_path.find(".py") != std::string::npos)
-        {
             status = execve("/usr/local/bin/python3", &av[0], ev);
-            // status = execve("/opt/homebrew/bin/python3", &av[0], ev);
-        }
 		else
 			status = execve(this->_cgi_path.c_str(), av, ev);
 		close(this->_request_fd);
