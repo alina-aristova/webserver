@@ -171,6 +171,7 @@ void Cgi::execCgi(ParseRequest & request, char **main_env, std::string max_body_
 	putData(request.getBody().c_str(), this->_request_file);
 	putData("", this->_response_file);
 
+	std::cout << "Я ушел в cgi" << std::endl;
 	int pid;
 	int status = 0;
 	std::cout << this->_cgi_path << std::endl;
