@@ -29,7 +29,6 @@ void ReadingTransmitterClass::_readIntoBuffer() {
     if (bytesRead < 0) {
         _connectionState = ERROR_WHILE_READING;
         _responseStatus = "500";
-//        std::cout << _socket << std::endl;
         size_t endOfLine = _readingBuffer.find("\r\n");
         if (endOfLine == std::string::npos)
             _readingBuffer = "";
@@ -181,7 +180,6 @@ void ReadingTransmitterClass::_contentLengthReading() {
     /// Находим длину запроса, понадобится для обработки
     size_t totalLengthOfRequest = _readingBuffer.find("\r\n\r\n") + 4 + _contentLength;
 
-    std::cout << totalLengthOfRequest << " " << _readingBuffer.size() << std::endl;
     /// Проверяем настал ли момент начинать обработку текущего запроса
     if (totalLengthOfRequest > _readingBuffer.size())
         return ;
@@ -322,25 +320,25 @@ void ReadingTransmitterClass::operate() {
     /// Обрабатываем ошибки
     if (_connectionState == ERROR_WHILE_READING) {
         /// выводим что у нас вышло в запросе ///
-        std::cout << std::endl;
-        std::cout << "*************   Request      *************" << std::endl;
-        std::cout << "******************************************" << std::endl;
-        std::cout << "статус " << _responseStatus << std::endl; // +
-        std::cout << "------------------------" << std::endl; // +
-        std::cout << "уходит в обработчик" << std::endl; // +
-        std::cout << _bufferToBeProcessed << std::endl; // +
-        std::cout << "-------------------------" << std::endl; // +
-        std::cout << "остается" << std::endl; // +
-        std::cout << _readingBuffer << std::endl; // +
-        std::cout << "-------------------------" << std::endl; // +
-        std::cout << "соединение будет "; // +
-        if (_closeConnection) // +
-            std::cout << "закрыто" << std::endl; // +
-        else // +
-            std::cout << "поддержано" << std::endl; // +
-        std::cout << "--------------------------" << std::endl; // +
-        std::cout << "хост - " << _host << std::endl; // +
-        std::cout << "******************************************" << std::endl;
+//        std::cout << std::endl;
+//        std::cout << "*************   Request      *************" << std::endl;
+//        std::cout << "******************************************" << std::endl;
+//        std::cout << "статус " << _responseStatus << std::endl; // +
+//        std::cout << "------------------------" << std::endl; // +
+//        std::cout << "уходит в обработчик" << std::endl; // +
+//        std::cout << _bufferToBeProcessed << std::endl; // +
+//        std::cout << "-------------------------" << std::endl; // +
+//        std::cout << "остается" << std::endl; // +
+//        std::cout << _readingBuffer << std::endl; // +
+//        std::cout << "-------------------------" << std::endl; // +
+//        std::cout << "соединение будет "; // +
+//        if (_closeConnection) // +
+//            std::cout << "закрыто" << std::endl; // +
+//        else // +
+//            std::cout << "поддержано" << std::endl; // +
+//        std::cout << "--------------------------" << std::endl; // +
+//        std::cout << "хост - " << _host << std::endl; // +
+//        std::cout << "******************************************" << std::endl;
 
         /// находим нужного хоста
         Server *applicableHost = findRightHost();
@@ -374,29 +372,29 @@ void ReadingTransmitterClass::operate() {
     }
     else if (_connectionState == IS_FORMING_RESPONSE) {
         /// выводим что у нас вышло в запросе ///
-        std::cout << std::endl;
-        std::cout << "******************************************" << std::endl;
-        std::cout << "*************   Request      *************" << std::endl;
-        std::cout << "******************************************" << std::endl;
-        std::cout << "статус " << _responseStatus << std::endl; // +
-        std::cout << "------------------------" << std::endl; // +
-        std::cout << "файловый дескриптор" << std::endl; // +
-        std::cout << _socket << std::endl; // +
-        std::cout << "------------------------" << std::endl; // +
-        std::cout << "уходит в обработчик" << std::endl; // +
-        std::cout << _bufferToBeProcessed << std::endl; // +
-        std::cout << "-------------------------" << std::endl; // +
-        std::cout << "остается" << std::endl; // +
-        std::cout << _readingBuffer << std::endl; // +
-        std::cout << "-------------------------" << std::endl; // +
-        std::cout << "соединение будет "; // +
-        if (_closeConnection) // +
-            std::cout << "закрыто" << std::endl; // +
-        else // +
-            std::cout << "поддержано" << std::endl; // +
-        std::cout << "--------------------------" << std::endl; // +
-        std::cout << "хост - " << _host << std::endl; // +
-        std::cout << "******************************************" << std::endl << std::endl;
+//        std::cout << std::endl;
+//        std::cout << "******************************************" << std::endl;
+//        std::cout << "*************   Request      *************" << std::endl;
+//        std::cout << "******************************************" << std::endl;
+//        std::cout << "статус " << _responseStatus << std::endl; // +
+//        std::cout << "------------------------" << std::endl; // +
+//        std::cout << "файловый дескриптор" << std::endl; // +
+//        std::cout << _socket << std::endl; // +
+//        std::cout << "------------------------" << std::endl; // +
+//        std::cout << "уходит в обработчик" << std::endl; // +
+//        std::cout << _bufferToBeProcessed << std::endl; // +
+//        std::cout << "-------------------------" << std::endl; // +
+//        std::cout << "остается" << std::endl; // +
+//        std::cout << _readingBuffer << std::endl; // +
+//        std::cout << "-------------------------" << std::endl; // +
+//        std::cout << "соединение будет "; // +
+//        if (_closeConnection) // +
+//            std::cout << "закрыто" << std::endl; // +
+//        else // +
+//            std::cout << "поддержано" << std::endl; // +
+//        std::cout << "--------------------------" << std::endl; // +
+//        std::cout << "хост - " << _host << std::endl; // +
+//        std::cout << "******************************************" << std::endl << std::endl;
 
         /// находим нужного хоста
         Server *applicableHost = findRightHost();
@@ -414,7 +412,6 @@ void ReadingTransmitterClass::operate() {
             _closeConnection = true;
 
         /// Проверяем тип запроса и если надо запускаем CGI, в любом случае формируем response
-		std::cout << requestParser.getForCgi() << std::endl;
         if (requestParser.getForCgi())
         {
             std::string cgiUri = requestParser.getRootDirectory();
