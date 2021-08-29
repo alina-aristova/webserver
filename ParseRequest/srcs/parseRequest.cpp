@@ -311,8 +311,7 @@ error ParseRequest::requestForNotCgi()
         findType(this->getStrPath());
         
     }
-    #include <stdio.h>
-    if (this->_method == "POST")
+    else if (this->_method == "POST")
     {
         if (this->_body.find("\r\n") == std::string::npos) {
             this->_code = "400";
@@ -343,13 +342,13 @@ error ParseRequest::requestForNotCgi()
         //std::cout << getStrPath() << std::endl;
         //std::cout << "*****************************" << std::endl;
         //std::cout << this->_body;
-        this->_body = this->_body.substr(this->_body.find("\r\n\r\n") + 4);
         if (this->_body.find("\r\n\r\n") == std::string::npos) {
             this->_code = "400";
             this->_sizeFile = 0;
             this->_str = "";
             return (BadRequest);
         }
+        this->_body = this->_body.substr(this->_body.find("\r\n\r\n") + 4);
         size_t bodySize = this->_body.size() - boundaryStrSize - 4;
         this->_body = this->_body.substr(0, bodySize);
         //std::cout << "*****************************" << std::endl;
@@ -374,7 +373,7 @@ error ParseRequest::requestForNotCgi()
             return (BadRequest);
         }
     }
-    if (this->_method == "DELETE")
+    else if (this->_method == "DELETE")
     {
         std::cout << this->_path;
         findPath(this->_rootDirectory);
@@ -382,6 +381,8 @@ error ParseRequest::requestForNotCgi()
             std::cout << "удадилили\n";
          else
              std::cout << "------------------------" << std::endl << "не удалили" << std::endl;
+        this->_code = "200";
+        this->_sizeFile = 0;
     }
     return(OK);
 }
