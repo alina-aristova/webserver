@@ -463,6 +463,7 @@ error ParseRequest::parsRequest(String request, Server host, String NumCode)
         this->_body = request;
         if(atoi(this->_clientMaxBodySize.c_str()) != -1)
         {
+
             if( this->_body.size() > (unsigned long)atoi(this->_clientMaxBodySize.c_str()))
             {
                 this-> _code = "413";
@@ -521,13 +522,7 @@ error ParseRequest::parsBodyLength(std::string &request) {
     return (OK);
 }
 
-//=============================================================================
-//
-//
-//
-//
-//
-//=============================================================================
+
 
 void ParseRequest::findPath(std::string root)
 {
@@ -545,13 +540,6 @@ void ParseRequest::findPath(std::string root)
     this->_strPath = (root + this->_path);
 }
 
-//=============================================================================
-//
-//
-//
-//
-//
-//=============================================================================
 
 void ParseRequest::findNewPath(std::string indexFile)
 {
@@ -610,13 +598,6 @@ error ParseRequest::dirToString(std::string indexFile)
     return(OK);
 }
 
-//=============================================================================
-//
-//
-//
-//
-//
-//=============================================================================
 
  error ParseRequest::fileToString(std::string root)
  {
